@@ -1,16 +1,23 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowRight, Star, Users, Home as HomeIcon, Trophy } from 'lucide-react';
+import { ArrowRight, Star, Users, Home as HomeIcon, Trophy, Search, Building, TreePine } from 'lucide-react';
 import PropertyCard from '@/components/ui/PropertyCard';
-import PropertyFilter from '@/components/ui/PropertyFilter';
 import { mockProperties } from '@/data/mockProperties';
 import { Property, PropertyFilter as PropertyFilterType } from '@/types/property';
+import heroHouse from '@/assets/hero-house.jpg';
 
 const Home = () => {
   const [filteredProperties, setFilteredProperties] = useState<Property[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [filters, setFilters] = useState<PropertyFilterType>({});
   const [favorites, setFavorites] = useState<string[]>([]);
+  const [activeCategory, setActiveCategory] = useState<string>('all');
+  const [heroSearch, setHeroSearch] = useState({
+    category: '',
+    minPrice: '',
+    maxPrice: '',
+    location: ''
+  });
 
   // Load favorites from localStorage
   useEffect(() => {
@@ -23,6 +30,17 @@ const Home = () => {
   // Filter properties based on search and filters
   useEffect(() => {
     let filtered = [...mockProperties];
+
+    // Apply category filter
+    if (activeCategory !== 'all') {
+      if (activeCategory === 'residencial') {
+        filtered = filtered.filter(property => property.type === 'casa' || property.type === 'apartamento');
+      } else if (activeCategory === 'comercial') {
+        filtered = filtered.filter(property => property.type === 'comercial');
+      } else if (activeCategory === 'terrenos') {
+        filtered = filtered.filter(property => property.type === 'terreno');
+      }
+    }
 
     // Apply search query
     if (searchQuery) {
@@ -37,45 +55,8 @@ const Home = () => {
       );
     }
 
-    // Apply filters
-    if (filters.type) {
-      filtered = filtered.filter(property => property.type === filters.type);
-    }
-    
-    if (filters.city) {
-      filtered = filtered.filter(property => property.address.city === filters.city);
-    }
-    
-    if (filters.minPrice) {
-      filtered = filtered.filter(property => property.price >= filters.minPrice!);
-    }
-    
-    if (filters.maxPrice) {
-      filtered = filtered.filter(property => property.price <= filters.maxPrice!);
-    }
-    
-    if (filters.bedrooms) {
-      filtered = filtered.filter(property => property.bedrooms >= filters.bedrooms!);
-    }
-    
-    if (filters.suites) {
-      filtered = filtered.filter(property => property.suites >= filters.suites!);
-    }
-    
-    if (filters.garages) {
-      filtered = filtered.filter(property => property.garages >= filters.garages!);
-    }
-    
-    if (filters.minArea) {
-      filtered = filtered.filter(property => property.area >= filters.minArea!);
-    }
-    
-    if (filters.maxArea) {
-      filtered = filtered.filter(property => property.area <= filters.maxArea!);
-    }
-
     setFilteredProperties(filtered);
-  }, [searchQuery, filters]);
+  }, [searchQuery, activeCategory]);
 
   const handleFavorite = (propertyId: string) => {
     const newFavorites = favorites.includes(propertyId)
@@ -86,53 +67,157 @@ const Home = () => {
     localStorage.setItem('favorites', JSON.stringify(newFavorites));
   };
 
+  const handleHeroSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    // Apply hero search filters
+    const newFilters: PropertyFilterType = {};
+    
+    if (heroSearch.category) {
+      newFilters.type = heroSearch.category;
+    }
+    
+    if (heroSearch.minPrice) {
+      newFilters.minPrice = Number(heroSearch.minPrice.replace(/\D/g, ''));
+    }
+    
+    if (heroSearch.maxPrice) {
+      newFilters.maxPrice = Number(heroSearch.maxPrice.replace(/\D/g, ''));
+    }
+    
+    if (heroSearch.location) {
+      newFilters.city = heroSearch.location;
+    }
+    
+    setFilters(newFilters);
+    setSearchQuery(heroSearch.location);
+  };
+
+  const categories = [
+    { id: 'all', name: 'TODOS', icon: HomeIcon, count: mockProperties.length },
+    { id: 'residencial', name: 'RESIDENCIAL', icon: HomeIcon, count: mockProperties.filter(p => p.type === 'casa' || p.type === 'apartamento').length },
+    { id: 'comercial', name: 'COMERCIAL', icon: Building, count: mockProperties.filter(p => p.type === 'comercial').length },
+    { id: 'terrenos', name: 'TERRENOS', icon: TreePine, count: mockProperties.filter(p => p.type === 'terreno').length },
+  ];
+
   const featuredProperties = mockProperties.filter(property => property.featured);
   const displayProperties = filteredProperties.length > 0 ? filteredProperties.slice(0, 6) : featuredProperties;
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Hero Section */}
-      <section className="relative bg-gradient-to-br from-neutral-900 to-neutral-800 text-white py-20">
-        <div className="container">
-          <div className="max-w-4xl mx-auto text-center">
+      {/* Hero Section with Integrated Search */}
+      <section className="relative bg-gradient-to-br from-neutral-900 to-neutral-800 text-white">
+        {/* Background Image */}
+        <div className="absolute inset-0">
+          <img
+            src={heroHouse}
+            alt="Casa moderna"
+            className="w-full h-full object-cover opacity-40"
+          />
+          <div className="absolute inset-0 bg-black/50"></div>
+        </div>
+        
+        <div className="relative container py-20">
+          <div className="max-w-4xl mx-auto text-center mb-12">
             <h1 className="text-4xl md:text-6xl font-bold mb-6">
-              Encontre o Imóvel dos
-              <span className="text-primary block">Seus Sonhos</span>
+              Encontre o <span className="text-primary">imóvel</span> dos
+              <span className="block">seus sonhos com a Sibele Imóveis</span>
             </h1>
-            <p className="text-xl md:text-2xl text-neutral-300 mb-8 max-w-2xl mx-auto">
-              Especializada em imóveis de alto padrão em São Paulo. 
-              Mais de 10 anos conectando pessoas aos seus lares ideais.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link to="/imoveis" className="btn-primary inline-flex items-center space-x-2">
-                <HomeIcon size={20} />
-                <span>Ver Todos os Imóveis</span>
-                <ArrowRight size={18} />
-              </Link>
-              <a
-                href="https://wa.me/5511999887766?text=Olá! Gostaria de saber mais sobre os imóveis disponíveis."
-                target="_blank"
-                rel="noopener noreferrer"
-                className="btn-secondary border-white text-white hover:bg-white hover:text-neutral-900"
-              >
-                Falar com a Corretora
-              </a>
-            </div>
+          </div>
+
+          {/* Hero Search Form */}
+          <div className="max-w-5xl mx-auto">
+            <form onSubmit={handleHeroSearch} className="bg-white rounded-2xl p-6 shadow-2xl">
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
+                <div>
+                  <label className="block text-sm font-medium text-neutral-600 mb-2">
+                    Categoria
+                  </label>
+                  <select
+                    value={heroSearch.category}
+                    onChange={(e) => setHeroSearch({ ...heroSearch, category: e.target.value })}
+                    className="w-full px-4 py-3 rounded-lg border border-neutral-200 bg-white text-neutral-700 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+                  >
+                    <option value="">Selecione</option>
+                    <option value="casa">Casa</option>
+                    <option value="apartamento">Apartamento</option>
+                    <option value="terreno">Terreno</option>
+                    <option value="comercial">Comercial</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-neutral-600 mb-2">
+                    Valor mínimo
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="R$ 0,00"
+                    value={heroSearch.minPrice}
+                    onChange={(e) => setHeroSearch({ ...heroSearch, minPrice: e.target.value })}
+                    className="w-full px-4 py-3 rounded-lg border border-neutral-200 bg-white text-neutral-700 placeholder:text-neutral-400 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-neutral-600 mb-2">
+                    Localização
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="Cidade, bairro..."
+                    value={heroSearch.location}
+                    onChange={(e) => setHeroSearch({ ...heroSearch, location: e.target.value })}
+                    className="w-full px-4 py-3 rounded-lg border border-neutral-200 bg-white text-neutral-700 placeholder:text-neutral-400 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+                  />
+                </div>
+
+                <div>
+                  <button
+                    type="submit"
+                    className="w-full bg-primary text-primary-foreground px-6 py-3 rounded-lg font-medium hover:bg-primary-hover transition-colors flex items-center justify-center space-x-2"
+                  >
+                    <Search size={18} />
+                    <span>Buscar</span>
+                  </button>
+                </div>
+              </div>
+            </form>
           </div>
         </div>
       </section>
 
-      {/* Search & Filters */}
+      {/* Category Filter Section */}
       <section className="py-12 bg-neutral-50">
         <div className="container">
-          <div className="max-w-4xl mx-auto">
-            <h2 className="text-3xl font-bold text-center mb-8">
-              Encontre Seu Imóvel Ideal
+          <div className="text-center mb-8">
+            <h2 className="text-3xl font-bold mb-4">
+              Busque seu imóvel por categoria
             </h2>
-            <PropertyFilter
-              onFilterChange={setFilters}
-              onSearch={setSearchQuery}
-            />
+          </div>
+          
+          <div className="flex flex-wrap justify-center gap-4 mb-8">
+            {categories.map((category) => {
+              const Icon = category.icon;
+              return (
+                <button
+                  key={category.id}
+                  onClick={() => setActiveCategory(category.id)}
+                  className={`px-6 py-3 rounded-full font-medium transition-all ${
+                    activeCategory === category.id
+                      ? 'bg-primary text-primary-foreground shadow-lg'
+                      : 'bg-white text-neutral-600 hover:bg-neutral-100 border border-neutral-200'
+                  }`}
+                >
+                  <div className="flex items-center space-x-2">
+                    <Icon size={18} />
+                    <span>{category.name}</span>
+                    <span className="text-xs bg-neutral-200 text-neutral-600 px-2 py-1 rounded-full">
+                      {category.count}
+                    </span>
+                  </div>
+                </button>
+              );
+            })}
           </div>
         </div>
       </section>
@@ -153,9 +238,9 @@ const Home = () => {
             </Link>
           </div>
 
-          {featuredProperties.length > 0 ? (
+          {displayProperties.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {featuredProperties.map((property) => (
+              {displayProperties.map((property) => (
                 <PropertyCard
                   key={property.id}
                   property={property}
@@ -177,6 +262,7 @@ const Home = () => {
                 onClick={() => {
                   setFilters({});
                   setSearchQuery('');
+                  setActiveCategory('all');
                 }}
                 className="btn-primary"
               >
@@ -184,6 +270,61 @@ const Home = () => {
               </button>
             </div>
           )}
+        </div>
+      </section>
+
+      {/* Services Section */}
+      <section className="py-16 bg-neutral-50">
+        <div className="container">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl font-bold mb-4">
+              Explore as inúmeras maneiras pelas quais podemos ajudar
+            </h2>
+            <p className="text-muted-foreground max-w-2xl mx-auto">
+              Oferecemos soluções completas para todas as suas necessidades imobiliárias
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div className="card-property text-center p-8">
+              <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-6">
+                <HomeIcon className="text-primary" size={32} />
+              </div>
+              <h3 className="text-xl font-bold mb-4">Comprar imóveis</h3>
+              <p className="text-muted-foreground mb-6">
+                Encontre o imóvel perfeito com nossa expertise e atendimento personalizado.
+              </p>
+              <Link to="/imoveis" className="btn-primary">
+                Ver imóveis
+              </Link>
+            </div>
+
+            <div className="card-property text-center p-8">
+              <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-6">
+                <Building className="text-primary" size={32} />
+              </div>
+              <h3 className="text-xl font-bold mb-4">Alugar imóveis</h3>
+              <p className="text-muted-foreground mb-6">
+                Encontre opções de aluguel que se encaixem no seu orçamento e necessidades.
+              </p>
+              <Link to="/imoveis" className="btn-primary">
+                Ver aluguéis
+              </Link>
+            </div>
+
+            <div className="card-property text-center p-8">
+              <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-6">
+                <Star className="text-primary" size={32} />
+              </div>
+              <h3 className="text-xl font-bold mb-4">Anuncie seu imóvel</h3>
+              <p className="text-muted-foreground mb-6">
+                Venda ou alugue seu imóvel com nossa estratégia de marketing eficaz.
+              </p>
+              <Link to="/contato" className="btn-primary">
+                Anunciar
+              </Link>
+            </div>
+          </div>
         </div>
       </section>
 
@@ -221,10 +362,9 @@ const Home = () => {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <div>
               <h2 className="text-3xl font-bold mb-6">
-                Sibele Santos
-                <span className="block text-lg font-normal text-muted-foreground mt-2">
-                  CRECI-SP 123456
-                </span>
+                A melhor maneira de encontrar
+                <br />
+                o imóvel <span className="text-primary">perfeito</span> para você
               </h2>
               <p className="text-lg text-muted-foreground mb-6 leading-relaxed">
                 Com mais de uma década de experiência no mercado imobiliário de São Paulo, 
@@ -246,7 +386,7 @@ const Home = () => {
                   <div className="text-sm text-muted-foreground">Satisfação</div>
                 </div>
               </div>
-              <Link to="/sobre" className="btn-secondary">
+              <Link to="/sobre" className="btn-primary">
                 Conhecer Mais
               </Link>
             </div>

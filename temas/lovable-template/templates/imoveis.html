@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Imóveis - Via Fatto Imóveis</title>
+    <meta name="description" content="Conheça todos os nossos imóveis disponíveis para compra e aluguel. Casas, apartamentos, terrenos e imóveis comerciais.">
+    <link rel="stylesheet" href="../assets/css/styles.css">
+    <link rel="icon" href="../assets/images/favicon.ico">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="flex items-center justify-between py-4">
+                <div class="flex items-center space-x-4">
+                    <img src="../assets/images/logo.png" alt="Via Fatto Imóveis" width="50" height="50">
+                    <div>
+                        <h1 class="text-xl font-bold text-foreground">Via Fatto Imóveis</h1>
+                        <p class="text-sm text-muted">CRECI-SP 123456</p>
+                    </div>
+                </div>
+
+                <nav class="hidden md:block">
+                    <ul class="nav-links">
+                        <li><a href="index.html">Início</a></li>
+                        <li><a href="imoveis.html" class="text-primary">Imóveis</a></li>
+                        <li><a href="sobre.html">Sobre</a></li>
+                        <li><a href="favoritos.html">Favoritos</a></li>
+                        <li><a href="contato.html">Contato</a></li>
+                    </ul>
+                </nav>
+
+                <button id="mobile-menu-btn" class="md:hidden">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="3" y1="6" x2="21" y2="6"></line>
+                        <line x1="3" y1="12" x2="21" y2="12"></line>
+                        <line x1="3" y1="18" x2="21" y2="18"></line>
+                    </svg>
+                </button>
+            </div>
+
+            <nav id="mobile-menu" class="hidden md:hidden pb-4">
+                <ul class="nav-links">
+                    <li><a href="index.html">Início</a></li>
+                    <li><a href="imoveis.html" class="text-primary">Imóveis</a></li>
+                    <li><a href="sobre.html">Sobre</a></li>
+                    <li><a href="favoritos.html">Favoritos</a></li>
+                    <li><a href="contato.html">Contato</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Page Header -->
+    <section class="py-12 bg-neutral-50">
+        <div class="container text-center">
+            <h1 class="text-4xl font-bold mb-4">Nossos Imóveis</h1>
+            <p class="text-lg text-muted max-w-2xl mx-auto">Explore nossa seleção completa de imóveis disponíveis para compra e aluguel</p>
+        </div>
+    </section>
+
+    <!-- Filter Section -->
+    <section class="py-8 bg-white border-b">
+        <div class="container">
+            <div class="mb-6">
+                <input type="text" id="property-search" placeholder="Buscar por título, localização ou características..." class="form-input max-w-md">
+            </div>
+            
+            <div class="flex flex-wrap gap-4">
+                <button class="category-btn active" data-category="all">Todos</button>
+                <button class="category-btn" data-category="casa">Casas</button>
+                <button class="category-btn" data-category="apartamento">Apartamentos</button>
+                <button class="category-btn" data-category="terreno">Terrenos</button>
+                <button class="category-btn" data-category="comercial">Comercial</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Properties Grid -->
+    <section class="py-16">
+        <div class="container">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="all-properties-grid">
+                <!-- All property cards will be loaded here by JavaScript -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+                <div>
+                    <h2 class="text-xl font-bold">Via Fatto Imóveis</h2>
+                    <p class="text-sm text-neutral-400">CRECI-SP 123456</p>
+                    <p class="text-neutral-300 mt-4">Sua imobiliária de confiança em São Paulo.</p>
+                </div>
+
+                <div>
+                    <h3 class="font-semibold mb-4">Links Rápidos</h3>
+                    <ul class="space-y-2">
+                        <li><a href="index.html" class="text-neutral-300 hover:text-primary transition-colors">Início</a></li>
+                        <li><a href="imoveis.html" class="text-neutral-300 hover:text-primary transition-colors">Imóveis</a></li>
+                        <li><a href="sobre.html" class="text-neutral-300 hover:text-primary transition-colors">Sobre</a></li>
+                        <li><a href="favoritos.html" class="text-neutral-300 hover:text-primary transition-colors">Favoritos</a></li>
+                        <li><a href="contato.html" class="text-neutral-300 hover:text-primary transition-colors">Contato</a></li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h3 class="font-semibold mb-4">Serviços</h3>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="text-neutral-300 hover:text-primary transition-colors">Compra e Venda</a></li>
+                        <li><a href="#" class="text-neutral-300 hover:text-primary transition-colors">Locação</a></li>
+                        <li><a href="#" class="text-neutral-300 hover:text-primary transition-colors">Avaliação</a></li>
+                        <li><a href="#" class="text-neutral-300 hover:text-primary transition-colors">Consultoria</a></li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h3 class="font-semibold mb-4">Contato</h3>
+                    <div class="space-y-3">
+                        <a href="tel:+5511999887766" class="flex items-center space-x-2 text-neutral-300 hover:text-primary transition-colors">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
+                            </svg>
+                            <span>(11) 99988-7766</span>
+                        </a>
+                        <a href="mailto:contato@viafatto.com.br" class="flex items-center space-x-2 text-neutral-300 hover:text-primary transition-colors">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                                <polyline points="22,6 12,13 2,6"></polyline>
+                            </svg>
+                            <span>contato@viafatto.com.br</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="border-t border-neutral-800 pt-8 text-center">
+                <p class="text-neutral-400 text-sm">© 2024 Via Fatto Imóveis. Todos os direitos reservados.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="../assets/js/main.js"></script>
+</body>
+</html>

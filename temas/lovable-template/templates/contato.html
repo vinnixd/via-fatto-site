@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contato - Via Fatto Imóveis</title>
+    <meta name="description" content="Entre em contato com a Via Fatto Imóveis. Estamos prontos para ajudá-lo a encontrar o imóvel perfeito.">
+    <link rel="stylesheet" href="../assets/css/styles.css">
+    <link rel="icon" href="../assets/images/favicon.ico">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="flex items-center justify-between py-4">
+                <div class="flex items-center space-x-4">
+                    <img src="../assets/images/logo.png" alt="Via Fatto Imóveis" width="50" height="50">
+                    <div>
+                        <h1 class="text-xl font-bold text-foreground">Via Fatto Imóveis</h1>
+                        <p class="text-sm text-muted">CRECI-SP 123456</p>
+                    </div>
+                </div>
+
+                <nav class="hidden md:block">
+                    <ul class="nav-links">
+                        <li><a href="index.html">Início</a></li>
+                        <li><a href="imoveis.html">Imóveis</a></li>
+                        <li><a href="sobre.html">Sobre</a></li>
+                        <li><a href="favoritos.html">Favoritos</a></li>
+                        <li><a href="contato.html" class="text-primary">Contato</a></li>
+                    </ul>
+                </nav>
+
+                <button id="mobile-menu-btn" class="md:hidden">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="3" y1="6" x2="21" y2="6"></line>
+                        <line x1="3" y1="12" x2="21" y2="12"></line>
+                        <line x1="3" y1="18" x2="21" y2="18"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Page Header -->
+    <section class="py-12 bg-neutral-50">
+        <div class="container text-center">
+            <h1 class="text-4xl font-bold mb-4">Entre em Contato</h1>
+            <p class="text-lg text-muted max-w-2xl mx-auto">Estamos aqui para ajudá-lo a encontrar o imóvel perfeito</p>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section class="py-16">
+        <div class="container">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
+                <!-- Contact Form -->
+                <div>
+                    <h2 class="text-2xl font-bold mb-6">Envie sua Mensagem</h2>
+                    <form id="contact-form" class="space-y-4">
+                        <div>
+                            <label class="form-label">Nome Completo</label>
+                            <input type="text" name="name" required class="form-input">
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="form-label">E-mail</label>
+                                <input type="email" name="email" required class="form-input">
+                            </div>
+                            <div>
+                                <label class="form-label">Telefone</label>
+                                <input type="tel" name="phone" class="form-input">
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="form-label">Assunto</label>
+                            <select name="subject" required class="form-input">
+                                <option value="">Selecione um assunto</option>
+                                <option value="compra">Compra de Imóvel</option>
+                                <option value="venda">Venda de Imóvel</option>
+                                <option value="aluguel">Aluguel de Imóvel</option>
+                                <option value="avaliacao">Avaliação de Imóvel</option>
+                                <option value="outros">Outros</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label class="form-label">Mensagem</label>
+                            <textarea name="message" rows="5" required class="form-input"></textarea>
+                        </div>
+
+                        <button type="submit" class="btn-primary w-full">Enviar Mensagem</button>
+                    </form>
+                </div>
+
+                <!-- Contact Info -->
+                <div>
+                    <h2 class="text-2xl font-bold mb-6">Informações de Contato</h2>
+                    
+                    <div class="bg-neutral-50 rounded-2xl p-6 mb-8">
+                        <div class="flex items-center mb-4">
+                            <svg class="mr-2 text-primary" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                                <circle cx="12" cy="7" r="4"></circle>
+                            </svg>
+                            <h2 class="text-xl font-semibold">Via Fatto Team</h2>
+                        </div>
+                        <p class="text-muted mb-4">CRECI-SP 123456</p>
+                        <p class="text-muted">
+                            Especialistas em encontrar o imóvel perfeito para você. 
+                            Com anos de experiência no mercado imobiliário.
+                        </p>
+                    </div>
+
+                    <div class="space-y-6">
+                        <div class="flex items-start space-x-4">
+                            <div class="bg-primary/10 p-3 rounded-lg">
+                                <svg class="text-primary" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
+                                </svg>
+                            </div>
+                            <div>
+                                <h3 class="font-semibold mb-1">Telefone</h3>
+                                <p class="text-muted">
+                                    <a href="tel:+5511999887766" class="text-foreground hover:text-primary transition-colors font-medium">
+                                        (11) 99988-7766
+                                    </a>
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="flex items-start space-x-4">
+                            <div class="bg-primary/10 p-3 rounded-lg">
+                                <svg class="text-primary" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                                    <polyline points="22,6 12,13 2,6"></polyline>
+                                </svg>
+                            </div>
+                            <div>
+                                <h3 class="font-semibold mb-1">E-mail</h3>
+                                <p class="text-muted">
+                                    <a href="mailto:contato@viafatto.com.br" class="text-foreground hover:text-primary transition-colors font-medium">
+                                        contato@viafatto.com.br
+                                    </a>
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="flex items-start space-x-4">
+                            <div class="bg-primary/10 p-3 rounded-lg">
+                                <svg class="text-primary" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                                    <circle cx="12" cy="10" r="3"></circle>
+                                </svg>
+                            </div>
+                            <div>
+                                <h3 class="font-semibold mb-1">Endereço</h3>
+                                <p class="text-muted">São Paulo, SP</p>
+                            </div>
+                        </div>
+
+                        <div class="flex items-start space-x-4">
+                            <div class="bg-primary/10 p-3 rounded-lg">
+                                <svg class="text-primary" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <circle cx="12" cy="12" r="10"></circle>
+                                    <polyline points="12,6 12,12 16,14"></polyline>
+                                </svg>
+                            </div>
+                            <div>
+                                <h3 class="font-semibold mb-1">Horário de Atendimento</h3>
+                                <p class="text-muted">
+                                    Segunda a Sexta: 9h às 18h<br>
+                                    Sábado: 9h às 14h
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-8">
+                        <a href="https://wa.me/5511999887766?text=Olá! Gostaria de conversar sobre imóveis." 
+                           target="_blank" 
+                           rel="noopener noreferrer" 
+                           class="btn-primary w-full text-center">
+                            Conversar no WhatsApp
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+                <div>
+                    <h2 class="text-xl font-bold">Via Fatto Imóveis</h2>
+                    <p class="text-sm text-neutral-400">CRECI-SP 123456</p>
+                    <p class="text-neutral-300 mt-4">Sua imobiliária de confiança em São Paulo.</p>
+                </div>
+
+                <div>
+                    <h3 class="font-semibold mb-4">Links Rápidos</h3>
+                    <ul class="space-y-2">
+                        <li><a href="index.html" class="text-neutral-300 hover:text-primary transition-colors">Início</a></li>
+                        <li><a href="imoveis.html" class="text-neutral-300 hover:text-primary transition-colors">Imóveis</a></li>
+                        <li><a href="sobre.html" class="text-neutral-300 hover:text-primary transition-colors">Sobre</a></li>
+                        <li><a href="favoritos.html" class="text-neutral-300 hover:text-primary transition-colors">Favoritos</a></li>
+                        <li><a href="contato.html" class="text-neutral-300 hover:text-primary transition-colors">Contato</a></li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h3 class="font-semibold mb-4">Serviços</h3>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="text-neutral-300 hover:text-primary transition-colors">Compra e Venda</a></li>
+                        <li><a href="#" class="text-neutral-300 hover:text-primary transition-colors">Locação</a></li>
+                        <li><a href="#" class="text-neutral-300 hover:text-primary transition-colors">Avaliação</a></li>
+                        <li><a href="#" class="text-neutral-300 hover:text-primary transition-colors">Consultoria</a></li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h3 class="font-semibold mb-4">Contato</h3>
+                    <div class="space-y-3">
+                        <a href="tel:+5511999887766" class="flex items-center space-x-2 text-neutral-300 hover:text-primary transition-colors">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
+                            </svg>
+                            <span>(11) 99988-7766</span>
+                        </a>
+                        <a href="mailto:contato@viafatto.com.br" class="flex items-center space-x-2 text-neutral-300 hover:text-primary transition-colors">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                                <polyline points="22,6 12,13 2,6"></polyline>
+                            </svg>
+                            <span>contato@viafatto.com.br</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="border-t border-neutral-800 pt-8 text-center">
+                <p class="text-neutral-400 text-sm">© 2024 Via Fatto Imóveis. Todos os direitos reservados.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="../assets/js/main.js"></script>
+</body>
+</html>

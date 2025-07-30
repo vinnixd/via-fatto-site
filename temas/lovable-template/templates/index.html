@@ -1,0 +1,664 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Via Fatto Imóveis - Encontre o imóvel dos seus sonhos</title>
+    <meta name="description" content="Via Fatto Imóveis - Encontre o imóvel perfeito com nossa expertise e atendimento personalizado. Casas, apartamentos, terrenos e imóveis comerciais.">
+    <link rel="stylesheet" href="../assets/css/styles.css">
+    <link rel="icon" href="../assets/images/favicon.ico">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="flex items-center justify-between py-4">
+                <!-- Logo -->
+                <div class="flex items-center space-x-4">
+                    <img src="../assets/images/logo.png" alt="Via Fatto Imóveis" width="50" height="50">
+                    <div>
+                        <h1 class="text-xl font-bold text-foreground">Via Fatto Imóveis</h1>
+                        <p class="text-sm text-muted">CRECI-SP 123456</p>
+                    </div>
+                </div>
+
+                <!-- Desktop Navigation -->
+                <nav class="hidden md:block">
+                    <ul class="nav-links">
+                        <li><a href="index.html">Início</a></li>
+                        <li><a href="imoveis.html">Imóveis</a></li>
+                        <li><a href="sobre.html">Sobre</a></li>
+                        <li><a href="favoritos.html">Favoritos</a></li>
+                        <li><a href="contato.html">Contato</a></li>
+                    </ul>
+                </nav>
+
+                <!-- Mobile Menu Button -->
+                <button id="mobile-menu-btn" class="md:hidden">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="3" y1="6" x2="21" y2="6"></line>
+                        <line x1="3" y1="12" x2="21" y2="12"></line>
+                        <line x1="3" y1="18" x2="21" y2="18"></line>
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Mobile Navigation -->
+            <nav id="mobile-menu" class="hidden md:hidden pb-4">
+                <ul class="nav-links">
+                    <li><a href="index.html">Início</a></li>
+                    <li><a href="imoveis.html">Imóveis</a></li>
+                    <li><a href="sobre.html">Sobre</a></li>
+                    <li><a href="favoritos.html">Favoritos</a></li>
+                    <li><a href="contato.html">Contato</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-bg">
+            <img src="../assets/images/hero-house.jpg" alt="Casa moderna" class="w-full h-full object-cover opacity-40">
+        </div>
+        
+        <div class="container hero-content">
+            <div class="mb-12">
+                <h1 class="text-4xl md:text-6xl font-bold mb-6">
+                    Encontre o <span class="text-primary">imóvel</span> dos
+                    <span class="block">seus sonhos com a Via Fatto Imóveis</span>
+                </h1>
+            </div>
+
+            <!-- Hero Search Form -->
+            <form id="hero-search-form" class="bg-white rounded-2xl p-6 shadow-2xl max-w-5xl mx-auto">
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                    <div>
+                        <label class="form-label text-neutral-600">Categoria</label>
+                        <select name="category" class="form-input">
+                            <option value="">Selecione</option>
+                            <option value="casa">Casa</option>
+                            <option value="apartamento">Apartamento</option>
+                            <option value="terreno">Terreno</option>
+                            <option value="comercial">Comercial</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="form-label text-neutral-600">Valor mínimo</label>
+                        <input type="text" name="minPrice" placeholder="R$ 0,00" class="form-input">
+                    </div>
+
+                    <div>
+                        <label class="form-label text-neutral-600">Localização</label>
+                        <input type="text" name="location" placeholder="Cidade, bairro..." class="form-input">
+                    </div>
+
+                    <div class="flex items-end">
+                        <button type="submit" class="btn-primary w-full">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display: inline; margin-right: 0.5rem;">
+                                <circle cx="11" cy="11" r="8"></circle>
+                                <path d="m21 21-4.35-4.35"></path>
+                            </svg>
+                            Buscar
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </section>
+
+    <!-- Category Filter Section -->
+    <section class="py-12 bg-neutral-50">
+        <div class="container">
+            <div class="text-center mb-8">
+                <h2 class="text-3xl font-bold mb-4">Busque seu imóvel por categoria</h2>
+            </div>
+            
+            <div class="flex flex-wrap justify-center gap-4 mb-8">
+                <button class="category-btn active" data-category="all">
+                    <div class="flex items-center space-x-2">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                            <polyline points="9,22 9,12 15,12 15,22"></polyline>
+                        </svg>
+                        <span>TODOS</span>
+                        <span class="text-xs bg-neutral-200 text-neutral-600 px-2 py-1 rounded-full">6</span>
+                    </div>
+                </button>
+                
+                <button class="category-btn" data-category="residencial">
+                    <div class="flex items-center space-x-2">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                            <polyline points="9,22 9,12 15,12 15,22"></polyline>
+                        </svg>
+                        <span>RESIDENCIAL</span>
+                        <span class="text-xs bg-neutral-200 text-neutral-600 px-2 py-1 rounded-full">4</span>
+                    </div>
+                </button>
+                
+                <button class="category-btn" data-category="comercial">
+                    <div class="flex items-center space-x-2">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect width="16" height="20" x="4" y="2" rx="2" ry="2"></rect>
+                            <path d="M9 22v-4h6v4"></path>
+                            <path d="M8 6h.01"></path>
+                            <path d="M16 6h.01"></path>
+                            <path d="M12 6h.01"></path>
+                            <path d="M12 10h.01"></path>
+                            <path d="M12 14h.01"></path>
+                            <path d="M16 10h.01"></path>
+                            <path d="M16 14h.01"></path>
+                            <path d="M8 10h.01"></path>
+                            <path d="M8 14h.01"></path>
+                        </svg>
+                        <span>COMERCIAL</span>
+                        <span class="text-xs bg-neutral-200 text-neutral-600 px-2 py-1 rounded-full">1</span>
+                    </div>
+                </button>
+                
+                <button class="category-btn" data-category="terreno">
+                    <div class="flex items-center space-x-2">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="m17 21 4-4-4-4"></path>
+                            <path d="M3 11v3a1 1 0 0 0 1 1h3"></path>
+                            <path d="M3 7V4a1 1 0 0 1 1-1h3"></path>
+                            <path d="m7 3-4 4 4 4"></path>
+                            <path d="M14 3h3a1 1 0 0 1 1 1v3"></path>
+                            <path d="M14 21h3a1 1 0 0 0 1-1v-3"></path>
+                        </svg>
+                        <span>TERRENOS</span>
+                        <span class="text-xs bg-neutral-200 text-neutral-600 px-2 py-1 rounded-full">1</span>
+                    </div>
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Properties Grid -->
+    <section class="py-16">
+        <div class="container">
+            <div class="text-center mb-8">
+                <h2 class="text-3xl font-bold mb-4">Conheça nossos melhores imóveis</h2>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8" id="properties-grid">
+                <!-- Property Card 1 -->
+                <div class="card-property property-card" 
+                     data-category="casa" 
+                     data-price="850000" 
+                     data-location="Vila Madalena, São Paulo"
+                     data-title="Casa Moderna Vila Madalena"
+                     data-description="Casa moderna com 3 quartos"
+                     data-property-id="1"
+                     data-reference="VF001">
+                    
+                    <div class="relative h-48 md:h-56 overflow-hidden">
+                        <img src="../assets/images/casa-vila-madalena.jpg" alt="Casa Moderna Vila Madalena" class="w-full h-full object-cover transition-all hover:scale-105">
+                        
+                        <div class="absolute top-3 left-3">
+                            <span class="bg-primary text-primary-foreground px-3 py-1 rounded-full text-xs font-medium">À Venda</span>
+                        </div>
+
+                        <div class="absolute top-3 right-3">
+                            <span class="bg-warning text-white px-2 py-1 rounded-full text-xs font-medium">Destaque</span>
+                        </div>
+
+                        <button class="favorite-btn absolute bottom-3 right-3 p-2 rounded-full bg-white/90 text-neutral-600 hover:bg-red-500 hover:text-white transition-colors" data-property-id="1">
+                            <svg class="heart-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                            </svg>
+                        </button>
+
+                        <div class="absolute bottom-3 left-3 flex items-center space-x-1 bg-black/50 text-white px-2 py-1 rounded-full text-xs">
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                <circle cx="12" cy="12" r="3"></circle>
+                            </svg>
+                            <span>245</span>
+                        </div>
+                    </div>
+
+                    <div class="p-4">
+                        <div class="mb-2">
+                            <span class="text-2xl font-bold text-primary">R$ 850.000</span>
+                        </div>
+
+                        <h3 class="text-lg font-semibold text-foreground mb-2 line-clamp-2">Casa Moderna Vila Madalena</h3>
+
+                        <div class="flex items-center text-muted mb-3">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 0.25rem;">
+                                <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"></path>
+                                <circle cx="12" cy="10" r="3"></circle>
+                            </svg>
+                            <span class="text-sm">Vila Madalena, São Paulo</span>
+                        </div>
+
+                        <div class="flex items-center justify-between text-sm text-muted mb-4">
+                            <div class="flex items-center space-x-1">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M2 4v16"></path>
+                                    <path d="M2 8h18a2 2 0 0 1 2 2v10"></path>
+                                    <path d="M2 17h20"></path>
+                                    <path d="M6 8v9"></path>
+                                </svg>
+                                <span>3</span>
+                            </div>
+                            <div class="flex items-center space-x-1">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M9 6 6.5 3.5a1.5 1.5 0 0 0-1-.5C4.683 3 4 3.683 4 4.5V17a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-5"></path>
+                                    <line x1="10" x2="8" y1="5" y2="7"></line>
+                                    <line x1="2" x2="22" y1="12" y2="12"></line>
+                                    <line x1="7" x2="7" y1="19" y2="21"></line>
+                                    <line x1="17" x2="17" y1="19" y2="21"></line>
+                                </svg>
+                                <span>2</span>
+                            </div>
+                            <div class="flex items-center space-x-1">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                    <polyline points="14,2 14,8 20,8"></polyline>
+                                    <line x1="16" x2="8" y1="13" y2="13"></line>
+                                    <line x1="16" x2="8" y1="17" y2="17"></line>
+                                    <polyline points="10,9 9,9 8,9"></polyline>
+                                </svg>
+                                <span>2</span>
+                            </div>
+                            <div class="flex items-center space-x-1">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polyline points="16,3 21,3 21,8"></polyline>
+                                    <line x1="4" x2="9" y1="20" y2="20"></line>
+                                    <polyline points="21,16 21,21 16,21"></polyline>
+                                    <line x1="15" x2="20" y1="4" y2="9"></line>
+                                    <line x1="4" x2="9" y1="4" y2="9"></line>
+                                </svg>
+                                <span>180m²</span>
+                            </div>
+                        </div>
+
+                        <div class="text-xs text-muted mb-3">Ref: VF001</div>
+
+                        <div class="flex space-x-2">
+                            <a href="imovel.html?id=1" class="btn-secondary text-sm py-2 text-center flex-1">Ver Detalhes</a>
+                            <a href="#" onclick="window.open(getPropertyWhatsAppUrl(this.closest('.property-card')), '_blank')" class="btn-primary text-sm py-2 text-center flex-1">WhatsApp</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Property Card 2 -->
+                <div class="card-property property-card" 
+                     data-category="apartamento" 
+                     data-price="650000" 
+                     data-location="Ipanema, Rio de Janeiro"
+                     data-title="Apartamento Vista Mar Ipanema"
+                     data-description="Apartamento com vista para o mar"
+                     data-property-id="2"
+                     data-reference="VF002">
+                    
+                    <div class="relative h-48 md:h-56 overflow-hidden">
+                        <img src="../assets/images/apartamento-ipanema.jpg" alt="Apartamento Vista Mar Ipanema" class="w-full h-full object-cover transition-all hover:scale-105">
+                        
+                        <div class="absolute top-3 left-3">
+                            <span class="bg-primary text-primary-foreground px-3 py-1 rounded-full text-xs font-medium">À Venda</span>
+                        </div>
+
+                        <div class="absolute top-3 right-3">
+                            <span class="bg-warning text-white px-2 py-1 rounded-full text-xs font-medium">Destaque</span>
+                        </div>
+
+                        <button class="favorite-btn absolute bottom-3 right-3 p-2 rounded-full bg-white/90 text-neutral-600 hover:bg-red-500 hover:text-white transition-colors" data-property-id="2">
+                            <svg class="heart-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                            </svg>
+                        </button>
+
+                        <div class="absolute bottom-3 left-3 flex items-center space-x-1 bg-black/50 text-white px-2 py-1 rounded-full text-xs">
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                <circle cx="12" cy="12" r="3"></circle>
+                            </svg>
+                            <span>189</span>
+                        </div>
+                    </div>
+
+                    <div class="p-4">
+                        <div class="mb-2">
+                            <span class="text-2xl font-bold text-primary">R$ 650.000</span>
+                        </div>
+
+                        <h3 class="text-lg font-semibold text-foreground mb-2 line-clamp-2">Apartamento Vista Mar Ipanema</h3>
+
+                        <div class="flex items-center text-muted mb-3">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 0.25rem;">
+                                <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"></path>
+                                <circle cx="12" cy="10" r="3"></circle>
+                            </svg>
+                            <span class="text-sm">Ipanema, Rio de Janeiro</span>
+                        </div>
+
+                        <div class="flex items-center justify-between text-sm text-muted mb-4">
+                            <div class="flex items-center space-x-1">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M2 4v16"></path>
+                                    <path d="M2 8h18a2 2 0 0 1 2 2v10"></path>
+                                    <path d="M2 17h20"></path>
+                                    <path d="M6 8v9"></path>
+                                </svg>
+                                <span>2</span>
+                            </div>
+                            <div class="flex items-center space-x-1">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M9 6 6.5 3.5a1.5 1.5 0 0 0-1-.5C4.683 3 4 3.683 4 4.5V17a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-5"></path>
+                                    <line x1="10" x2="8" y1="5" y2="7"></line>
+                                    <line x1="2" x2="22" y1="12" y2="12"></line>
+                                    <line x1="7" x2="7" y1="19" y2="21"></line>
+                                    <line x1="17" x2="17" y1="19" y2="21"></line>
+                                </svg>
+                                <span>2</span>
+                            </div>
+                            <div class="flex items-center space-x-1">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                    <polyline points="14,2 14,8 20,8"></polyline>
+                                    <line x1="16" x2="8" y1="13" y2="13"></line>
+                                    <line x1="16" x2="8" y1="17" y2="17"></line>
+                                    <polyline points="10,9 9,9 8,9"></polyline>
+                                </svg>
+                                <span>1</span>
+                            </div>
+                            <div class="flex items-center space-x-1">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polyline points="16,3 21,3 21,8"></polyline>
+                                    <line x1="4" x2="9" y1="20" y2="20"></line>
+                                    <polyline points="21,16 21,21 16,21"></polyline>
+                                    <line x1="15" x2="20" y1="4" y2="9"></line>
+                                    <line x1="4" x2="9" y1="4" y2="9"></line>
+                                </svg>
+                                <span>95m²</span>
+                            </div>
+                        </div>
+
+                        <div class="text-xs text-muted mb-3">Ref: VF002</div>
+
+                        <div class="flex space-x-2">
+                            <a href="imovel.html?id=2" class="btn-secondary text-sm py-2 text-center flex-1">Ver Detalhes</a>
+                            <a href="#" onclick="window.open(getPropertyWhatsAppUrl(this.closest('.property-card')), '_blank')" class="btn-primary text-sm py-2 text-center flex-1">WhatsApp</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Property Card 3 -->
+                <div class="card-property property-card" 
+                     data-category="casa" 
+                     data-price="1200000" 
+                     data-location="Alphaville, Barueri"
+                     data-title="Casa de Luxo Alphaville"
+                     data-description="Casa de luxo em condomínio fechado"
+                     data-property-id="3"
+                     data-reference="VF003">
+                    
+                    <div class="relative h-48 md:h-56 overflow-hidden">
+                        <img src="../assets/images/casa-alphaville.jpg" alt="Casa de Luxo Alphaville" class="w-full h-full object-cover transition-all hover:scale-105">
+                        
+                        <div class="absolute top-3 left-3">
+                            <span class="bg-primary text-primary-foreground px-3 py-1 rounded-full text-xs font-medium">À Venda</span>
+                        </div>
+
+                        <div class="absolute top-3 right-3">
+                            <span class="bg-warning text-white px-2 py-1 rounded-full text-xs font-medium">Destaque</span>
+                        </div>
+
+                        <button class="favorite-btn absolute bottom-3 right-3 p-2 rounded-full bg-white/90 text-neutral-600 hover:bg-red-500 hover:text-white transition-colors" data-property-id="3">
+                            <svg class="heart-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                            </svg>
+                        </button>
+
+                        <div class="absolute bottom-3 left-3 flex items-center space-x-1 bg-black/50 text-white px-2 py-1 rounded-full text-xs">
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                <circle cx="12" cy="12" r="3"></circle>
+                            </svg>
+                            <span>412</span>
+                        </div>
+                    </div>
+
+                    <div class="p-4">
+                        <div class="mb-2">
+                            <span class="text-2xl font-bold text-primary">R$ 1.200.000</span>
+                        </div>
+
+                        <h3 class="text-lg font-semibold text-foreground mb-2 line-clamp-2">Casa de Luxo Alphaville</h3>
+
+                        <div class="flex items-center text-muted mb-3">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 0.25rem;">
+                                <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"></path>
+                                <circle cx="12" cy="10" r="3"></circle>
+                            </svg>
+                            <span class="text-sm">Alphaville, Barueri</span>
+                        </div>
+
+                        <div class="flex items-center justify-between text-sm text-muted mb-4">
+                            <div class="flex items-center space-x-1">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M2 4v16"></path>
+                                    <path d="M2 8h18a2 2 0 0 1 2 2v10"></path>
+                                    <path d="M2 17h20"></path>
+                                    <path d="M6 8v9"></path>
+                                </svg>
+                                <span>4</span>
+                            </div>
+                            <div class="flex items-center space-x-1">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M9 6 6.5 3.5a1.5 1.5 0 0 0-1-.5C4.683 3 4 3.683 4 4.5V17a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-5"></path>
+                                    <line x1="10" x2="8" y1="5" y2="7"></line>
+                                    <line x1="2" x2="22" y1="12" y2="12"></line>
+                                    <line x1="7" x2="7" y1="19" y2="21"></line>
+                                    <line x1="17" x2="17" y1="19" y2="21"></line>
+                                </svg>
+                                <span>3</span>
+                            </div>
+                            <div class="flex items-center space-x-1">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                    <polyline points="14,2 14,8 20,8"></polyline>
+                                    <line x1="16" x2="8" y1="13" y2="13"></line>
+                                    <line x1="16" x2="8" y1="17" y2="17"></line>
+                                    <polyline points="10,9 9,9 8,9"></polyline>
+                                </svg>
+                                <span>4</span>
+                            </div>
+                            <div class="flex items-center space-x-1">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polyline points="16,3 21,3 21,8"></polyline>
+                                    <line x1="4" x2="9" y1="20" y2="20"></line>
+                                    <polyline points="21,16 21,21 16,21"></polyline>
+                                    <line x1="15" x2="20" y1="4" y2="9"></line>
+                                    <line x1="4" x2="9" y1="4" y2="9"></line>
+                                </svg>
+                                <span>350m²</span>
+                            </div>
+                        </div>
+
+                        <div class="text-xs text-muted mb-3">Ref: VF003</div>
+
+                        <div class="flex space-x-2">
+                            <a href="imovel.html?id=3" class="btn-secondary text-sm py-2 text-center flex-1">Ver Detalhes</a>
+                            <a href="#" onclick="window.open(getPropertyWhatsAppUrl(this.closest('.property-card')), '_blank')" class="btn-primary text-sm py-2 text-center flex-1">WhatsApp</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="text-center">
+                <a href="imoveis.html" class="btn-primary">Todos os imóveis</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Services Section -->
+    <section class="py-16 bg-neutral-50">
+        <div class="container">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold mb-4">Explore as inúmeras maneiras pelas quais podemos ajudar</h2>
+                <p class="text-muted max-w-2xl mx-auto">Oferecemos soluções completas para todas as suas necessidades imobiliárias</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div class="card-property text-center p-8">
+                    <div class="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-6">
+                        <svg class="text-primary" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                            <polyline points="9,22 9,12 15,12 15,22"></polyline>
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-bold mb-4">Comprar imóveis</h3>
+                    <p class="text-muted mb-6">Encontre o imóvel perfeito com nossa expertise e atendimento personalizado.</p>
+                    <a href="imoveis.html" class="btn-primary">Ver imóveis</a>
+                </div>
+
+                <div class="card-property text-center p-8">
+                    <div class="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-6">
+                        <svg class="text-primary" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect width="16" height="20" x="4" y="2" rx="2" ry="2"></rect>
+                            <path d="M9 22v-4h6v4"></path>
+                            <path d="M8 6h.01"></path>
+                            <path d="M16 6h.01"></path>
+                            <path d="M12 6h.01"></path>
+                            <path d="M12 10h.01"></path>
+                            <path d="M12 14h.01"></path>
+                            <path d="M16 10h.01"></path>
+                            <path d="M16 14h.01"></path>
+                            <path d="M8 10h.01"></path>
+                            <path d="M8 14h.01"></path>
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-bold mb-4">Alugar imóveis</h3>
+                    <p class="text-muted mb-6">Encontre opções de aluguel que se encaixem no seu orçamento e necessidades.</p>
+                    <a href="imoveis.html" class="btn-primary">Ver aluguéis</a>
+                </div>
+
+                <div class="card-property text-center p-8">
+                    <div class="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-6">
+                        <svg class="text-primary" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polygon points="12,2 22,8.5 22,15.5 12,22 2,15.5 2,8.5"></polygon>
+                            <line x1="12" x2="12" y1="22" y2="15.5"></line>
+                            <polyline points="22,8.5 12,15.5 2,8.5"></polyline>
+                            <polyline points="2,15.5 12,8.5 22,15.5"></polyline>
+                            <line x1="12" x2="12" y1="2" y2="8.5"></line>
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-bold mb-4">Anuncie seu imóvel</h3>
+                    <p class="text-muted mb-6">Venda ou alugue seu imóvel com nossa estratégia de marketing eficaz.</p>
+                    <a href="contato.html" class="btn-primary">Anunciar</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Featured Properties Carousel -->
+    <section class="py-16">
+        <div class="container">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold mb-4">Imóveis em Destaque</h2>
+                <p class="text-muted max-w-2xl mx-auto">Conheça alguns dos nossos melhores imóveis selecionados especialmente para você</p>
+            </div>
+            
+            <div class="carousel relative">
+                <div class="carousel-inner">
+                    <!-- Carousel items will be populated by JavaScript -->
+                </div>
+                
+                <button class="carousel-prev absolute left-4 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white text-neutral-800 rounded-full p-3 shadow-lg transition-all">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="15,18 9,12 15,6"></polyline>
+                    </svg>
+                </button>
+                
+                <button class="carousel-next absolute right-4 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white text-neutral-800 rounded-full p-3 shadow-lg transition-all">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="9,18 15,12 9,6"></polyline>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="py-16 bg-neutral-900 text-white">
+        <div class="container text-center">
+            <h2 class="text-3xl md:text-4xl font-bold mb-4">Pronto para Encontrar Seu Novo Lar?</h2>
+            <p class="text-xl text-neutral-300 mb-8 max-w-2xl mx-auto">Entre em contato e deixe nossa expertise trabalhar para você. Atendimento personalizado e resultados garantidos.</p>
+            <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                <a href="https://wa.me/5511999887766?text=Olá! Gostaria de agendar uma consulta sobre imóveis." target="_blank" rel="noopener noreferrer" class="btn-primary">Agendar Consulta</a>
+                <a href="contato.html" class="btn-secondary border-white text-white hover:bg-white hover:text-neutral-900">Outros Contatos</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+                <!-- Company Info -->
+                <div>
+                    <h2 class="text-xl font-bold">Via Fatto Imóveis</h2>
+                    <p class="text-sm text-neutral-400">CRECI-SP 123456</p>
+                    <p class="text-neutral-300 mt-4">Sua imobiliária de confiança em São Paulo. Encontre o imóvel dos seus sonhos com nossa expertise.</p>
+                </div>
+
+                <!-- Quick Links -->
+                <div>
+                    <h3 class="font-semibold mb-4">Links Rápidos</h3>
+                    <ul class="space-y-2">
+                        <li><a href="index.html" class="text-neutral-300 hover:text-primary transition-colors">Início</a></li>
+                        <li><a href="imoveis.html" class="text-neutral-300 hover:text-primary transition-colors">Imóveis</a></li>
+                        <li><a href="sobre.html" class="text-neutral-300 hover:text-primary transition-colors">Sobre</a></li>
+                        <li><a href="favoritos.html" class="text-neutral-300 hover:text-primary transition-colors">Favoritos</a></li>
+                        <li><a href="contato.html" class="text-neutral-300 hover:text-primary transition-colors">Contato</a></li>
+                    </ul>
+                </div>
+
+                <!-- Services -->
+                <div>
+                    <h3 class="font-semibold mb-4">Serviços</h3>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="text-neutral-300 hover:text-primary transition-colors">Compra e Venda</a></li>
+                        <li><a href="#" class="text-neutral-300 hover:text-primary transition-colors">Locação</a></li>
+                        <li><a href="#" class="text-neutral-300 hover:text-primary transition-colors">Avaliação</a></li>
+                        <li><a href="#" class="text-neutral-300 hover:text-primary transition-colors">Consultoria</a></li>
+                    </ul>
+                </div>
+
+                <!-- Contact -->
+                <div>
+                    <h3 class="font-semibold mb-4">Contato</h3>
+                    <div class="space-y-3">
+                        <a href="tel:+5511999887766" class="flex items-center space-x-2 text-neutral-300 hover:text-primary transition-colors">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
+                            </svg>
+                            <span>(11) 99988-7766</span>
+                        </a>
+                        <a href="mailto:contato@viafatto.com.br" class="flex items-center space-x-2 text-neutral-300 hover:text-primary transition-colors">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                                <polyline points="22,6 12,13 2,6"></polyline>
+                            </svg>
+                            <span>contato@viafatto.com.br</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="border-t border-neutral-800 pt-8 text-center">
+                <p class="text-neutral-400 text-sm">© 2024 Via Fatto Imóveis. Todos os direitos reservados.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="../assets/js/main.js"></script>
+</body>
+</html>

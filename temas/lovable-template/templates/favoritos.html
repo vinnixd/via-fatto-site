@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Favoritos - Via Fatto Imóveis</title>
+    <meta name="description" content="Seus imóveis favoritos salvos na Via Fatto Imóveis.">
+    <link rel="stylesheet" href="../assets/css/styles.css">
+    <link rel="icon" href="../assets/images/favicon.ico">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="flex items-center justify-between py-4">
+                <div class="flex items-center space-x-4">
+                    <img src="../assets/images/logo.png" alt="Via Fatto Imóveis" width="50" height="50">
+                    <div>
+                        <h1 class="text-xl font-bold text-foreground">Via Fatto Imóveis</h1>
+                        <p class="text-sm text-muted">CRECI-SP 123456</p>
+                    </div>
+                </div>
+
+                <nav class="hidden md:block">
+                    <ul class="nav-links">
+                        <li><a href="index.html">Início</a></li>
+                        <li><a href="imoveis.html">Imóveis</a></li>
+                        <li><a href="sobre.html">Sobre</a></li>
+                        <li><a href="favoritos.html" class="text-primary">Favoritos</a></li>
+                        <li><a href="contato.html">Contato</a></li>
+                    </ul>
+                </nav>
+
+                <button id="mobile-menu-btn" class="md:hidden">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="3" y1="6" x2="21" y2="6"></line>
+                        <line x1="3" y1="12" x2="21" y2="12"></line>
+                        <line x1="3" y1="18" x2="21" y2="18"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Page Header -->
+    <section class="py-12 bg-neutral-50">
+        <div class="container">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h1 class="text-4xl font-bold mb-4">Meus Favoritos</h1>
+                    <p class="text-lg text-muted">Imóveis que você salvou para consultar depois</p>
+                </div>
+                <div class="flex items-center space-x-2">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-red-500">
+                        <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                    </svg>
+                    <span class="favorites-counter text-xl font-bold text-primary">0</span>
+                    <span class="text-muted">favoritos</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Favorites Grid -->
+    <section class="py-16">
+        <div class="container">
+            <div id="favorites-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Favorites will be loaded here by JavaScript -->
+            </div>
+
+            <!-- Empty State -->
+            <div id="empty-favorites" class="text-center py-16 hidden">
+                <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" class="mx-auto text-muted mb-4">
+                    <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                </svg>
+                <h3 class="text-xl font-semibold text-foreground mb-2">Nenhum favorito ainda</h3>
+                <p class="text-muted mb-6">Você ainda não salvou nenhum imóvel como favorito.</p>
+                <a href="imoveis.html" class="btn-primary">Explorar Imóveis</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+                <div>
+                    <h2 class="text-xl font-bold">Via Fatto Imóveis</h2>
+                    <p class="text-sm text-neutral-400">CRECI-SP 123456</p>
+                    <p class="text-neutral-300 mt-4">Sua imobiliária de confiança em São Paulo.</p>
+                </div>
+
+                <div>
+                    <h3 class="font-semibold mb-4">Links Rápidos</h3>
+                    <ul class="space-y-2">
+                        <li><a href="index.html" class="text-neutral-300 hover:text-primary transition-colors">Início</a></li>
+                        <li><a href="imoveis.html" class="text-neutral-300 hover:text-primary transition-colors">Imóveis</a></li>
+                        <li><a href="sobre.html" class="text-neutral-300 hover:text-primary transition-colors">Sobre</a></li>
+                        <li><a href="favoritos.html" class="text-neutral-300 hover:text-primary transition-colors">Favoritos</a></li>
+                        <li><a href="contato.html" class="text-neutral-300 hover:text-primary transition-colors">Contato</a></li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h3 class="font-semibold mb-4">Serviços</h3>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="text-neutral-300 hover:text-primary transition-colors">Compra e Venda</a></li>
+                        <li><a href="#" class="text-neutral-300 hover:text-primary transition-colors">Locação</a></li>
+                        <li><a href="#" class="text-neutral-300 hover:text-primary transition-colors">Avaliação</a></li>
+                        <li><a href="#" class="text-neutral-300 hover:text-primary transition-colors">Consultoria</a></li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h3 class="font-semibold mb-4">Contato</h3>
+                    <div class="space-y-3">
+                        <a href="tel:+5511999887766" class="flex items-center space-x-2 text-neutral-300 hover:text-primary transition-colors">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
+                            </svg>
+                            <span>(11) 99988-7766</span>
+                        </a>
+                        <a href="mailto:contato@viafatto.com.br" class="flex items-center space-x-2 text-neutral-300 hover:text-primary transition-colors">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                                <polyline points="22,6 12,13 2,6"></polyline>
+                            </svg>
+                            <span>contato@viafatto.com.br</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="border-t border-neutral-800 pt-8 text-center">
+                <p class="text-neutral-400 text-sm">© 2024 Via Fatto Imóveis. Todos os direitos reservados.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="../assets/js/main.js"></script>
+    <script>
+        // Load favorites on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            loadFavorites();
+        });
+
+        function loadFavorites() {
+            const favorites = JSON.parse(localStorage.getItem('favorites') || '[]');
+            const favoritesGrid = document.getElementById('favorites-grid');
+            const emptyState = document.getElementById('empty-favorites');
+            
+            if (favorites.length === 0) {
+                favoritesGrid.style.display = 'none';
+                emptyState.style.display = 'block';
+            } else {
+                favoritesGrid.style.display = 'grid';
+                emptyState.style.display = 'none';
+                
+                // Here you would load the actual property data and render cards
+                // For now, we'll show a placeholder
+                favoritesGrid.innerHTML = '<p class="text-center col-span-full">Carregando favoritos...</p>';
+            }
+        }
+    </script>
+</body>
+</html>

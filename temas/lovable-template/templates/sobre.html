@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sobre - Via Fatto Imóveis</title>
+    <meta name="description" content="Conheça a Via Fatto Imóveis e nossa história no mercado imobiliário.">
+    <link rel="stylesheet" href="../assets/css/styles.css">
+    <link rel="icon" href="../assets/images/favicon.ico">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="flex items-center justify-between py-4">
+                <div class="flex items-center space-x-4">
+                    <img src="../assets/images/logo.png" alt="Via Fatto Imóveis" width="50" height="50">
+                    <div>
+                        <h1 class="text-xl font-bold text-foreground">Via Fatto Imóveis</h1>
+                        <p class="text-sm text-muted">CRECI-SP 123456</p>
+                    </div>
+                </div>
+
+                <nav class="hidden md:block">
+                    <ul class="nav-links">
+                        <li><a href="index.html">Início</a></li>
+                        <li><a href="imoveis.html">Imóveis</a></li>
+                        <li><a href="sobre.html" class="text-primary">Sobre</a></li>
+                        <li><a href="favoritos.html">Favoritos</a></li>
+                        <li><a href="contato.html">Contato</a></li>
+                    </ul>
+                </nav>
+
+                <button id="mobile-menu-btn" class="md:hidden">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="3" y1="6" x2="21" y2="6"></line>
+                        <line x1="3" y1="12" x2="21" y2="12"></line>
+                        <line x1="3" y1="18" x2="21" y2="18"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- About Section -->
+    <section class="py-16">
+        <div class="container">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+                <div>
+                    <h1 class="text-4xl md:text-5xl font-bold mb-6">
+                        Via Fatto Imóveis
+                        <span class="block text-lg font-normal text-muted mt-2">
+                          Sua parceira no mercado imobiliário
+                        </span>
+                    </h1>
+                    
+                    <div class="space-y-6 text-lg text-muted">
+                        <p>
+                            Com mais de uma década de experiência no mercado imobiliário, 
+                            a Via Fatto Imóveis se dedica a oferecer um atendimento personalizado 
+                            e encontrar o imóvel perfeito para cada cliente.
+                        </p>
+                        
+                        <p>
+                            Especializada em imóveis de alto padrão nas regiões mais valorizadas 
+                            de São Paulo, nossa equipe trabalha com transparência, agilidade e 
+                            total comprometimento com a satisfação dos nossos clientes.
+                        </p>
+                        
+                        <p>
+                            Seja para comprar, vender ou alugar, estamos aqui para tornar 
+                            sua experiência imobiliária única e bem-sucedida.
+                        </p>
+                    </div>
+
+                    <div class="flex items-center space-x-8 mt-8">
+                        <div class="text-center">
+                            <div class="text-3xl font-bold text-primary">500+</div>
+                            <div class="text-sm text-muted">Vendas Realizadas</div>
+                        </div>
+                        <div class="text-center">
+                            <div class="text-3xl font-bold text-primary">10+</div>
+                            <div class="text-sm text-muted">Anos de Experiência</div>
+                        </div>
+                        <div class="text-center">
+                            <div class="text-3xl font-bold text-primary">98%</div>
+                            <div class="text-sm text-muted">Clientes Satisfeitos</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="relative">
+                    <div class="aspect-square bg-neutral-200 rounded-2xl overflow-hidden">
+                        <img src="../assets/images/team-photo.jpg" alt="Equipe Via Fatto Imóveis" class="w-full h-full object-cover">
+                    </div>
+                    <div class="absolute -bottom-6 -right-6 bg-primary text-primary-foreground p-4 rounded-xl shadow-lg">
+                        <div class="text-center">
+                            <div class="text-lg font-bold">CRECI-SP</div>
+                            <div class="text-sm">123456</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="py-16 bg-primary text-primary-foreground">
+        <div class="container text-center">
+            <h2 class="text-3xl font-bold mb-4">Pronto para começar?</h2>
+            <p class="text-xl mb-8 opacity-90">Entre em contato e vamos encontrar o imóvel perfeito para você.</p>
+            <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                <a href="https://wa.me/5511999887766?text=Olá! Gostaria de conversar sobre imóveis." target="_blank" class="btn-secondary bg-white text-primary hover:bg-neutral-100">
+                    Falar no WhatsApp
+                </a>
+                <a href="contato.html" class="btn-secondary border-white text-white hover:bg-white hover:text-primary">
+                    Página de Contato
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="border-t border-neutral-800 pt-8 text-center">
+                <p class="text-neutral-400 text-sm">© 2024 Via Fatto Imóveis. Todos os direitos reservados.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="../assets/js/main.js"></script>
+</body>
+</html>

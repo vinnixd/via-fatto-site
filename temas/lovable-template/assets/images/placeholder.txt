@@ -1,0 +1,21 @@
+# Pasta de Imagens
+
+Esta pasta deve conter as seguintes imagens:
+
+## Obrigatórias:
+- logo.png (Logo da Via Fatto Imóveis)
+- favicon.ico (Ícone do site)
+- hero-house.jpg (Imagem de fundo do banner principal)
+
+## Imóveis:
+- casa-vila-madalena.jpg
+- apartamento-ipanema.jpg  
+- casa-alphaville.jpg
+- terreno-granja-viana.jpg
+- apartamento-jardins.jpg
+- sala-comercial-faria-lima.jpg
+
+## Opcional:
+- team-photo.jpg (Foto da equipe)
+
+Todas as imagens devem estar otimizadas para web e ter boa qualidade.

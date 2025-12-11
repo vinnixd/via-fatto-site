@@ -111,7 +111,7 @@ const Home = () => {
     builtArea: property.built_area || undefined,
     features: property.features || [],
     amenities: property.amenities || [],
-    images: property.images?.map(img => img.url) || ['/placeholder.svg'],
+    images: property.images && property.images.length > 0 ? property.images.map(img => img.url) : ['https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=800&auto=format&fit=crop&q=60'],
     featured: property.featured,
     financing: property.financing,
     documentation: property.documentation as 'regular' | 'pendente' | 'irregular',

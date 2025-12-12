@@ -24,7 +24,7 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 import { supabase } from '@/integrations/supabase/client';
-import { Plus, Search, Pencil, Trash2, Eye, Star, Loader2 } from 'lucide-react';
+import { Plus, Search, Pencil, Trash2, Eye, Star, Loader2, Upload } from 'lucide-react';
 import { toast } from 'sonner';
 
 interface Property {
@@ -153,12 +153,20 @@ const PropertiesListPage = () => {
                   }}
                 />
               </div>
-              <Button asChild>
-                <Link to="/admin/imoveis/novo">
-                  <Plus className="h-4 w-4 mr-2" />
-                  Novo Imóvel
-                </Link>
-              </Button>
+              <div className="flex gap-2">
+                <Button variant="outline" asChild>
+                  <Link to="/admin/importar">
+                    <Upload className="h-4 w-4 mr-2" />
+                    Importar CSV
+                  </Link>
+                </Button>
+                <Button asChild>
+                  <Link to="/admin/imoveis/novo">
+                    <Plus className="h-4 w-4 mr-2" />
+                    Novo Imóvel
+                  </Link>
+                </Button>
+              </div>
             </div>
 
             {/* Table */}

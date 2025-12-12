@@ -22,7 +22,6 @@ const menuItems = [
   { icon: Palette, label: 'Designer', path: '/admin/designer' },
   { icon: Building2, label: 'Imóveis', path: '/admin/imoveis' },
   { icon: FolderOpen, label: 'Categorias', path: '/admin/categorias' },
-  { icon: Globe, label: 'Configurações', path: '/admin/configuracoes' },
   { icon: Heart, label: 'Favoritos', path: '/admin/favoritos' },
   { icon: MessageSquare, label: 'Mensagens', path: '/admin/mensagens' },
   { icon: User, label: 'Meu Perfil', path: '/admin/perfil' },

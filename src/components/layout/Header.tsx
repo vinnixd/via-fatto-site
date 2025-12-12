@@ -33,11 +33,11 @@ const Header = () => {
               <img 
                 src={siteConfig.logo_url} 
                 alt="Logo" 
-                className="h-10 w-auto object-contain"
+                className="h-12 max-w-[200px] w-auto object-contain"
               />
             ) : (
-              <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
-                <span className="text-primary-foreground font-bold text-lg">V</span>
+              <div className="w-10 h-10 bg-primary rounded-lg flex items-center justify-center">
+                <span className="text-primary-foreground font-bold text-xl">V</span>
               </div>
             )}
           </Link>

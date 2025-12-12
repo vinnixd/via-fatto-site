@@ -121,7 +121,7 @@ const Home = () => {
       name: 'Via Fatto Imóveis',
       phone: siteConfig?.whatsapp || '11999887766',
       email: siteConfig?.email || 'contato@viafatto.com.br',
-      creci: 'CRECI-SP 123456',
+      creci: 'CRECI-DF: 29588',
       avatar: '',
     },
     createdAt: property.created_at,
@@ -468,8 +468,8 @@ const Home = () => {
               </div>
               {/* CRECI Badge */}
               <div className="absolute -bottom-6 -right-6 bg-primary text-primary-foreground p-4 rounded-xl shadow-lg text-center">
-                <div className="text-lg font-bold">CRECI-SP</div>
-                <div className="text-xl font-bold">123456</div>
+                <div className="text-lg font-bold">CRECI-DF</div>
+                <div className="text-xl font-bold">29588</div>
               </div>
             </div>
           </div>

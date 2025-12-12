@@ -59,7 +59,7 @@ export const mockProperties: Property[] = [
       name: 'Via Fatto Team',
       phone: '11999887766',
       email: 'contato@viafatto.com.br',
-      creci: 'CRECI-SP 123456'
+      creci: 'CRECI-DF: 29588'
     }
   },
   {
@@ -116,7 +116,7 @@ export const mockProperties: Property[] = [
       name: 'Via Fatto Team',
       phone: '11999887766',
       email: 'contato@viafatto.com.br',
-      creci: 'CRECI-SP 123456'
+      creci: 'CRECI-DF: 29588'
     }
   },
   {
@@ -166,7 +166,7 @@ export const mockProperties: Property[] = [
       name: 'Via Fatto Team',
       phone: '11999887766',
       email: 'contato@viafatto.com.br',
-      creci: 'CRECI-SP 123456'
+      creci: 'CRECI-DF: 29588'
     }
   },
   {
@@ -217,7 +217,7 @@ export const mockProperties: Property[] = [
       name: 'Via Fatto Team',
       phone: '11999887766',
       email: 'contato@viafatto.com.br',
-      creci: 'CRECI-SP 123456'
+      creci: 'CRECI-DF: 29588'
     }
   },
   {
@@ -267,7 +267,7 @@ export const mockProperties: Property[] = [
       name: 'Via Fatto Team',
       phone: '11999887766',
       email: 'contato@viafatto.com.br',
-      creci: 'CRECI-SP 123456'
+      creci: 'CRECI-DF: 29588'
     }
   },
   {
@@ -318,7 +318,7 @@ export const mockProperties: Property[] = [
       name: 'Via Fatto Team',
       phone: '11999887766',
       email: 'contato@viafatto.com.br',
-      creci: 'CRECI-SP 123456'
+      creci: 'CRECI-DF: 29588'
     }
   }
 ];

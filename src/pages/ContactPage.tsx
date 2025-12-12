@@ -263,7 +263,7 @@ const ContactPage = () => {
 
                   <div className="mt-6 pt-6 border-t border-border">
                     <p className="text-sm text-muted-foreground text-center">
-                      <strong>CRECI-SP 123456</strong><br />
+                      <strong>CRECI-DF: 29588</strong><br />
                       Corretora de Imóveis Licenciada
                     </p>
                   </div>

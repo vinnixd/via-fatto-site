@@ -32,7 +32,7 @@ const Footer = () => {
                 )}
                 <div>
                   <h2 className="text-xl font-bold">Via Fatto Imóveis</h2>
-                  <p className="text-sm text-neutral-400">CRECI-SP 123456</p>
+                  <p className="text-sm text-neutral-400">CRECI-DF: 29588</p>
                 </div>
               </div>
               <p className="text-neutral-300 mb-6 max-w-md">

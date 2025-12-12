@@ -274,7 +274,7 @@ const PropertyPage = () => {
                     <strong>Via Fatto Imóveis</strong>
                   </div>
                   <div className="text-sm text-muted-foreground">
-                    CRECI-SP 123456
+                    CRECI-DF: 29588 | CRECI-GO: 42119
                   </div>
                   <div className="text-sm text-muted-foreground">
                     {siteConfig?.phone || '(11) 99988-7766'}

@@ -458,18 +458,18 @@ const Home = () => {
                 Conhecer Mais
               </Link>
             </div>
-            <div className="relative">
-              <div className="rounded-2xl overflow-hidden">
+            <div className="relative group">
+              <div className="aspect-square bg-neutral-200 rounded-2xl overflow-hidden">
                 <img
-                  src={siteConfig?.about_image_url || "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=800&h=600&fit=crop"}
+                  src={siteConfig?.about_image_url || "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=800&h=800&fit=crop&crop=top"}
                   alt="Via Fatto Imóveis"
-                  className="w-full h-full object-cover grayscale"
+                  className="w-full h-full object-cover object-top grayscale transition-all duration-500 group-hover:grayscale-0 group-hover:scale-105"
                 />
               </div>
               {/* CRECI Badge */}
-              <div className="absolute -bottom-4 -right-4 bg-primary text-primary-foreground px-6 py-3 rounded-lg shadow-lg">
-                <div className="text-sm font-bold">CRECI-SP</div>
-                <div className="text-lg font-bold">123456</div>
+              <div className="absolute -bottom-6 -right-6 bg-primary text-primary-foreground p-4 rounded-xl shadow-lg text-center">
+                <div className="text-lg font-bold">CRECI-SP</div>
+                <div className="text-xl font-bold">123456</div>
               </div>
             </div>
           </div>

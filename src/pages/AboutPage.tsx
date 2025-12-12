@@ -21,7 +21,7 @@ const AboutPage = () => {
               <h1 className="text-4xl md:text-5xl font-bold mb-6">
                 {siteConfig?.about_title || 'Via Fatto Imóveis'}
                 <span className="block text-lg font-normal text-muted-foreground mt-2">
-                  CRECI-SP 123456
+                  CRECI-DF: 29588
                 </span>
               </h1>
               <p className="text-xl text-muted-foreground mb-8 leading-relaxed">
@@ -57,8 +57,8 @@ const AboutPage = () => {
               </div>
               <div className="absolute -bottom-6 -right-6 bg-primary text-primary-foreground p-6 rounded-xl shadow-xl">
                 <div className="text-center">
-                  <div className="text-2xl font-bold">CRECI-SP</div>
-                  <div className="text-lg">123456</div>
+                  <div className="text-2xl font-bold">CRECI-DF</div>
+                  <div className="text-lg">29588</div>
                 </div>
               </div>
             </div>

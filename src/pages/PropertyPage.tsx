@@ -13,8 +13,10 @@ const PropertyPage = () => {
   const { data: property, isLoading } = useProperty(slug || '');
   const { data: siteConfig } = useSiteConfig();
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [thumbnailStartIndex, setThumbnailStartIndex] = useState(0);
   const [isFavorited, setIsFavorited] = useState(false);
   const [isGalleryOpen, setIsGalleryOpen] = useState(false);
+  const thumbnailsPerPage = 4;
 
   useEffect(() => {
     if (property) {
@@ -144,24 +146,62 @@ const PropertyPage = () => {
                 )}
               </div>
 
-              {/* Thumbnail Grid */}
+              {/* Thumbnail Carousel */}
               {images.length > 1 && (
-                <div className="grid grid-cols-4 md:grid-cols-6 gap-2">
-                  {images.map((image, index) => (
+                <div className="relative flex items-center gap-2">
+                  {/* Left Arrow */}
+                  {thumbnailStartIndex > 0 && (
                     <button
-                      key={index}
-                      onClick={() => setCurrentImageIndex(index)}
-                      className={`relative aspect-square rounded-lg overflow-hidden ${
-                        index === currentImageIndex ? 'ring-2 ring-primary' : ''
-                      }`}
+                      onClick={() => setThumbnailStartIndex(prev => Math.max(0, prev - 1))}
+                      className="flex-shrink-0 bg-muted hover:bg-muted/80 p-2 rounded-full transition-colors"
                     >
-                      <img
-                        src={image}
-                        alt={`${property.title} - ${index + 1}`}
-                        className="w-full h-full object-cover hover:opacity-80 transition-opacity"
-                      />
+                      <ChevronLeft size={20} />
                     </button>
-                  ))}
+                  )}
+                  
+                  {/* Thumbnails */}
+                  <div className="flex-1 grid grid-cols-4 gap-2">
+                    {images.slice(thumbnailStartIndex, thumbnailStartIndex + thumbnailsPerPage).map((image, index) => {
+                      const actualIndex = thumbnailStartIndex + index;
+                      return (
+                        <button
+                          key={actualIndex}
+                          onClick={() => setCurrentImageIndex(actualIndex)}
+                          className={`relative aspect-square rounded-lg overflow-hidden ${
+                            actualIndex === currentImageIndex ? 'ring-2 ring-primary' : ''
+                          }`}
+                        >
+                          <img
+                            src={image}
+                            alt={`${property.title} - ${actualIndex + 1}`}
+                            className="w-full h-full object-cover hover:opacity-80 transition-opacity"
+                          />
+                          {/* Show +N on last thumbnail if more images exist */}
+                          {index === thumbnailsPerPage - 1 && images.length > thumbnailStartIndex + thumbnailsPerPage && (
+                            <div 
+                              className="absolute inset-0 bg-black/50 flex items-center justify-center text-white font-medium cursor-pointer"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setIsGalleryOpen(true);
+                              }}
+                            >
+                              +{images.length - thumbnailStartIndex - thumbnailsPerPage}
+                            </div>
+                          )}
+                        </button>
+                      );
+                    })}
+                  </div>
+                  
+                  {/* Right Arrow */}
+                  {thumbnailStartIndex + thumbnailsPerPage < images.length && (
+                    <button
+                      onClick={() => setThumbnailStartIndex(prev => Math.min(images.length - thumbnailsPerPage, prev + 1))}
+                      className="flex-shrink-0 bg-muted hover:bg-muted/80 p-2 rounded-full transition-colors"
+                    >
+                      <ChevronRight size={20} />
+                    </button>
+                  )}
                 </div>
               )}
             </div>

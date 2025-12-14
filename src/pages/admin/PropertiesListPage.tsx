@@ -1,5 +1,5 @@
 import { useEffect, useState, useCallback } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import AdminLayout from '@/components/admin/AdminLayout';
 import ImportProgressBar from '@/components/admin/ImportProgressBar';
 import AdminHeader from '@/components/admin/AdminHeader';
@@ -96,6 +96,7 @@ interface SortablePropertyCardProps {
   formatPrice: (price: number) => string;
   toggleFeatured: (id: string, featured: boolean) => void;
   setDeleteId: (id: string) => void;
+  onCardClick: (id: string) => void;
 }
 
 const SortablePropertyCard = ({
@@ -109,6 +110,7 @@ const SortablePropertyCard = ({
   formatPrice,
   toggleFeatured,
   setDeleteId,
+  onCardClick,
 }: SortablePropertyCardProps) => {
   const {
     attributes,
@@ -136,7 +138,7 @@ const SortablePropertyCard = ({
         if (isSelectMode) {
           onSelectToggle(property.id);
         } else if (!isReorderMode) {
-          window.location.href = `/admin/imoveis/${property.id}`;
+          onCardClick(property.id);
         }
       }}
     >
@@ -276,6 +278,7 @@ const SortablePropertyCard = ({
 };
 
 const PropertiesListPage = () => {
+  const navigate = useNavigate();
   const [properties, setProperties] = useState<Property[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
@@ -780,6 +783,7 @@ const PropertiesListPage = () => {
                       formatPrice={formatPrice}
                       toggleFeatured={toggleFeatured}
                       setDeleteId={setDeleteId}
+                      onCardClick={(id) => navigate(`/admin/imoveis/${id}`)}
                     />
                   ))}
                 </div>

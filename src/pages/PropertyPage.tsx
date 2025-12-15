@@ -7,6 +7,7 @@ import { useProperty, useSiteConfig, useSimilarProperties } from '@/hooks/useSup
 import WhatsAppIcon from '@/components/ui/WhatsAppIcon';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { buildWhatsAppUrl } from '@/lib/utils';
+import PropertyMap from '@/components/ui/PropertyMap';
 
 const PropertyPage = () => {
   const { slug } = useParams<{ slug: string }>();
@@ -235,6 +236,20 @@ const PropertyPage = () => {
                           </div>
                         ))}
                       </div>
+                    </div>
+                  )}
+
+                  {/* Map Section */}
+                  {property.location_type !== 'hidden' && (
+                    <div className="mt-6 pt-6 border-t border-border">
+                      <h3 className="font-semibold mb-3 text-foreground flex items-center gap-2">
+                        <MapPin className="h-4 w-4 text-primary" />
+                        Localização
+                      </h3>
+                      <PropertyMap
+                        address={`${property.address_street || ''} ${property.address_neighborhood || ''}, ${property.address_city}, ${property.address_state}, Brasil`}
+                        locationType={property.location_type as 'exact' | 'approximate' | 'hidden'}
+                      />
                     </div>
                   )}
                 </div>

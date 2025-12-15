@@ -162,6 +162,137 @@ export type Database = {
         }
         Relationships: []
       }
+      portais: {
+        Row: {
+          ativo: boolean
+          config: Json
+          created_at: string
+          formato_feed: Database["public"]["Enums"]["feed_format"]
+          id: string
+          metodo: Database["public"]["Enums"]["portal_method"]
+          nome: string
+          slug: string
+          token_feed: string
+          updated_at: string
+        }
+        Insert: {
+          ativo?: boolean
+          config?: Json
+          created_at?: string
+          formato_feed?: Database["public"]["Enums"]["feed_format"]
+          id?: string
+          metodo?: Database["public"]["Enums"]["portal_method"]
+          nome: string
+          slug: string
+          token_feed?: string
+          updated_at?: string
+        }
+        Update: {
+          ativo?: boolean
+          config?: Json
+          created_at?: string
+          formato_feed?: Database["public"]["Enums"]["feed_format"]
+          id?: string
+          metodo?: Database["public"]["Enums"]["portal_method"]
+          nome?: string
+          slug?: string
+          token_feed?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      portal_logs: {
+        Row: {
+          created_at: string
+          detalhes: Json | null
+          feed_url: string | null
+          id: string
+          portal_id: string
+          status: Database["public"]["Enums"]["log_status"]
+          tempo_geracao_ms: number | null
+          total_itens: number
+        }
+        Insert: {
+          created_at?: string
+          detalhes?: Json | null
+          feed_url?: string | null
+          id?: string
+          portal_id: string
+          status: Database["public"]["Enums"]["log_status"]
+          tempo_geracao_ms?: number | null
+          total_itens?: number
+        }
+        Update: {
+          created_at?: string
+          detalhes?: Json | null
+          feed_url?: string | null
+          id?: string
+          portal_id?: string
+          status?: Database["public"]["Enums"]["log_status"]
+          tempo_geracao_ms?: number | null
+          total_itens?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "portal_logs_portal_id_fkey"
+            columns: ["portal_id"]
+            isOneToOne: false
+            referencedRelation: "portais"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      portal_publicacoes: {
+        Row: {
+          created_at: string
+          id: string
+          imovel_id: string
+          mensagem_erro: string | null
+          payload_snapshot: Json | null
+          portal_id: string
+          status: Database["public"]["Enums"]["publication_status"]
+          ultima_tentativa: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          imovel_id: string
+          mensagem_erro?: string | null
+          payload_snapshot?: Json | null
+          portal_id: string
+          status?: Database["public"]["Enums"]["publication_status"]
+          ultima_tentativa?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          imovel_id?: string
+          mensagem_erro?: string | null
+          payload_snapshot?: Json | null
+          portal_id?: string
+          status?: Database["public"]["Enums"]["publication_status"]
+          ultima_tentativa?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "portal_publicacoes_imovel_id_fkey"
+            columns: ["imovel_id"]
+            isOneToOne: false
+            referencedRelation: "properties"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "portal_publicacoes_portal_id_fkey"
+            columns: ["portal_id"]
+            isOneToOne: false
+            referencedRelation: "portais"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -500,6 +631,9 @@ export type Database = {
     Enums: {
       app_role: "admin" | "user"
       documentation_status: "regular" | "irregular" | "pendente"
+      feed_format: "xml" | "json" | "csv"
+      log_status: "success" | "error"
+      portal_method: "feed" | "api" | "manual"
       property_profile: "residencial" | "comercial" | "industrial" | "misto"
       property_status: "venda" | "aluguel" | "vendido" | "alugado"
       property_type:
@@ -511,6 +645,7 @@ export type Database = {
         | "cobertura"
         | "flat"
         | "galpao"
+      publication_status: "pending" | "published" | "error" | "disabled"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -640,6 +775,9 @@ export const Constants = {
     Enums: {
       app_role: ["admin", "user"],
       documentation_status: ["regular", "irregular", "pendente"],
+      feed_format: ["xml", "json", "csv"],
+      log_status: ["success", "error"],
+      portal_method: ["feed", "api", "manual"],
       property_profile: ["residencial", "comercial", "industrial", "misto"],
       property_status: ["venda", "aluguel", "vendido", "alugado"],
       property_type: [
@@ -652,6 +790,7 @@ export const Constants = {
         "flat",
         "galpao",
       ],
+      publication_status: ["pending", "published", "error", "disabled"],
     },
   },
 } as const

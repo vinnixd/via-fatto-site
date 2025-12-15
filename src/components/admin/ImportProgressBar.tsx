@@ -2,13 +2,14 @@ import { useEffect, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Progress } from '@/components/ui/progress';
 import { Card, CardContent } from '@/components/ui/card';
-import { CheckCircle2, Loader2, XCircle, DollarSign, FileText, ListChecks } from 'lucide-react';
+import { CheckCircle2, Loader2, XCircle, DollarSign, FileText, ListChecks, Car } from 'lucide-react';
 import { toast } from 'sonner';
 
 interface ImportStats {
   withPrice: number;
   withDescription: number;
   withSpecs: number;
+  withVagas: number;
   totalProcessed: number;
   imagensImportadas?: number;
 }
@@ -90,7 +91,7 @@ const ImportProgressBar = ({ onComplete }: ImportProgressBarProps) => {
             // Show notification with stats
             toast.success(
               `Importação concluída! ${job.created_items} criados, ${job.updated_items} atualizados${
-                stats ? ` • ${stats.withPrice} com preço, ${stats.withSpecs} com specs` : ''
+                stats ? ` • ${stats.withPrice} preço, ${stats.withVagas} vagas` : ''
               }`,
               {
                 icon: <CheckCircle2 className="h-5 w-5 text-green-500" />,
@@ -195,7 +196,7 @@ const ImportProgressBar = ({ onComplete }: ImportProgressBarProps) => {
 
             {/* Stats row */}
             {stats && (
-              <div className="flex items-center gap-4 mt-2 text-xs">
+              <div className="flex items-center flex-wrap gap-x-4 gap-y-1 mt-2 text-xs">
                 <span className="flex items-center gap-1 text-green-600">
                   <DollarSign className="h-3 w-3" />
                   {stats.withPrice} preço
@@ -207,6 +208,10 @@ const ImportProgressBar = ({ onComplete }: ImportProgressBarProps) => {
                 <span className="flex items-center gap-1 text-purple-600">
                   <ListChecks className="h-3 w-3" />
                   {stats.withSpecs} specs
+                </span>
+                <span className="flex items-center gap-1 text-orange-600">
+                  <Car className="h-3 w-3" />
+                  {stats.withVagas} vagas
                 </span>
               </div>
             )}

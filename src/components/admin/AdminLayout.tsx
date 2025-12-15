@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import AdminSidebar from './AdminSidebar';
+import ImportProgressBar from './ImportProgressBar';
 import { Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -57,6 +58,10 @@ const AdminLayout = ({ children }: AdminLayoutProps) => {
           sidebarCollapsed ? 'ml-16' : 'ml-64'
         )}
       >
+        {/* Global Import Progress Bar - visible on all admin pages */}
+        <div className="fixed bottom-4 right-4 z-50 w-96 max-w-[calc(100vw-2rem)]">
+          <ImportProgressBar />
+        </div>
         {children}
       </main>
     </div>

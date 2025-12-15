@@ -16,6 +16,7 @@ interface ImportStats {
   withPrice: number;
   withDescription: number;
   withSpecs: number;
+  withVagas: number;
   problems: Array<{
     title: string;
     permalink: string;
@@ -309,16 +310,25 @@ function extractSpecsFromContent(content: string): {
     }
   }
   
-  // Vagas patterns
+  // Vagas patterns - more comprehensive matching
   const vagasPatterns = [
-    /(\d+)\s*(?:vagas?|garagens?)/i,
-    /(?:vagas?|garagem|garagens?)[\s:]*(\d+)/i,
+    /(\d+)\s*vagas?/i,                                    // "2 vagas", "1 vaga"
+    /(\d+)\s*garagens?/i,                                 // "2 garagens"
+    /(?:vagas?|garagem|garagens?)[\s:]*(\d+)/i,           // "vagas: 2", "garagem: 1"
+    /garagem\s*(?:para|com|coberta\s+para|coberta\s+com)?\s*(\d+)/i,  // "garagem para 2 carros"
+    /vaga\s*de\s*garagem/i,                               // "vaga de garagem" = 1
+    /(\d+)\s*(?:carros?|ve[ií]culos?)/i,                  // "3 carros", "2 veículos"
   ];
   for (const pattern of vagasPatterns) {
     const match = text.match(pattern);
     if (match) {
-      specs.vagas = parseInt(match[1], 10);
-      break;
+      // "vaga de garagem" without number = 1
+      if (/vaga\s*de\s*garagem/i.test(match[0]) && !match[1]) {
+        specs.vagas = 1;
+      } else if (match[1]) {
+        specs.vagas = parseInt(match[1], 10);
+      }
+      if (specs.vagas > 0) break;
     }
   }
   
@@ -503,30 +513,55 @@ async function processProperty(
     let quartos = parseIntValue(row['Quartos'] || row['quartos'] || row['Bedrooms'] || '');
     let suites = parseIntValue(row['Suítes'] || row['suites'] || row['Suites'] || '');
     let banheiros = parseIntValue(row['Banheiros'] || row['banheiros'] || row['Bathrooms'] || '');
-    let vagas = parseIntValue(row['Vagas'] || row['vagas'] || row['Garages'] || row['Garagem'] || '');
+    
+    // Vagas: check multiple column names explicitly
+    let vagas = parseIntValue(
+      row['Vagas'] || row['vagas'] || 
+      row['Garagem'] || row['garagem'] || 
+      row['Garagens'] || row['garagens'] ||
+      row['Garages'] || row['garages'] ||
+      row['Parking'] || row['parking'] || ''
+    );
+    
     let area = parseBrazilianNumber(row['Área'] || row['area'] || row['Area'] || row['Área Total'] || '');
     let areaConstructed = parseBrazilianNumber(row['Área Construída'] || row['area_construida'] || row['Built Area'] || '');
     
-    // If no explicit specs, try extracting from Content
-    if (quartos === 0 && suites === 0 && banheiros === 0 && vagas === 0 && !area) {
-      const extractedSpecs = extractSpecsFromContent(contentRaw);
-      
-      if (quartos === 0) quartos = extractedSpecs.quartos;
-      if (suites === 0) suites = extractedSpecs.suites;
-      if (banheiros === 0) banheiros = extractedSpecs.banheiros;
-      if (vagas === 0) vagas = extractedSpecs.vagas;
-      if (!area && extractedSpecs.area) area = extractedSpecs.area;
-      if (!areaConstructed && extractedSpecs.areaConstructed) areaConstructed = extractedSpecs.areaConstructed;
-      
-      if (extractedSpecs.quartos || extractedSpecs.suites || extractedSpecs.banheiros || 
-          extractedSpecs.vagas || extractedSpecs.area) {
-        console.log(`Extracted specs from content: quartos=${quartos}, suítes=${suites}, banheiros=${banheiros}, vagas=${vagas}, area=${area}`);
-      }
+    // Extract from Content for any missing spec individually (not all-or-nothing)
+    const extractedSpecs = extractSpecsFromContent(contentRaw);
+    
+    if (quartos === 0 && extractedSpecs.quartos > 0) {
+      quartos = extractedSpecs.quartos;
+      console.log(`Extracted quartos from content: ${quartos}`);
+    }
+    if (suites === 0 && extractedSpecs.suites > 0) {
+      suites = extractedSpecs.suites;
+      console.log(`Extracted suites from content: ${suites}`);
+    }
+    if (banheiros === 0 && extractedSpecs.banheiros > 0) {
+      banheiros = extractedSpecs.banheiros;
+      console.log(`Extracted banheiros from content: ${banheiros}`);
+    }
+    if (vagas === 0 && extractedSpecs.vagas > 0) {
+      vagas = extractedSpecs.vagas;
+      console.log(`Extracted vagas from content: ${vagas}`);
+    }
+    if (!area && extractedSpecs.area) {
+      area = extractedSpecs.area;
+      console.log(`Extracted area from content: ${area}`);
+    }
+    if (!areaConstructed && extractedSpecs.areaConstructed) {
+      areaConstructed = extractedSpecs.areaConstructed;
+      console.log(`Extracted areaConstructed from content: ${areaConstructed}`);
     }
     
+    const hasVagas = vagas > 0;
     const hasSpecs = quartos > 0 || suites > 0 || banheiros > 0 || vagas > 0 || (area !== null && area > 0);
+    
     if (!hasSpecs) {
       issues.push('Sem especificações');
+    }
+    if (!hasVagas) {
+      issues.push('Sem vagas');
     }
     
     // Build property data
@@ -624,14 +659,14 @@ async function processProperty(
     // Property can be saved even without images
     return { 
       success: true, created, updated, imagesCount, 
-      hasPrice, hasDescription, hasSpecs, issues 
+      hasPrice, hasDescription, hasSpecs, hasVagas, issues 
     };
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
     console.error(`Error line ${lineNumber}: ${errorMessage}`);
     return { 
       success: false, created: false, updated: false, imagesCount: 0, 
-      hasPrice: false, hasDescription: false, hasSpecs: false,
+      hasPrice: false, hasDescription: false, hasSpecs: false, hasVagas: false,
       issues, error: errorMessage 
     };
   }
@@ -730,6 +765,7 @@ serve(async (req) => {
       let withPrice = 0;
       let withDescription = 0;
       let withSpecs = 0;
+      let withVagas = 0;
       const erros: Array<{ linha: number; titulo: string; motivo: string }> = [];
       const problemProperties: Array<{ title: string; permalink: string; issues: string[] }> = [];
       
@@ -746,6 +782,7 @@ serve(async (req) => {
           if (result.hasPrice) withPrice++;
           if (result.hasDescription) withDescription++;
           if (result.hasSpecs) withSpecs++;
+          if (result.hasVagas) withVagas++;
           
           // Track properties with issues even if successfully imported
           if (result.issues.length > 0) {
@@ -778,6 +815,7 @@ serve(async (req) => {
                   withPrice,
                   withDescription,
                   withSpecs,
+                  withVagas,
                   totalProcessed: i + 1
                 },
                 problemProperties: problemProperties.slice(-20)
@@ -803,6 +841,7 @@ serve(async (req) => {
                 withPrice,
                 withDescription,
                 withSpecs,
+                withVagas,
                 totalProcessed: rows.length,
                 imagensImportadas
               },
@@ -814,7 +853,7 @@ serve(async (req) => {
       }
       
       console.log(`Import completed: ${criados} created, ${atualizados} updated, ${imagensImportadas} images, ${erros.length} errors`);
-      console.log(`Stats: ${withPrice} with price, ${withDescription} with description, ${withSpecs} with specs`);
+      console.log(`Stats: ${withPrice} with price, ${withDescription} with description, ${withSpecs} with specs, ${withVagas} with vagas`);
     };
     
     // Start background processing

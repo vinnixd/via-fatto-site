@@ -18,6 +18,7 @@ export interface PropertyFromDB {
   address_city: string;
   address_state: string;
   address_zipcode: string | null;
+  location_type: 'exact' | 'approximate' | 'hidden';
   bedrooms: number;
   suites: number;
   bathrooms: number;

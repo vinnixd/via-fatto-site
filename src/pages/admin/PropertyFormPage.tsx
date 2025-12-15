@@ -73,6 +73,8 @@ interface PropertyImage {
   isNew?: boolean;
 }
 
+type LocationType = 'exact' | 'approximate' | 'hidden';
+
 interface FormData {
   title: string;
   slug: string;
@@ -89,6 +91,7 @@ interface FormData {
   address_city: string;
   address_state: string;
   address_zipcode: string;
+  location_type: LocationType;
   bedrooms: number;
   suites: number;
   bathrooms: number;
@@ -230,6 +233,7 @@ const PropertyFormPage = () => {
     address_city: '',
     address_state: '',
     address_zipcode: '',
+    location_type: 'approximate',
     bedrooms: 0,
     suites: 0,
     bathrooms: 0,
@@ -287,6 +291,7 @@ const PropertyFormPage = () => {
         address_city: property.address_city || '',
         address_state: property.address_state || '',
         address_zipcode: property.address_zipcode || '',
+        location_type: (property.location_type as LocationType) || 'approximate',
         bedrooms: property.bedrooms || 0,
         suites: property.suites || 0,
         bathrooms: property.bathrooms || 0,
@@ -411,6 +416,7 @@ const PropertyFormPage = () => {
         address_city: formData.address_city,
         address_state: formData.address_state,
         address_zipcode: formData.address_zipcode,
+        location_type: formData.location_type,
         bedrooms: Number(formData.bedrooms),
         suites: Number(formData.suites),
         bathrooms: Number(formData.bathrooms),
@@ -990,6 +996,86 @@ const PropertyFormPage = () => {
                           className="h-12"
                           required
                         />
+                      </div>
+                    </div>
+
+                    <Separator />
+
+                    <div className="space-y-4">
+                      <Label className="flex items-center gap-2">
+                        <MapPin className="h-4 w-4 text-muted-foreground" />
+                        Exibição da Localização no Mapa
+                      </Label>
+                      <p className="text-sm text-muted-foreground">
+                        Escolha como a localização será exibida na página do imóvel
+                      </p>
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div
+                          onClick={() => setFormData({ ...formData, location_type: 'exact' })}
+                          className={`cursor-pointer p-4 rounded-xl border-2 transition-all ${
+                            formData.location_type === 'exact'
+                              ? 'border-primary bg-primary/10'
+                              : 'border-border hover:border-primary/50'
+                          }`}
+                        >
+                          <div className="flex items-center gap-3 mb-2">
+                            <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center ${
+                              formData.location_type === 'exact' ? 'border-primary' : 'border-muted-foreground'
+                            }`}>
+                              {formData.location_type === 'exact' && (
+                                <div className="w-2 h-2 rounded-full bg-primary" />
+                              )}
+                            </div>
+                            <span className="font-medium">Exata</span>
+                          </div>
+                          <p className="text-xs text-muted-foreground ml-7">
+                            Mostra o marcador no endereço exato do imóvel
+                          </p>
+                        </div>
+                        <div
+                          onClick={() => setFormData({ ...formData, location_type: 'approximate' })}
+                          className={`cursor-pointer p-4 rounded-xl border-2 transition-all ${
+                            formData.location_type === 'approximate'
+                              ? 'border-primary bg-primary/10'
+                              : 'border-border hover:border-primary/50'
+                          }`}
+                        >
+                          <div className="flex items-center gap-3 mb-2">
+                            <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center ${
+                              formData.location_type === 'approximate' ? 'border-primary' : 'border-muted-foreground'
+                            }`}>
+                              {formData.location_type === 'approximate' && (
+                                <div className="w-2 h-2 rounded-full bg-primary" />
+                              )}
+                            </div>
+                            <span className="font-medium">Aproximada</span>
+                          </div>
+                          <p className="text-xs text-muted-foreground ml-7">
+                            Mostra uma área aproximada, protegendo a privacidade
+                          </p>
+                        </div>
+                        <div
+                          onClick={() => setFormData({ ...formData, location_type: 'hidden' })}
+                          className={`cursor-pointer p-4 rounded-xl border-2 transition-all ${
+                            formData.location_type === 'hidden'
+                              ? 'border-primary bg-primary/10'
+                              : 'border-border hover:border-primary/50'
+                          }`}
+                        >
+                          <div className="flex items-center gap-3 mb-2">
+                            <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center ${
+                              formData.location_type === 'hidden' ? 'border-primary' : 'border-muted-foreground'
+                            }`}>
+                              {formData.location_type === 'hidden' && (
+                                <div className="w-2 h-2 rounded-full bg-primary" />
+                              )}
+                            </div>
+                            <span className="font-medium">Não mostrar</span>
+                          </div>
+                          <p className="text-xs text-muted-foreground ml-7">
+                            O mapa não será exibido na página do imóvel
+                          </p>
+                        </div>
                       </div>
                     </div>
                   </CardContent>

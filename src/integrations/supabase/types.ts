@@ -223,6 +223,7 @@ export type Database = {
           garages: number
           id: string
           iptu: number | null
+          location_type: string
           old_url: string | null
           order_index: number | null
           price: number
@@ -263,6 +264,7 @@ export type Database = {
           garages?: number
           id?: string
           iptu?: number | null
+          location_type?: string
           old_url?: string | null
           order_index?: number | null
           price?: number
@@ -303,6 +305,7 @@ export type Database = {
           garages?: number
           id?: string
           iptu?: number | null
+          location_type?: string
           old_url?: string | null
           order_index?: number | null
           price?: number

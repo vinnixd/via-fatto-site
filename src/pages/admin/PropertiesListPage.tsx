@@ -430,56 +430,62 @@ const PropertiesListPage = () => {
     
     setBulkDeleting(true);
     let deletedCount = 0;
-    let imagesDeleted = 0;
-    let favoritesDeleted = 0;
     
     try {
-      for (const propertyId of selectedIds) {
-        // 1. Get images from database to delete from storage
-        const { data: images } = await supabase
-          .from('property_images')
-          .select('url')
-          .eq('property_id', propertyId);
-        
-        // 2. Delete images from storage
-        if (images && images.length > 0) {
-          for (const image of images) {
+      const propertyIds = Array.from(selectedIds);
+      
+      // 1. Get ALL images from all properties at once
+      const { data: allImages } = await supabase
+        .from('property_images')
+        .select('url, property_id')
+        .in('property_id', propertyIds);
+      
+      // 2. Delete images from storage in batch (max 100 per request)
+      if (allImages && allImages.length > 0) {
+        const imagePaths = allImages
+          .map(img => {
             try {
-              // Extract path from URL
-              const url = new URL(image.url);
+              const url = new URL(img.url);
               const pathMatch = url.pathname.match(/\/storage\/v1\/object\/public\/property-images\/(.+)/);
-              if (pathMatch) {
-                await supabase.storage.from('property-images').remove([pathMatch[1]]);
-              }
-            } catch (e) {
-              console.warn('Could not delete image from storage:', e);
+              return pathMatch ? pathMatch[1] : null;
+            } catch {
+              return null;
             }
-          }
-          imagesDeleted += images.length;
-        }
+          })
+          .filter((path): path is string => path !== null);
         
-        // 3. Delete images from database
-        await supabase.from('property_images').delete().eq('property_id', propertyId);
-        
-        // 4. Delete favorites
-        const { error: favError } = await supabase
-          .from('favorites')
-          .delete()
-          .eq('property_id', propertyId);
-        
-        if (!favError) favoritesDeleted++;
-        
-        // 5. Delete property
-        const { error } = await supabase.from('properties').delete().eq('id', propertyId);
-        
-        if (!error) {
-          deletedCount++;
+        // Delete in batches of 100
+        for (let i = 0; i < imagePaths.length; i += 100) {
+          const batch = imagePaths.slice(i, i + 100);
+          await supabase.storage.from('property-images').remove(batch);
         }
       }
       
+      // 3. Delete all property_images records at once
+      await supabase
+        .from('property_images')
+        .delete()
+        .in('property_id', propertyIds);
+      
+      // 4. Delete all favorites at once
+      await supabase
+        .from('favorites')
+        .delete()
+        .in('property_id', propertyIds);
+      
+      // 5. Delete all properties at once
+      const { error, count } = await supabase
+        .from('properties')
+        .delete()
+        .in('id', propertyIds);
+      
+      if (error) throw error;
+      
+      deletedCount = propertyIds.length;
+      
       toast.success(
-        `Exclusão concluída: ${deletedCount} imóveis, ${imagesDeleted} imagens, ${favoritesDeleted} favoritos removidos.`,
-        { duration: 8000 }
+        `${deletedCount} imóveis excluídos com sucesso!`,
+        { duration: 5000 }
       );
       
       setSelectedIds(new Set());
@@ -499,10 +505,36 @@ const PropertiesListPage = () => {
     if (!deleteId) return;
 
     try {
-      // Delete related images first
+      // 1. Get images to delete from storage
+      const { data: images } = await supabase
+        .from('property_images')
+        .select('url')
+        .eq('property_id', deleteId);
+      
+      // 2. Delete images from storage in batch
+      if (images && images.length > 0) {
+        const imagePaths = images
+          .map(img => {
+            try {
+              const url = new URL(img.url);
+              const pathMatch = url.pathname.match(/\/storage\/v1\/object\/public\/property-images\/(.+)/);
+              return pathMatch ? pathMatch[1] : null;
+            } catch {
+              return null;
+            }
+          })
+          .filter((path): path is string => path !== null);
+        
+        if (imagePaths.length > 0) {
+          await supabase.storage.from('property-images').remove(imagePaths);
+        }
+      }
+      
+      // 3. Delete related records
       await supabase.from('property_images').delete().eq('property_id', deleteId);
+      await supabase.from('favorites').delete().eq('property_id', deleteId);
 
-      // Delete property
+      // 4. Delete property
       const { error } = await supabase.from('properties').delete().eq('id', deleteId);
 
       if (error) throw error;

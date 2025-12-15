@@ -672,14 +672,15 @@ const PropertyFormPage = () => {
                             id="reference"
                             value={formData.reference}
                             onChange={(e) => setFormData({ ...formData, reference: e.target.value })}
-                            placeholder="REF-001"
+                            placeholder="001234"
                           />
                           <Button
                             type="button"
                             variant="outline"
+                            size="sm"
                             onClick={() => {
                               const randomNum = Math.floor(100000 + Math.random() * 900000);
-                              setFormData({ ...formData, reference: `REF-${randomNum}` });
+                              setFormData({ ...formData, reference: String(randomNum) });
                             }}
                             className="shrink-0"
                           >

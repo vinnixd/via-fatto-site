@@ -1,7 +1,6 @@
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import AdminLayout from '@/components/admin/AdminLayout';
-import ImportProgressBar from '@/components/admin/ImportProgressBar';
 import AdminHeader from '@/components/admin/AdminHeader';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -364,6 +363,32 @@ const PropertiesListPage = () => {
     fetchProperties();
   }, [page, search, isReorderMode]);
 
+  // Listen for import job completion to refresh the list
+  useEffect(() => {
+    const channel = supabase
+      .channel('import-jobs-list-refresh')
+      .on(
+        'postgres_changes',
+        {
+          event: 'UPDATE',
+          schema: 'public',
+          table: 'import_jobs',
+        },
+        (payload) => {
+          const job = payload.new as { status: string };
+          if (job.status === 'completed') {
+            // Refresh the properties list when import completes
+            fetchProperties();
+          }
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, []);
+
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
 
@@ -597,18 +622,12 @@ const PropertiesListPage = () => {
     return <Home className="h-3.5 w-3.5" />;
   };
 
-  const handleImportComplete = useCallback(() => {
-    fetchProperties();
-  }, []);
 
   return (
     <AdminLayout>
       <AdminHeader title="Imóveis" subtitle="Gerencie todos os imóveis cadastrados" />
 
       <div className="p-6 space-y-6">
-        {/* Import Progress Bar */}
-        <ImportProgressBar onComplete={handleImportComplete} />
-
         {/* Stats Cards */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           <Card className="border-0 shadow-sm bg-gradient-to-br from-primary/10 to-primary/5">

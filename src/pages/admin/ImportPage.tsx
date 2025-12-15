@@ -106,7 +106,10 @@ const ImportPage = () => {
           imagens_importadas: 0,
           erros: []
         });
-        toast.success(`Importação de ${data.totalRows} imóveis iniciada em segundo plano!`);
+        toast.success(
+          `Importação de ${data.totalRows} imóveis iniciada! Você pode navegar para outras páginas - o processo continua em segundo plano.`,
+          { duration: 8000 }
+        );
       } else {
         setResult(data);
         
@@ -143,9 +146,6 @@ const ImportPage = () => {
       />
       
       <div className="space-y-6">
-        {/* Import Progress Bar - shows real-time stats */}
-        <ImportProgressBar />
-        
         {/* Instructions Card */}
         <Card>
           <CardHeader>

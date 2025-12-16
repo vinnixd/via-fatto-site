@@ -305,7 +305,7 @@ const PortaisPage = () => {
                             <img 
                               src={portalBranding[portal.slug].logo} 
                               alt={portal.nome}
-                              className="w-10 h-10 object-contain"
+                              className={portal.slug === 'olx' ? "w-10 h-10 object-contain" : (portalBranding[portal.slug]?.noBg ? "w-11 h-11 object-contain" : "w-full h-full object-cover")}
                             />
                           </div>
                         ) : (

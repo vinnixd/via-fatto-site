@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
@@ -93,12 +93,13 @@ const UsersPage = () => {
   const [editingUser, setEditingUser] = useState<UserWithRole | null>(null);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
 
-  // Check permissions
-  if (!permissionsLoading && !canAccessUsers) {
-    toast.error('Sem permissão para acessar esta página');
-    navigate('/admin');
-    return null;
-  }
+  // Check permissions with useEffect
+  useEffect(() => {
+    if (!permissionsLoading && !canAccessUsers) {
+      toast.error('Sem permissão para acessar esta página');
+      navigate('/admin');
+    }
+  }, [permissionsLoading, canAccessUsers, navigate]);
 
   // Fetch users with roles
   const { data: users, isLoading: usersLoading } = useQuery({

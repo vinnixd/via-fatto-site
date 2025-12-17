@@ -1,10 +1,11 @@
 import { useAuth } from '@/contexts/AuthContext';
 
-export type AppRole = 'admin' | 'corretor' | 'user';
+export type AppRole = 'admin' | 'gestor' | 'corretor' | 'user';
 
 interface UserPermissions {
   role: AppRole;
   isAdmin: boolean;
+  isGestor: boolean;
   isCorretor: boolean;
   canAccessUsers: boolean;
   canManageProperties: boolean;
@@ -13,17 +14,18 @@ interface UserPermissions {
 }
 
 export const usePermissions = (): UserPermissions => {
-  const { isAdmin, isCorretor, loading } = useAuth();
+  const { isAdmin, isGestor, isCorretor, loading } = useAuth();
 
-  const role: AppRole = isAdmin ? 'admin' : isCorretor ? 'corretor' : 'user';
+  const role: AppRole = isAdmin ? 'admin' : isGestor ? 'gestor' : isCorretor ? 'corretor' : 'user';
 
   return {
     role,
     isAdmin,
+    isGestor,
     isCorretor,
     canAccessUsers: isAdmin,
-    canManageProperties: isAdmin || isCorretor,
-    canManagePortals: isAdmin,
+    canManageProperties: isAdmin || isGestor || isCorretor,
+    canManagePortals: isAdmin || isGestor,
     loading,
   };
 };

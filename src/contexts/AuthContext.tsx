@@ -7,6 +7,7 @@ interface AuthContextType {
   session: Session | null;
   loading: boolean;
   isAdmin: boolean;
+  isGestor: boolean;
   isCorretor: boolean;
   canAccessAdmin: boolean;
   signIn: (email: string, password: string) => Promise<{ error: Error | null }>;
@@ -21,6 +22,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [isGestor, setIsGestor] = useState(false);
   const [isCorretor, setIsCorretor] = useState(false);
 
   const checkUserRole = async (userId: string) => {
@@ -31,6 +33,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     
     const roles = data?.map(r => r.role) || [];
     setIsAdmin(roles.includes('admin'));
+    setIsGestor(roles.includes('gestor'));
     setIsCorretor(roles.includes('corretor'));
   };
 
@@ -65,7 +68,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     return () => subscription.unsubscribe();
   }, []);
 
-  const canAccessAdmin = isAdmin || isCorretor;
+  const canAccessAdmin = isAdmin || isGestor || isCorretor;
 
   const signIn = async (email: string, password: string) => {
     const { error } = await supabase.auth.signInWithPassword({ email, password });
@@ -90,7 +93,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ user, session, loading, isAdmin, isCorretor, canAccessAdmin, signIn, signUp, signOut }}>
+    <AuthContext.Provider value={{ user, session, loading, isAdmin, isGestor, isCorretor, canAccessAdmin, signIn, signUp, signOut }}>
       {children}
     </AuthContext.Provider>
   );

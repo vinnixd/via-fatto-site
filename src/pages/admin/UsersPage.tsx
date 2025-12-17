@@ -255,6 +255,8 @@ const UsersPage = () => {
     switch (role) {
       case 'admin':
         return <Badge className="bg-primary">Admin</Badge>;
+      case 'gestor':
+        return <Badge className="bg-blue-500">Gestor</Badge>;
       case 'corretor':
         return <Badge variant="secondary">Corretor</Badge>;
       default:
@@ -350,6 +352,7 @@ const UsersPage = () => {
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="corretor">Corretor</SelectItem>
+                        <SelectItem value="gestor">Gestor</SelectItem>
                         <SelectItem value="admin">Administrador</SelectItem>
                       </SelectContent>
                     </Select>
@@ -601,6 +604,7 @@ const UsersPage = () => {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="corretor">Corretor</SelectItem>
+                  <SelectItem value="gestor">Gestor</SelectItem>
                   <SelectItem value="admin">Administrador</SelectItem>
                 </SelectContent>
               </Select>

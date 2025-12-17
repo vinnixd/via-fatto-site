@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import AdminLayout from '@/components/admin/AdminLayout';
+import AdminHeader from '@/components/admin/AdminHeader';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -181,20 +182,14 @@ const DomainsPage = () => {
 
   return (
     <AdminLayout>
-      <div className="space-y-8">
-        {/* Header */}
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-          <div className="space-y-1">
-            <div className="flex items-center gap-3">
-              <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center">
-                <Globe className="h-5 w-5 text-primary" />
-              </div>
-              <h1 className="text-2xl font-bold tracking-tight">Domínios</h1>
-            </div>
-            <p className="text-muted-foreground max-w-xl">
-              O domínio é o endereço do seu site na Internet. Você pode ter mais de um e gerenciá-los aqui.
-            </p>
-          </div>
+      <AdminHeader title="Domínios" subtitle="Gerencie os domínios do seu site" />
+      
+      <div className="p-6 space-y-6">
+        {/* Header Actions */}
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <p className="text-muted-foreground max-w-xl">
+            O domínio é o endereço do seu site na Internet. Você pode ter mais de um e gerenciá-los aqui.
+          </p>
           <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
             <DialogTrigger asChild>
               <Button className="gap-2 shadow-lg shadow-primary/20">

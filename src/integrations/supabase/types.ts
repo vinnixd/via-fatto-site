@@ -597,9 +597,12 @@ export type Database = {
           address: string | null
           created_at: string
           email: string | null
+          facebook_pixel_id: string | null
           favicon_url: string | null
           footer_links: Json | null
           footer_text: string | null
+          google_analytics_id: string | null
+          gtm_container_id: string | null
           hero_background_url: string | null
           hero_subtitle: string | null
           hero_title: string | null
@@ -633,9 +636,12 @@ export type Database = {
           address?: string | null
           created_at?: string
           email?: string | null
+          facebook_pixel_id?: string | null
           favicon_url?: string | null
           footer_links?: Json | null
           footer_text?: string | null
+          google_analytics_id?: string | null
+          gtm_container_id?: string | null
           hero_background_url?: string | null
           hero_subtitle?: string | null
           hero_title?: string | null
@@ -669,9 +675,12 @@ export type Database = {
           address?: string | null
           created_at?: string
           email?: string | null
+          facebook_pixel_id?: string | null
           favicon_url?: string | null
           footer_links?: Json | null
           footer_text?: string | null
+          google_analytics_id?: string | null
+          gtm_container_id?: string | null
           hero_background_url?: string | null
           hero_subtitle?: string | null
           hero_title?: string | null

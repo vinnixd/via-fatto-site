@@ -43,7 +43,7 @@ const PropertyCard = ({ property, onFavorite, isFavorited = false }: PropertyCar
   };
 
   return (
-    <Link to={`/imovel/${property.slug}`} className="card-property group block">
+    <Link to={`/imovel/${property.slug}`} className="card-property group block h-full flex flex-col">
       {/* Image Container */}
       <div className="relative h-48 md:h-56 overflow-hidden">
         <img
@@ -94,7 +94,7 @@ const PropertyCard = ({ property, onFavorite, isFavorited = false }: PropertyCar
       </div>
 
       {/* Content */}
-      <div className="p-4">
+      <div className="p-4 flex flex-col flex-1">
         {/* Price */}
         <div className="mb-2">
           <span className="text-2xl font-bold text-primary">
@@ -115,32 +115,34 @@ const PropertyCard = ({ property, onFavorite, isFavorited = false }: PropertyCar
           </span>
         </div>
 
-        {/* Features */}
-        <div className="flex items-center justify-between text-sm text-muted-foreground mb-4">
+        {/* Spacer to push features to bottom */}
+        <div className="flex-1" />
+
+        {/* Features - Fixed at footer, centered */}
+        <div className="flex items-center justify-center gap-4 text-sm text-muted-foreground pt-3 border-t border-border">
           {property.bedrooms > 0 && (
-            <div className="flex items-center space-x-1">
-              <Bed size={16} />
+            <div className="flex items-center gap-1">
+              <Bed size={14} />
               <span>{property.bedrooms}</span>
             </div>
           )}
           {property.bathrooms > 0 && (
-            <div className="flex items-center space-x-1">
-              <Bath size={16} />
+            <div className="flex items-center gap-1">
+              <Bath size={14} />
               <span>{property.bathrooms}</span>
             </div>
           )}
           {property.garages > 0 && (
-            <div className="flex items-center space-x-1">
-              <Car size={16} />
+            <div className="flex items-center gap-1">
+              <Car size={14} />
               <span>{property.garages}</span>
             </div>
           )}
-          <div className="flex items-center space-x-1">
-            <Maximize size={16} />
+          <div className="flex items-center gap-1">
+            <Maximize size={14} />
             <span>{property.area}m²</span>
           </div>
         </div>
-
       </div>
     </Link>
   );

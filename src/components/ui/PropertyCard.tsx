@@ -1,4 +1,4 @@
-import { Heart, Bed, Bath, Car, Maximize, MapPin, Eye } from 'lucide-react';
+import { Heart, Bed, Bath, Car, Maximize, MapPin } from 'lucide-react';
 import { Property } from '@/types/property';
 import { Link } from 'react-router-dom';
 import { useState } from 'react';
@@ -87,10 +87,9 @@ const PropertyCard = ({ property, onFavorite, isFavorited = false }: PropertyCar
           <Heart size={16} fill={isFavorited ? 'currentColor' : 'none'} />
         </button>
 
-        {/* Views Counter */}
-        <div className="absolute bottom-3 left-3 flex items-center space-x-1 bg-black/50 text-white px-2 py-1 rounded-full text-xs">
-          <Eye size={12} />
-          <span>{property.views}</span>
+        {/* Reference */}
+        <div className="absolute bottom-3 left-3 bg-black/50 text-white px-2 py-1 rounded-full text-xs">
+          Ref: {property.reference}
         </div>
       </div>
 
@@ -142,23 +141,6 @@ const PropertyCard = ({ property, onFavorite, isFavorited = false }: PropertyCar
           </div>
         </div>
 
-        {/* Reference */}
-        <div className="text-xs text-muted-foreground mb-3">
-          Ref: {property.reference}
-        </div>
-
-        {/* Action Buttons */}
-        <div className="flex space-x-2">
-          <span className="flex-1 btn-secondary text-sm py-2 text-center">
-            Ver Detalhes
-          </span>
-          <button
-            onClick={handleWhatsAppClick}
-            className="flex-1 btn-primary text-sm py-2 text-center"
-          >
-            WhatsApp
-          </button>
-        </div>
       </div>
     </Link>
   );

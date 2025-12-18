@@ -10,6 +10,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { Loader2, Globe, Phone, Mail, MapPin, Search, Upload } from 'lucide-react';
+import { compressImage } from '@/lib/imageCompression';
 
 interface SiteConfig {
   id: string;
@@ -61,12 +62,15 @@ const SettingsPage = () => {
     if (!config) return;
 
     try {
-      const fileExt = file.name.split('.').pop();
+      // Compress image before upload
+      const compressedFile = await compressImage(file, { maxWidth: 1200, maxHeight: 630, quality: 0.9 });
+      
+      const fileExt = compressedFile.name.split('.').pop();
       const fileName = `og-image-${Date.now()}.${fileExt}`;
 
       const { error: uploadError } = await supabase.storage
         .from('site-assets')
-        .upload(fileName, file, { upsert: true });
+        .upload(fileName, compressedFile, { upsert: true });
 
       if (uploadError) throw uploadError;
 

@@ -11,6 +11,7 @@ import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { compressImage } from '@/lib/imageCompression';
 import { 
   Loader2, 
   Palette, 
@@ -126,12 +127,15 @@ const DesignerPage = () => {
 
   const handleImageUpload = async (file: File, field: keyof SiteConfig) => {
     try {
-      const fileExt = file.name.split('.').pop();
+      // Compress image before upload
+      const compressedFile = await compressImage(file, { maxWidth: 1920, maxHeight: 1080, quality: 0.85 });
+      
+      const fileExt = compressedFile.name.split('.').pop();
       const fileName = `${field}-${Date.now()}.${fileExt}`;
 
       const { error: uploadError } = await supabase.storage
         .from('site-assets')
-        .upload(fileName, file, { upsert: true });
+        .upload(fileName, compressedFile, { upsert: true });
 
       if (uploadError) throw uploadError;
 

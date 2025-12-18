@@ -108,6 +108,8 @@ interface FormData {
   amenities: string[];
   reference: string;
   category_id: string;
+  seo_title: string;
+  seo_description: string;
 }
 
 // Sortable Image Component for drag-and-drop
@@ -190,6 +192,7 @@ const PropertyFormPage = () => {
   const [activeStep, setActiveStep] = useState(0);
   const [isImprovingDescription, setIsImprovingDescription] = useState(false);
   const [isImprovingTitle, setIsImprovingTitle] = useState(false);
+  const [isGeneratingSeo, setIsGeneratingSeo] = useState(false);
   const [isLookingUpCep, setIsLookingUpCep] = useState(false);
 
   // CEP lookup function
@@ -253,6 +256,7 @@ const PropertyFormPage = () => {
     { id: 'specs', title: 'Especificações', icon: Maximize },
     { id: 'features', title: 'Características', icon: Sparkles },
     { id: 'images', title: 'Galeria', icon: ImageIcon },
+    { id: 'seo', title: 'SEO', icon: Settings2 },
   ];
 
   const [formData, setFormData] = useState<FormData>({
@@ -286,6 +290,8 @@ const PropertyFormPage = () => {
     amenities: [],
     reference: '',
     category_id: '',
+    seo_title: '',
+    seo_description: '',
   });
 
   useEffect(() => {
@@ -344,6 +350,8 @@ const PropertyFormPage = () => {
         amenities: property.amenities || [],
         reference: property.reference || '',
         category_id: property.category_id || '',
+        seo_title: property.seo_title || '',
+        seo_description: property.seo_description || '',
       });
 
       // Fetch images
@@ -379,6 +387,54 @@ const PropertyFormPage = () => {
       title: value,
       slug: generateSlug(value),
     });
+  };
+
+  // Generate SEO with AI
+  const handleGenerateSeo = async () => {
+    if (!formData.title || !formData.address_city) {
+      toast.error('Preencha título e cidade antes de gerar SEO');
+      return;
+    }
+
+    setIsGeneratingSeo(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('generate-seo', {
+        body: {
+          propertyInfo: {
+            title: formData.title,
+            type: formData.type,
+            status: formData.status,
+            city: formData.address_city,
+            state: formData.address_state,
+            neighborhood: formData.address_neighborhood,
+            bedrooms: formData.bedrooms,
+            bathrooms: formData.bathrooms,
+            garages: formData.garages,
+            area: formData.area,
+            price: formData.price,
+            features: formData.features,
+          },
+        },
+      });
+
+      if (error) throw error;
+
+      if (data?.seo_title || data?.seo_description) {
+        setFormData(prev => ({
+          ...prev,
+          seo_title: data.seo_title || prev.seo_title,
+          seo_description: data.seo_description || prev.seo_description,
+        }));
+        toast.success('SEO gerado com sucesso!');
+      } else {
+        throw new Error('Resposta inválida da IA');
+      }
+    } catch (err: any) {
+      console.error('SEO generation error:', err);
+      toast.error(err.message || 'Erro ao gerar SEO');
+    } finally {
+      setIsGeneratingSeo(false);
+    }
   };
 
   const handleImageUpload = useCallback(async (files: FileList) => {
@@ -469,6 +525,8 @@ const PropertyFormPage = () => {
         amenities: formData.amenities,
         reference: formData.reference,
         category_id: formData.category_id || null,
+        seo_title: formData.seo_title || null,
+        seo_description: formData.seo_description || null,
         created_by: user?.id,
       };
 
@@ -1473,6 +1531,124 @@ const PropertyFormPage = () => {
                         </DndContext>
                       </div>
                     )}
+                  </CardContent>
+                </Card>
+              )}
+
+              {/* Step 5: SEO */}
+              {activeStep === 5 && (
+                <Card className="border-0 shadow-sm">
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <Settings2 className="h-5 w-5 text-primary" />
+                      SEO - Otimização para Google
+                    </CardTitle>
+                    <CardDescription>
+                      Configure o título e descrição que aparecerão nos resultados de busca
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent className="space-y-6">
+                    {/* Generate SEO Button */}
+                    <div className="bg-gradient-to-r from-primary/10 to-primary/5 rounded-xl p-6">
+                      <div className="flex items-start gap-4">
+                        <div className="w-12 h-12 rounded-full bg-primary/20 flex items-center justify-center flex-shrink-0">
+                          <Sparkles className="h-6 w-6 text-primary" />
+                        </div>
+                        <div className="flex-1">
+                          <h4 className="font-semibold mb-1">Gerar SEO com IA</h4>
+                          <p className="text-sm text-muted-foreground mb-4">
+                            Gere automaticamente título e descrição otimizados para mecanismos de busca usando inteligência artificial.
+                          </p>
+                          <Button
+                            type="button"
+                            variant="admin"
+                            onClick={handleGenerateSeo}
+                            disabled={isGeneratingSeo || !formData.title || !formData.address_city}
+                          >
+                            {isGeneratingSeo ? (
+                              <>
+                                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                                Gerando...
+                              </>
+                            ) : (
+                              <>
+                                <Sparkles className="h-4 w-4 mr-2" />
+                                Gerar SEO Automático
+                              </>
+                            )}
+                          </Button>
+                        </div>
+                      </div>
+                    </div>
+
+                    <Separator />
+
+                    {/* SEO Title */}
+                    <div className="space-y-2">
+                      <div className="flex items-center justify-between">
+                        <Label htmlFor="seo_title">
+                          Título SEO <span className="text-xs text-muted-foreground">(máx. 60 caracteres)</span>
+                        </Label>
+                        <span className={`text-xs ${formData.seo_title.length > 60 ? 'text-destructive' : 'text-muted-foreground'}`}>
+                          {formData.seo_title.length}/60
+                        </span>
+                      </div>
+                      <Input
+                        id="seo_title"
+                        value={formData.seo_title}
+                        onChange={(e) => setFormData({ ...formData, seo_title: e.target.value.substring(0, 70) })}
+                        placeholder="Ex: Casa à Venda em Brasília DF | 3 Quartos, 200m²"
+                        className="h-12"
+                        maxLength={70}
+                      />
+                      {formData.seo_title && (
+                        <div className="mt-3 p-3 bg-muted rounded-lg">
+                          <p className="text-xs text-muted-foreground mb-1">Prévia no Google:</p>
+                          <p className="text-blue-600 text-lg hover:underline cursor-pointer truncate">
+                            {formData.seo_title}
+                          </p>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* SEO Description */}
+                    <div className="space-y-2">
+                      <div className="flex items-center justify-between">
+                        <Label htmlFor="seo_description">
+                          Meta Description <span className="text-xs text-muted-foreground">(máx. 155 caracteres)</span>
+                        </Label>
+                        <span className={`text-xs ${formData.seo_description.length > 155 ? 'text-destructive' : 'text-muted-foreground'}`}>
+                          {formData.seo_description.length}/155
+                        </span>
+                      </div>
+                      <Textarea
+                        id="seo_description"
+                        value={formData.seo_description}
+                        onChange={(e) => setFormData({ ...formData, seo_description: e.target.value.substring(0, 165) })}
+                        placeholder="Ex: Casa à venda no Lago Sul, Brasília DF com 3 quartos, suíte master, churrasqueira e área gourmet. Agende sua visita!"
+                        className="min-h-[100px] resize-none"
+                        maxLength={165}
+                      />
+                      {formData.seo_description && (
+                        <div className="mt-3 p-3 bg-muted rounded-lg">
+                          <p className="text-xs text-muted-foreground mb-1">Prévia no Google:</p>
+                          <p className="text-sm text-muted-foreground line-clamp-2">
+                            {formData.seo_description}
+                          </p>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Tips */}
+                    <div className="bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-800 rounded-lg p-4">
+                      <h5 className="font-medium text-amber-800 dark:text-amber-200 mb-2">Dicas para SEO</h5>
+                      <ul className="text-sm text-amber-700 dark:text-amber-300 space-y-1">
+                        <li>• Inclua o tipo de imóvel e localização no título</li>
+                        <li>• Use palavras-chave como "à venda", "para alugar", número de quartos</li>
+                        <li>• A meta description deve ter um CTA (ex: "Agende visita")</li>
+                        <li>• Evite textos genéricos ou duplicados</li>
+                      </ul>
+                    </div>
                   </CardContent>
                 </Card>
               )}

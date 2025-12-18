@@ -399,6 +399,8 @@ export type Database = {
           price: number
           profile: Database["public"]["Enums"]["property_profile"]
           reference: string | null
+          seo_description: string | null
+          seo_title: string | null
           slug: string
           status: Database["public"]["Enums"]["property_status"]
           suites: number
@@ -440,6 +442,8 @@ export type Database = {
           price?: number
           profile?: Database["public"]["Enums"]["property_profile"]
           reference?: string | null
+          seo_description?: string | null
+          seo_title?: string | null
           slug: string
           status?: Database["public"]["Enums"]["property_status"]
           suites?: number
@@ -481,6 +485,8 @@ export type Database = {
           price?: number
           profile?: Database["public"]["Enums"]["property_profile"]
           reference?: string | null
+          seo_description?: string | null
+          seo_title?: string | null
           slug?: string
           status?: Database["public"]["Enums"]["property_status"]
           suites?: number

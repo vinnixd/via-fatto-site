@@ -38,6 +38,8 @@ export interface PropertyFromDB {
   order_index: number | null;
   created_at: string;
   updated_at: string;
+  seo_title: string | null;
+  seo_description: string | null;
   images?: { id: string; url: string; alt: string; order_index: number }[];
 }
 

@@ -12,6 +12,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
 import { Loader2, User, Mail, Phone, Shield, Camera, Lock, Check } from 'lucide-react';
 import bannerProfile from '@/assets/banner-profile.png';
+import { compressImage } from '@/lib/imageCompression';
 
 // Preload banner image
 const preloadBanner = () => {
@@ -94,12 +95,15 @@ const ProfilePage = () => {
     setUploadingAvatar(true);
 
     try {
-      const fileExt = file.name.split('.').pop();
+      // Compress image before upload
+      const compressedFile = await compressImage(file, { maxWidth: 400, maxHeight: 400, quality: 0.9 });
+      
+      const fileExt = compressedFile.name.split('.').pop();
       const fileName = `avatars/${profile.id}-${Date.now()}.${fileExt}`;
 
       const { error: uploadError } = await supabase.storage
         .from('site-assets')
-        .upload(fileName, file, { upsert: true });
+        .upload(fileName, compressedFile, { upsert: true });
 
       if (uploadError) throw uploadError;
 

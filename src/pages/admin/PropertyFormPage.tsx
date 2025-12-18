@@ -42,6 +42,7 @@ import {
   Settings2
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
+import { compressImage } from '@/lib/imageCompression';
 import type { Database } from '@/integrations/supabase/types';
 import {
   DndContext,
@@ -598,17 +599,20 @@ const PropertyFormPage = () => {
         }
       }
 
-      // Upload new images in parallel
+      // Upload new images in parallel with compression
       const newImagesToUpload = images.filter(img => img.isNew && img.file);
       const uploadPromises = newImagesToUpload.map(async (img, index) => {
         if (!img.file) return null;
 
-        const fileExt = img.file.name.split('.').pop();
+        // Compress image before upload
+        const compressedFile = await compressImage(img.file, { maxWidth: 1920, maxHeight: 1080, quality: 0.85 });
+        
+        const fileExt = compressedFile.name.split('.').pop();
         const fileName = `${propertyId}/${Date.now()}-${index}.${fileExt}`;
 
         const { error: uploadError } = await supabase.storage
           .from('property-images')
-          .upload(fileName, img.file);
+          .upload(fileName, compressedFile);
 
         if (uploadError) {
           console.error('Upload error:', uploadError);

@@ -738,7 +738,7 @@ const PropertyFormPage = () => {
                         </div>
                         <div className="space-y-2">
                           <Label>Categoria</Label>
-                          <Select value={formData.category_id} onValueChange={(v) => setFormData({ ...formData, category_id: v })}>
+                          <Select value={formData.category_id || undefined} onValueChange={(v) => setFormData({ ...formData, category_id: v })}>
                             <SelectTrigger className="h-11">
                               <SelectValue placeholder="Selecione" />
                             </SelectTrigger>

@@ -42,6 +42,9 @@ import { ImagePositionPicker } from '@/components/ui/ImagePositionPicker';
 interface SiteConfig {
   id: string;
   logo_url: string;
+  logo_horizontal_url: string;
+  logo_vertical_url: string;
+  logo_symbol_url: string;
   favicon_url: string;
   primary_color: string;
   secondary_color: string;
@@ -141,6 +144,9 @@ const DesignerPage = () => {
         .from('site_config')
         .update({
           logo_url: config.logo_url,
+          logo_horizontal_url: config.logo_horizontal_url,
+          logo_vertical_url: config.logo_vertical_url,
+          logo_symbol_url: config.logo_symbol_url,
           favicon_url: config.favicon_url,
           primary_color: config.primary_color,
           secondary_color: config.secondary_color,
@@ -230,7 +236,7 @@ const DesignerPage = () => {
               </div>
               <div>
                 <p className="text-xs text-muted-foreground">Imagens</p>
-                <p className="font-semibold">{[config.logo_url, config.hero_background_url, config.about_image_url].filter(Boolean).length} enviadas</p>
+                <p className="font-semibold">{[config.logo_horizontal_url, config.logo_vertical_url, config.logo_symbol_url, config.hero_background_url, config.about_image_url].filter(Boolean).length} enviadas</p>
               </div>
             </CardContent>
           </Card>
@@ -334,41 +340,119 @@ const DesignerPage = () => {
                         <ImagePlus className="h-5 w-5 text-primary" />
                       </div>
                       <div>
-                        <CardTitle>Logo da Empresa</CardTitle>
-                        <CardDescription>Faça upload do logotipo da sua imobiliária</CardDescription>
+                        <CardTitle>Logotipos da Empresa</CardTitle>
+                        <CardDescription>Envie diferentes versões do seu logotipo para uso em diferentes contextos</CardDescription>
                       </div>
                     </div>
                   </CardHeader>
                   <CardContent>
-                    <div className="flex items-center gap-6">
-                      <div className="relative group">
-                        {config.logo_url ? (
-                          <div className="w-32 h-32 rounded-2xl bg-gradient-to-br from-muted to-muted/50 flex items-center justify-center overflow-hidden border-2 border-dashed border-border group-hover:border-primary transition-colors">
-                            <img src={config.logo_url} alt="Logo" className="max-w-full max-h-full object-contain p-2" />
-                          </div>
-                        ) : (
-                          <div className="w-32 h-32 rounded-2xl bg-gradient-to-br from-muted to-muted/50 flex items-center justify-center border-2 border-dashed border-border">
-                            <Upload className="h-8 w-8 text-muted-foreground" />
-                          </div>
-                        )}
-                      </div>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                      {/* Logo Horizontal */}
                       <div className="space-y-3">
-                        <Label htmlFor="logo-upload" className="cursor-pointer">
-                          <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors">
+                        <div className="flex items-center gap-2 mb-2">
+                          <Badge variant="outline" className="text-xs">Horizontal</Badge>
+                          <span className="text-xs text-muted-foreground">Para cabeçalhos e banners</span>
+                        </div>
+                        <div className="relative group">
+                          {config.logo_horizontal_url ? (
+                            <div className="w-full h-24 rounded-xl bg-gradient-to-br from-muted to-muted/50 flex items-center justify-center overflow-hidden border-2 border-dashed border-border group-hover:border-primary transition-colors">
+                              <img src={config.logo_horizontal_url} alt="Logo Horizontal" className="max-w-full max-h-full object-contain p-2" />
+                            </div>
+                          ) : (
+                            <div className="w-full h-24 rounded-xl bg-gradient-to-br from-muted to-muted/50 flex items-center justify-center border-2 border-dashed border-border">
+                              <div className="text-center">
+                                <div className="w-16 h-6 border-2 border-dashed border-muted-foreground/50 rounded mx-auto mb-1" />
+                                <span className="text-xs text-muted-foreground">Horizontal</span>
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                        <Label htmlFor="logo-horizontal-upload" className="cursor-pointer block">
+                          <div className="w-full inline-flex items-center justify-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors text-sm">
                             <Upload className="h-4 w-4" />
-                            Enviar Logo
+                            {config.logo_horizontal_url ? 'Alterar' : 'Enviar'}
                           </div>
                           <Input
-                            id="logo-upload"
+                            id="logo-horizontal-upload"
                             type="file"
                             accept="image/*"
                             className="hidden"
-                            onChange={(e) => e.target.files?.[0] && handleImageUpload(e.target.files[0], 'logo_url')}
+                            onChange={(e) => e.target.files?.[0] && handleImageUpload(e.target.files[0], 'logo_horizontal_url')}
                           />
                         </Label>
-                        <p className="text-xs text-muted-foreground">PNG, JPG ou SVG. Máx 2MB.</p>
+                      </div>
+
+                      {/* Logo Vertical */}
+                      <div className="space-y-3">
+                        <div className="flex items-center gap-2 mb-2">
+                          <Badge variant="outline" className="text-xs">Vertical</Badge>
+                          <span className="text-xs text-muted-foreground">Para rodapés e cards</span>
+                        </div>
+                        <div className="relative group">
+                          {config.logo_vertical_url ? (
+                            <div className="w-full h-24 rounded-xl bg-gradient-to-br from-muted to-muted/50 flex items-center justify-center overflow-hidden border-2 border-dashed border-border group-hover:border-primary transition-colors">
+                              <img src={config.logo_vertical_url} alt="Logo Vertical" className="max-w-full max-h-full object-contain p-2" />
+                            </div>
+                          ) : (
+                            <div className="w-full h-24 rounded-xl bg-gradient-to-br from-muted to-muted/50 flex items-center justify-center border-2 border-dashed border-border">
+                              <div className="text-center">
+                                <div className="w-8 h-10 border-2 border-dashed border-muted-foreground/50 rounded mx-auto mb-1" />
+                                <span className="text-xs text-muted-foreground">Vertical</span>
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                        <Label htmlFor="logo-vertical-upload" className="cursor-pointer block">
+                          <div className="w-full inline-flex items-center justify-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors text-sm">
+                            <Upload className="h-4 w-4" />
+                            {config.logo_vertical_url ? 'Alterar' : 'Enviar'}
+                          </div>
+                          <Input
+                            id="logo-vertical-upload"
+                            type="file"
+                            accept="image/*"
+                            className="hidden"
+                            onChange={(e) => e.target.files?.[0] && handleImageUpload(e.target.files[0], 'logo_vertical_url')}
+                          />
+                        </Label>
+                      </div>
+
+                      {/* Logo Símbolo */}
+                      <div className="space-y-3">
+                        <div className="flex items-center gap-2 mb-2">
+                          <Badge variant="outline" className="text-xs">Símbolo</Badge>
+                          <span className="text-xs text-muted-foreground">Para ícones e avatares</span>
+                        </div>
+                        <div className="relative group">
+                          {config.logo_symbol_url ? (
+                            <div className="w-full h-24 rounded-xl bg-gradient-to-br from-muted to-muted/50 flex items-center justify-center overflow-hidden border-2 border-dashed border-border group-hover:border-primary transition-colors">
+                              <img src={config.logo_symbol_url} alt="Logo Símbolo" className="max-w-full max-h-full object-contain p-2" />
+                            </div>
+                          ) : (
+                            <div className="w-full h-24 rounded-xl bg-gradient-to-br from-muted to-muted/50 flex items-center justify-center border-2 border-dashed border-border">
+                              <div className="text-center">
+                                <div className="w-8 h-8 border-2 border-dashed border-muted-foreground/50 rounded-lg mx-auto mb-1" />
+                                <span className="text-xs text-muted-foreground">Símbolo</span>
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                        <Label htmlFor="logo-symbol-upload" className="cursor-pointer block">
+                          <div className="w-full inline-flex items-center justify-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors text-sm">
+                            <Upload className="h-4 w-4" />
+                            {config.logo_symbol_url ? 'Alterar' : 'Enviar'}
+                          </div>
+                          <Input
+                            id="logo-symbol-upload"
+                            type="file"
+                            accept="image/*"
+                            className="hidden"
+                            onChange={(e) => e.target.files?.[0] && handleImageUpload(e.target.files[0], 'logo_symbol_url')}
+                          />
+                        </Label>
                       </div>
                     </div>
+                    <p className="text-xs text-muted-foreground mt-4">PNG, JPG ou SVG. Máx 2MB. O sistema escolherá automaticamente a versão mais adequada para cada contexto.</p>
                   </CardContent>
                 </Card>
 

@@ -190,6 +190,41 @@ const PropertyFormPage = () => {
   const [activeStep, setActiveStep] = useState(0);
   const [isImprovingDescription, setIsImprovingDescription] = useState(false);
   const [isImprovingTitle, setIsImprovingTitle] = useState(false);
+  const [isLookingUpCep, setIsLookingUpCep] = useState(false);
+
+  // CEP lookup function
+  const handleCepLookup = useCallback(async (cep: string) => {
+    const cleanCep = cep.replace(/\D/g, '');
+    if (cleanCep.length !== 8) return;
+
+    setIsLookingUpCep(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('lookup-cep', {
+        body: { cep: cleanCep }
+      });
+
+      if (error) throw error;
+
+      if (data?.success && data?.address) {
+        setFormData(prev => ({
+          ...prev,
+          address_street: data.address.street || prev.address_street,
+          address_neighborhood: data.address.neighborhood || prev.address_neighborhood,
+          address_city: data.address.city || prev.address_city,
+          address_state: data.address.state || prev.address_state,
+          address_zipcode: data.address.zipcode || prev.address_zipcode,
+        }));
+        toast.success('Endereço preenchido automaticamente!');
+      }
+    } catch (err: any) {
+      console.error('CEP lookup error:', err);
+      if (err.message?.includes('not found') || err.message?.includes('404')) {
+        toast.error('CEP não encontrado');
+      }
+    } finally {
+      setIsLookingUpCep(false);
+    }
+  }, []);
 
   // DnD sensors
   const sensors = useSensors(
@@ -1025,13 +1060,29 @@ const PropertyFormPage = () => {
                       </div>
                       <div className="space-y-2">
                         <Label htmlFor="address_zipcode">CEP</Label>
-                        <Input
-                          id="address_zipcode"
-                          value={formData.address_zipcode}
-                          onChange={(e) => setFormData({ ...formData, address_zipcode: e.target.value })}
-                          placeholder="00000-000"
-                          className="h-12"
-                        />
+                        <div className="relative">
+                          <Input
+                            id="address_zipcode"
+                            value={formData.address_zipcode}
+                            onChange={(e) => {
+                              const value = e.target.value;
+                              setFormData({ ...formData, address_zipcode: value });
+                              // Auto-lookup when user types a complete CEP
+                              const cleanCep = value.replace(/\D/g, '');
+                              if (cleanCep.length === 8) {
+                                handleCepLookup(value);
+                              }
+                            }}
+                            onBlur={(e) => handleCepLookup(e.target.value)}
+                            placeholder="00000-000"
+                            className="h-12 pr-10"
+                          />
+                          {isLookingUpCep && (
+                            <div className="absolute right-3 top-1/2 -translate-y-1/2">
+                              <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
+                            </div>
+                          )}
+                        </div>
                       </div>
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

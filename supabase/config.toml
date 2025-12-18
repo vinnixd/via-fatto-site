@@ -35,3 +35,6 @@ verify_jwt = false
 
 [functions.generate-seo]
 verify_jwt = true
+
+[functions.batch-generate-seo]
+verify_jwt = true

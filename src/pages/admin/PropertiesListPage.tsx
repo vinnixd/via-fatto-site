@@ -36,7 +36,8 @@ import {
   Check,
   CheckSquare,
   Square,
-  AlertTriangle
+  AlertTriangle,
+  Sparkles
 } from 'lucide-react';
 import { toast } from 'sonner';
 import {
@@ -292,6 +293,7 @@ const PropertiesListPage = () => {
   const [bulkDeleteConfirmText, setBulkDeleteConfirmText] = useState('');
   const [bulkDeleting, setBulkDeleting] = useState(false);
   const [savingOrder, setSavingOrder] = useState(false);
+  const [generatingSeo, setGeneratingSeo] = useState(false);
   const itemsPerPage = 24;
 
   const sensors = useSensors(
@@ -427,6 +429,26 @@ const PropertiesListPage = () => {
       toast.error('Erro ao salvar ordem');
     } finally {
       setSavingOrder(false);
+    }
+  };
+
+  const handleBatchGenerateSeo = async () => {
+    setGeneratingSeo(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('batch-generate-seo');
+      
+      if (error) throw error;
+      
+      if (data.processed === 0) {
+        toast.info(data.message || 'Todos os imóveis já possuem SEO configurado');
+      } else {
+        toast.success(`SEO gerado para ${data.processed} imóveis${data.errors > 0 ? ` (${data.errors} erros)` : ''}`);
+      }
+    } catch (error) {
+      console.error('Error generating batch SEO:', error);
+      toast.error('Erro ao gerar SEO em lote');
+    } finally {
+      setGeneratingSeo(false);
     }
   };
 
@@ -749,6 +771,19 @@ const PropertiesListPage = () => {
                     >
                       <ArrowUpDown className="h-4 w-4" />
                       <span className="hidden sm:inline">Ordenar</span>
+                    </Button>
+                    <Button
+                      variant="outline"
+                      onClick={handleBatchGenerateSeo}
+                      disabled={generatingSeo}
+                      className="gap-2"
+                    >
+                      {generatingSeo ? (
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                      ) : (
+                        <Sparkles className="h-4 w-4" />
+                      )}
+                      <span className="hidden sm:inline">Gerar SEO</span>
                     </Button>
                     <Button variant="outline" asChild className="gap-2">
                       <Link to="/admin/importar">

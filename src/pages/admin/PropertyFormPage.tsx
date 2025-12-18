@@ -37,7 +37,9 @@ import {
   Image as ImageIcon,
   Sparkles,
   Check,
-  GripVertical
+  GripVertical,
+  RefreshCw,
+  Settings2
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import type { Database } from '@/integrations/supabase/types';
@@ -639,184 +641,176 @@ const PropertyFormPage = () => {
                       Dados principais do imóvel
                     </CardDescription>
                   </CardHeader>
-                  <CardContent className="space-y-6">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                      <div className="md:col-span-2 space-y-2">
-                        <Label htmlFor="title">Título do Anúncio *</Label>
-                        <Input
-                          id="title"
-                          value={formData.title}
-                          onChange={(e) => handleTitleChange(e.target.value)}
-                          placeholder="Ex: Casa espaçosa com 3 quartos no Centro"
-                          className="h-12"
-                          required
-                        />
+                  <CardContent className="space-y-8">
+                    {/* Identificação */}
+                    <div className="space-y-4">
+                      <div className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
+                        <FileText className="h-4 w-4" />
+                        Identificação
                       </div>
-                      <div className="space-y-2">
-                        <Label htmlFor="slug">URL Amigável</Label>
-                        <Input
-                          id="slug"
-                          value={formData.slug}
-                          onChange={(e) => setFormData({ ...formData, slug: e.target.value })}
-                          placeholder="casa-3-quartos-centro"
-                          className="font-mono text-sm"
-                        />
-                        <p className="text-xs text-muted-foreground">
-                          Gerado automaticamente a partir do título
-                        </p>
-                      </div>
-                      <div className="space-y-2">
-                        <Label htmlFor="reference">Código de Referência</Label>
-                        <div className="flex gap-2">
+                      <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
+                        <div className="lg:col-span-6 space-y-2">
+                          <Label htmlFor="title">Título do Anúncio *</Label>
                           <Input
-                            id="reference"
-                            value={formData.reference}
-                            onChange={(e) => setFormData({ ...formData, reference: e.target.value })}
-                            placeholder="001234"
+                            id="title"
+                            value={formData.title}
+                            onChange={(e) => handleTitleChange(e.target.value)}
+                            placeholder="Ex: Casa espaçosa com 3 quartos no Centro"
+                            className="h-11"
+                            required
                           />
-                          <Button
-                            type="button"
-                            variant="outline"
-                            size="sm"
-                            onClick={() => {
-                              const randomNum = Math.floor(100000 + Math.random() * 900000);
-                              setFormData({ ...formData, reference: String(randomNum) });
-                            }}
-                            className="shrink-0"
-                          >
-                            Gerar
-                          </Button>
                         </div>
-                      </div>
-                    </div>
-
-                    <Separator />
-
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                      <div className="space-y-2">
-                        <Label className="flex items-center gap-2">
-                          <DollarSign className="h-4 w-4 text-muted-foreground" />
-                          Preço (R$) *
-                        </Label>
-                        <Input
-                          type="number"
-                          value={formData.price}
-                          onChange={(e) => setFormData({ ...formData, price: Number(e.target.value) })}
-                          placeholder="0"
-                          className="h-12 text-lg font-semibold"
-                          required
-                        />
-                      </div>
-                      <div className="space-y-2">
-                        <Label>Status *</Label>
-                        <Select value={formData.status} onValueChange={(v: PropertyStatus) => setFormData({ ...formData, status: v })}>
-                          <SelectTrigger className="h-12">
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="venda">À Venda</SelectItem>
-                            <SelectItem value="aluguel">Aluguel</SelectItem>
-                            <SelectItem value="vendido">Vendido</SelectItem>
-                            <SelectItem value="alugado">Alugado</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </div>
-                      <div className="space-y-2">
-                        <Label>Tipo de Imóvel *</Label>
-                        <Select value={formData.type} onValueChange={(v: PropertyType) => setFormData({ ...formData, type: v })}>
-                          <SelectTrigger className="h-12">
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="casa">Casa</SelectItem>
-                            <SelectItem value="apartamento">Apartamento</SelectItem>
-                            <SelectItem value="terreno">Terreno</SelectItem>
-                            <SelectItem value="comercial">Comercial</SelectItem>
-                            <SelectItem value="rural">Rural</SelectItem>
-                            <SelectItem value="cobertura">Cobertura</SelectItem>
-                            <SelectItem value="flat">Flat</SelectItem>
-                            <SelectItem value="galpao">Galpão</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </div>
-                    </div>
-
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                      <div className="space-y-2">
-                        <Label className="flex items-center gap-2">
-                          <DollarSign className="h-4 w-4 text-muted-foreground" />
-                          Valor do Condomínio (R$)
-                        </Label>
-                        <div className="flex gap-3 items-center">
+                        <div className="lg:col-span-4 space-y-2">
+                          <Label htmlFor="slug">URL Amigável</Label>
                           <Input
-                            type="number"
-                            value={formData.condo_exempt ? 0 : formData.condo_fee}
-                            onChange={(e) => setFormData({ ...formData, condo_fee: Number(e.target.value) })}
-                            placeholder="0"
-                            className="h-12"
-                            disabled={formData.condo_exempt}
+                            id="slug"
+                            value={formData.slug}
+                            onChange={(e) => setFormData({ ...formData, slug: e.target.value })}
+                            placeholder="casa-3-quartos-centro"
+                            className="h-11 font-mono text-sm"
                           />
-                          <div className="flex items-center gap-2 whitespace-nowrap">
-                            <Switch
-                              id="condo_exempt"
-                              checked={formData.condo_exempt}
-                              onCheckedChange={(checked) => setFormData({ ...formData, condo_exempt: checked, condo_fee: checked ? 0 : formData.condo_fee })}
+                        </div>
+                        <div className="lg:col-span-2 space-y-2">
+                          <Label htmlFor="reference">Código</Label>
+                          <div className="flex gap-1">
+                            <Input
+                              id="reference"
+                              value={formData.reference}
+                              onChange={(e) => setFormData({ ...formData, reference: e.target.value })}
+                              placeholder="001234"
+                              className="h-11"
                             />
-                            <Label htmlFor="condo_exempt" className="text-sm cursor-pointer">Isento</Label>
+                            <Button
+                              type="button"
+                              variant="outline"
+                              size="icon"
+                              className="h-11 w-11 shrink-0"
+                              onClick={() => {
+                                const randomNum = Math.floor(100000 + Math.random() * 900000);
+                                setFormData({ ...formData, reference: String(randomNum) });
+                              }}
+                            >
+                              <RefreshCw className="h-4 w-4" />
+                            </Button>
                           </div>
                         </div>
                       </div>
-                      <div className="space-y-2">
-                        <Label className="flex items-center gap-2">
-                          <DollarSign className="h-4 w-4 text-muted-foreground" />
-                          Valor do IPTU (R$/ano)
-                        </Label>
-                        <Input
-                          type="number"
-                          value={formData.iptu}
-                          onChange={(e) => setFormData({ ...formData, iptu: Number(e.target.value) })}
-                          placeholder="0"
-                          className="h-12"
-                        />
+                    </div>
+
+                    {/* Classificação */}
+                    <div className="space-y-4">
+                      <div className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
+                        <Home className="h-4 w-4" />
+                        Classificação
+                      </div>
+                      <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                        <div className="space-y-2">
+                          <Label>Status *</Label>
+                          <Select value={formData.status} onValueChange={(v: PropertyStatus) => setFormData({ ...formData, status: v })}>
+                            <SelectTrigger className="h-11">
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="venda">À Venda</SelectItem>
+                              <SelectItem value="aluguel">Aluguel</SelectItem>
+                              <SelectItem value="vendido">Vendido</SelectItem>
+                              <SelectItem value="alugado">Alugado</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        <div className="space-y-2">
+                          <Label>Tipo de Imóvel *</Label>
+                          <Select value={formData.type} onValueChange={(v: PropertyType) => setFormData({ ...formData, type: v })}>
+                            <SelectTrigger className="h-11">
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="casa">Casa</SelectItem>
+                              <SelectItem value="apartamento">Apartamento</SelectItem>
+                              <SelectItem value="terreno">Terreno</SelectItem>
+                              <SelectItem value="comercial">Comercial</SelectItem>
+                              <SelectItem value="rural">Rural</SelectItem>
+                              <SelectItem value="cobertura">Cobertura</SelectItem>
+                              <SelectItem value="flat">Flat</SelectItem>
+                              <SelectItem value="galpao">Galpão</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        <div className="space-y-2">
+                          <Label>Categoria</Label>
+                          <Select value={formData.category_id} onValueChange={(v) => setFormData({ ...formData, category_id: v })}>
+                            <SelectTrigger className="h-11">
+                              <SelectValue placeholder="Selecione" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {categories.map(cat => (
+                                <SelectItem key={cat.id} value={cat.id}>{cat.name}</SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </div>
                       </div>
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                      <div className="space-y-2">
-                        <Label>Categoria</Label>
-                        <Select value={formData.category_id} onValueChange={(v) => setFormData({ ...formData, category_id: v })}>
-                          <SelectTrigger className="h-12">
-                            <SelectValue placeholder="Selecione uma categoria" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {categories.map(cat => (
-                              <SelectItem key={cat.id} value={cat.id}>{cat.name}</SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
+                    {/* Valores */}
+                    <div className="space-y-4">
+                      <div className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
+                        <DollarSign className="h-4 w-4" />
+                        Valores
                       </div>
-                      <div className="space-y-2">
-                        <Label>Perfil</Label>
-                        <Select value={formData.profile} onValueChange={(v: PropertyProfile) => setFormData({ ...formData, profile: v })}>
-                          <SelectTrigger className="h-12">
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="residencial">Residencial</SelectItem>
-                            <SelectItem value="comercial">Comercial</SelectItem>
-                            <SelectItem value="industrial">Industrial</SelectItem>
-                            <SelectItem value="misto">Misto</SelectItem>
-                          </SelectContent>
-                        </Select>
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div className="space-y-2">
+                          <Label>Preço (R$) *</Label>
+                          <Input
+                            type="number"
+                            value={formData.price}
+                            onChange={(e) => setFormData({ ...formData, price: Number(e.target.value) })}
+                            placeholder="0"
+                            className="h-11 text-lg font-semibold"
+                            required
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <Label>Condomínio (R$)</Label>
+                          <div className="flex gap-2 items-center">
+                            <Input
+                              type="number"
+                              value={formData.condo_exempt ? 0 : formData.condo_fee}
+                              onChange={(e) => setFormData({ ...formData, condo_fee: Number(e.target.value) })}
+                              placeholder="0"
+                              className="h-11"
+                              disabled={formData.condo_exempt}
+                            />
+                            <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-muted/50 shrink-0">
+                              <Switch
+                                id="condo_exempt"
+                                checked={formData.condo_exempt}
+                                onCheckedChange={(checked) => setFormData({ ...formData, condo_exempt: checked, condo_fee: checked ? 0 : formData.condo_fee })}
+                              />
+                              <Label htmlFor="condo_exempt" className="text-xs cursor-pointer whitespace-nowrap">Isento</Label>
+                            </div>
+                          </div>
+                        </div>
+                        <div className="space-y-2">
+                          <Label>IPTU (R$/ano)</Label>
+                          <Input
+                            type="number"
+                            value={formData.iptu}
+                            onChange={(e) => setFormData({ ...formData, iptu: Number(e.target.value) })}
+                            placeholder="0"
+                            className="h-11"
+                          />
+                        </div>
                       </div>
                     </div>
 
-                    <div className="space-y-2">
+                    {/* Descrição */}
+                    <div className="space-y-4">
                       <div className="flex items-center justify-between">
-                        <Label htmlFor="description" className="flex items-center gap-2">
-                          <FileText className="h-4 w-4 text-muted-foreground" />
+                        <div className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
+                          <FileText className="h-4 w-4" />
                           Descrição
-                        </Label>
+                        </div>
                         <Button
                           type="button"
                           variant="outline"
@@ -854,7 +848,7 @@ const PropertyFormPage = () => {
                               setIsImprovingDescription(false);
                             }
                           }}
-                          disabled={isImprovingDescription}
+                          disabled={isImprovingDescription || !formData.description}
                           className="gap-2"
                         >
                           {isImprovingDescription ? (
@@ -871,58 +865,68 @@ const PropertyFormPage = () => {
                         </Button>
                       </div>
                       <Textarea
-                        id="description"
                         value={formData.description}
                         onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                         placeholder="Descreva o imóvel com detalhes..."
-                        rows={8}
+                        rows={6}
                         className="resize-none"
                       />
-                      <p className="text-xs text-muted-foreground">
-                        Use o botão "Melhorar com IA" para gerar uma descrição otimizada para SEO e conversão.
-                      </p>
                     </div>
 
-                    <Separator />
-
-                    <div className="flex flex-wrap gap-6">
-                      <div className="flex items-center gap-3 p-4 rounded-lg bg-primary/10 border border-primary/20 hover:bg-primary/20 transition-colors">
-                        <Switch
-                          checked={formData.active}
-                          onCheckedChange={(v) => setFormData({ ...formData, active: v })}
-                        />
-                        <div>
-                          <Label className="flex items-center gap-2 cursor-pointer">
-                            <Check className="h-4 w-4 text-primary" />
-                            Imóvel Ativo
-                          </Label>
-                          <p className="text-xs text-muted-foreground">Visível no site público</p>
-                        </div>
+                    {/* Opções */}
+                    <div className="space-y-4">
+                      <div className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
+                        <Settings2 className="h-4 w-4" />
+                        Opções de Exibição
                       </div>
-                      <div className="flex items-center gap-3 p-4 rounded-lg bg-muted/50 hover:bg-muted transition-colors">
-                        <Switch
-                          checked={formData.featured}
-                          onCheckedChange={(v) => setFormData({ ...formData, featured: v })}
-                        />
-                        <div>
-                          <Label className="flex items-center gap-2 cursor-pointer">
-                            <Star className="h-4 w-4 text-yellow-500" />
-                            Imóvel em Destaque
-                          </Label>
-                          <p className="text-xs text-muted-foreground">Aparece na página inicial</p>
+                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                        <div 
+                          className={`flex items-center gap-3 p-4 rounded-xl border-2 transition-all cursor-pointer ${formData.active ? 'border-primary bg-primary/5' : 'border-border bg-muted/30 hover:bg-muted/50'}`}
+                          onClick={() => setFormData({ ...formData, active: !formData.active })}
+                        >
+                          <Switch
+                            checked={formData.active}
+                            onCheckedChange={(v) => setFormData({ ...formData, active: v })}
+                          />
+                          <div>
+                            <p className="font-medium text-sm flex items-center gap-1.5">
+                              <Check className="h-3.5 w-3.5 text-primary" />
+                              Ativo
+                            </p>
+                            <p className="text-xs text-muted-foreground">Visível no site</p>
+                          </div>
                         </div>
-                      </div>
-                      <div className="flex items-center gap-3 p-4 rounded-lg bg-muted/50 hover:bg-muted transition-colors">
-                        <Switch
-                          checked={formData.financing}
-                          onCheckedChange={(v) => setFormData({ ...formData, financing: v })}
-                        />
-                        <div>
-                          <Label className="flex items-center gap-2 cursor-pointer">
-                            <DollarSign className="h-4 w-4 text-green-500" />
-                            Aceita Financiamento
-                          </Label>
-                          <p className="text-xs text-muted-foreground">Mostra selo de financiamento</p>
+                        <div 
+                          className={`flex items-center gap-3 p-4 rounded-xl border-2 transition-all cursor-pointer ${formData.featured ? 'border-yellow-500 bg-yellow-500/5' : 'border-border bg-muted/30 hover:bg-muted/50'}`}
+                          onClick={() => setFormData({ ...formData, featured: !formData.featured })}
+                        >
+                          <Switch
+                            checked={formData.featured}
+                            onCheckedChange={(v) => setFormData({ ...formData, featured: v })}
+                          />
+                          <div>
+                            <p className="font-medium text-sm flex items-center gap-1.5">
+                              <Star className="h-3.5 w-3.5 text-yellow-500" />
+                              Destaque
+                            </p>
+                            <p className="text-xs text-muted-foreground">Página inicial</p>
+                          </div>
+                        </div>
+                        <div 
+                          className={`flex items-center gap-3 p-4 rounded-xl border-2 transition-all cursor-pointer ${formData.financing ? 'border-green-500 bg-green-500/5' : 'border-border bg-muted/30 hover:bg-muted/50'}`}
+                          onClick={() => setFormData({ ...formData, financing: !formData.financing })}
+                        >
+                          <Switch
+                            checked={formData.financing}
+                            onCheckedChange={(v) => setFormData({ ...formData, financing: v })}
+                          />
+                          <div>
+                            <p className="font-medium text-sm flex items-center gap-1.5">
+                              <DollarSign className="h-3.5 w-3.5 text-green-500" />
+                              Financiamento
+                            </p>
+                            <p className="text-xs text-muted-foreground">Aceita financiar</p>
+                          </div>
                         </div>
                       </div>
                     </div>

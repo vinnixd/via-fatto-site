@@ -29,3 +29,9 @@ verify_jwt = true
 
 [functions.portal-test]
 verify_jwt = true
+
+[functions.generate-sitemap]
+verify_jwt = false
+
+[functions.generate-seo]
+verify_jwt = true

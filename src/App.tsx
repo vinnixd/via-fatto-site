@@ -13,6 +13,7 @@ import PropertiesPage from "./pages/PropertiesPage";
 import AboutPage from "./pages/AboutPage";
 import ContactPage from "./pages/ContactPage";
 import FavoritesPage from "./pages/FavoritesPage";
+import LocationPage from "./pages/LocationPage";
 import NotFound from "./pages/NotFound";
 
 // Admin Pages
@@ -55,6 +56,7 @@ const App = () => (
             {/* Public Routes */}
             <Route path="/" element={<Index />} />
             <Route path="/imoveis" element={<PropertiesPage />} />
+            <Route path="/imoveis/localizacao" element={<LocationPage />} />
             <Route path="/imovel/:slug" element={<PropertyPage />} />
             <Route path="/sobre" element={<AboutPage />} />
             <Route path="/contato" element={<ContactPage />} />

@@ -86,7 +86,7 @@ const UsersPage = () => {
   const [inviteData, setInviteData] = useState({
     email: '',
     name: '',
-    role: 'corretor' as 'admin' | 'corretor',
+    role: 'corretor' as 'admin' | 'gestor' | 'marketing' | 'corretor',
     expirationDays: 7,
   });
   const [generatedLink, setGeneratedLink] = useState<string | null>(null);
@@ -254,9 +254,11 @@ const UsersPage = () => {
   const getRoleBadge = (role: string) => {
     switch (role) {
       case 'admin':
-        return <Badge className="bg-primary">Admin</Badge>;
+        return <Badge className="bg-primary">Administrador</Badge>;
       case 'gestor':
-        return <Badge className="bg-blue-500">Gestor</Badge>;
+        return <Badge className="bg-blue-500">Gerente</Badge>;
+      case 'marketing':
+        return <Badge className="bg-purple-500">Marketing</Badge>;
       case 'corretor':
         return <Badge variant="secondary">Corretor</Badge>;
       default:
@@ -340,10 +342,10 @@ const UsersPage = () => {
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="invite-role">Papel</Label>
+                    <Label htmlFor="invite-role">Função</Label>
                     <Select
                       value={inviteData.role}
-                      onValueChange={(value: 'admin' | 'corretor') =>
+                      onValueChange={(value: 'admin' | 'gestor' | 'marketing' | 'corretor') =>
                         setInviteData({ ...inviteData, role: value })
                       }
                     >
@@ -352,7 +354,8 @@ const UsersPage = () => {
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="corretor">Corretor</SelectItem>
-                        <SelectItem value="gestor">Gestor</SelectItem>
+                        <SelectItem value="marketing">Marketing</SelectItem>
+                        <SelectItem value="gestor">Gerente</SelectItem>
                         <SelectItem value="admin">Administrador</SelectItem>
                       </SelectContent>
                     </Select>
@@ -439,7 +442,7 @@ const UsersPage = () => {
               <TableRow>
                 <TableHead>Nome</TableHead>
                 <TableHead>Email</TableHead>
-                <TableHead>Papel</TableHead>
+                <TableHead>Função</TableHead>
                 <TableHead>Status</TableHead>
                 <TableHead>Criado em</TableHead>
                 <TableHead className="w-[50px]"></TableHead>
@@ -483,7 +486,7 @@ const UsersPage = () => {
                             }}
                           >
                             <Shield className="h-4 w-4 mr-2" />
-                            Alterar Papel
+                            Alterar Função
                           </DropdownMenuItem>
                           {u.status === 'active' ? (
                             <DropdownMenuItem
@@ -525,7 +528,7 @@ const UsersPage = () => {
               <TableRow>
                 <TableHead>Email</TableHead>
                 <TableHead>Nome</TableHead>
-                <TableHead>Papel</TableHead>
+                <TableHead>Função</TableHead>
                 <TableHead>Expira em</TableHead>
                 <TableHead className="w-[100px]"></TableHead>
               </TableRow>
@@ -587,13 +590,13 @@ const UsersPage = () => {
         <Dialog open={editDialogOpen} onOpenChange={setEditDialogOpen}>
           <DialogContent>
             <DialogHeader>
-              <DialogTitle>Alterar Papel do Usuário</DialogTitle>
+              <DialogTitle>Alterar Função do Usuário</DialogTitle>
               <DialogDescription>
-                Altere o papel de {editingUser?.name || editingUser?.email}
+                Altere a função de {editingUser?.name || editingUser?.email}
               </DialogDescription>
             </DialogHeader>
             <div className="py-4">
-              <Label>Novo Papel</Label>
+              <Label>Nova Função</Label>
               <Select
                 value={editingUser?.role}
                 onValueChange={(value: string) =>
@@ -605,7 +608,8 @@ const UsersPage = () => {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="corretor">Corretor</SelectItem>
-                  <SelectItem value="gestor">Gestor</SelectItem>
+                  <SelectItem value="marketing">Marketing</SelectItem>
+                  <SelectItem value="gestor">Gerente</SelectItem>
                   <SelectItem value="admin">Administrador</SelectItem>
                 </SelectContent>
               </Select>

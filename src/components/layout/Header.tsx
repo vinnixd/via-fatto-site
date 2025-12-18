@@ -33,7 +33,16 @@ const Header = () => {
       <div className="container">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
-          <Link to="/" className="flex-shrink-0">
+          <Link 
+            to="/" 
+            className="flex-shrink-0"
+            onClick={(e) => {
+              if (location.pathname === '/') {
+                e.preventDefault();
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+              }
+            }}
+          >
             {(siteConfig?.logo_horizontal_url || siteConfig?.logo_url) ? (
               <img 
                 src={siteConfig.logo_horizontal_url || siteConfig.logo_url} 

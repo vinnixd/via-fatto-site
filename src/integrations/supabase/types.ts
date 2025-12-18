@@ -553,7 +553,10 @@ export type Database = {
           home_image_position: string | null
           home_image_url: string | null
           id: string
+          logo_horizontal_url: string | null
+          logo_symbol_url: string | null
           logo_url: string | null
+          logo_vertical_url: string | null
           og_image_url: string | null
           phone: string | null
           primary_color: string | null
@@ -586,7 +589,10 @@ export type Database = {
           home_image_position?: string | null
           home_image_url?: string | null
           id?: string
+          logo_horizontal_url?: string | null
+          logo_symbol_url?: string | null
           logo_url?: string | null
+          logo_vertical_url?: string | null
           og_image_url?: string | null
           phone?: string | null
           primary_color?: string | null
@@ -619,7 +625,10 @@ export type Database = {
           home_image_position?: string | null
           home_image_url?: string | null
           id?: string
+          logo_horizontal_url?: string | null
+          logo_symbol_url?: string | null
           logo_url?: string | null
+          logo_vertical_url?: string | null
           og_image_url?: string | null
           phone?: string | null
           primary_color?: string | null

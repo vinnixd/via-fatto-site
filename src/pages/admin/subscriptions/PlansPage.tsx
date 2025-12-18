@@ -99,6 +99,19 @@ const plans: Plan[] = [
 
 const PlansPage = () => {
   const [isAnnual, setIsAnnual] = useState(false);
+  
+  // Plano atual do cliente: Essencial (R$ 79)
+  const currentPlanPrice = 79;
+
+  const getButtonConfig = (planPrice: number) => {
+    if (planPrice === currentPlanPrice) {
+      return { text: 'Plano Atual', disabled: true, variant: 'outline' as const };
+    } else if (planPrice < currentPlanPrice) {
+      return { text: 'Reduzir Plano', disabled: false, variant: 'outline' as const };
+    } else {
+      return { text: 'Subir de plano', disabled: false, variant: 'default' as const };
+    }
+  };
 
   return (
     <SubscriptionsLayout>
@@ -139,6 +152,7 @@ const PlansPage = () => {
           {plans.map((plan) => {
             const Icon = plan.icon;
             const price = isAnnual ? plan.annualPrice : plan.monthlyPrice;
+            const buttonConfig = getButtonConfig(plan.monthlyPrice);
             
             return (
               <Card 
@@ -214,9 +228,10 @@ const PlansPage = () => {
                   <div className="pt-6 space-y-4">
                     <Button 
                       className="w-full" 
-                      variant={plan.highlighted ? "default" : "outline"}
+                      variant={buttonConfig.disabled ? "outline" : (plan.highlighted ? "default" : buttonConfig.variant)}
+                      disabled={buttonConfig.disabled}
                     >
-                      Contratar Plano
+                      {buttonConfig.text}
                     </Button>
                     
                     {!isAnnual && (

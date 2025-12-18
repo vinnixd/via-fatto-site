@@ -346,13 +346,13 @@ const PropertyPage = () => {
                 </div>
               </div>
 
-              {/* Documentation */}
-              <div className="flex items-center space-x-2">
-                <CheckCircle size={20} className="text-success" />
-                <span className="text-sm">
-                  {property.financing ? 'Aceita financiamento' : 'Não aceita financiamento'}
-                </span>
-              </div>
+              {/* Financing - Only show when enabled */}
+              {property.financing && (
+                <div className="flex items-center space-x-2">
+                  <CheckCircle size={20} className="text-success" />
+                  <span className="text-sm">Aceita financiamento</span>
+                </div>
+              )}
 
               {/* Contact */}
               <div className="border border-border rounded-lg p-4">

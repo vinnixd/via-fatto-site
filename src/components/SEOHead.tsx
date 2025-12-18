@@ -45,8 +45,9 @@ export function SEOHead({
     let seoDescription = description;
 
     if (property) {
-      seoTitle = seoTitle || generatePropertyTitle(property);
-      seoDescription = seoDescription || generatePropertyDescription(property);
+      // Prioritize custom SEO fields if available, otherwise generate
+      seoTitle = seoTitle || property.seo_title || generatePropertyTitle(property);
+      seoDescription = seoDescription || property.seo_description || generatePropertyDescription(property);
     }
 
     // Default fallbacks

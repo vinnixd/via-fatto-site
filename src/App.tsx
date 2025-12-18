@@ -33,6 +33,9 @@ import ImportPage from "./pages/admin/ImportPage";
 import PortaisPage from "./pages/admin/PortaisPage";
 import PortalConfigPage from "./pages/admin/PortalConfigPage";
 import UsersPage from "./pages/admin/UsersPage";
+import PaymentsPage from "./pages/admin/subscriptions/PaymentsPage";
+import PlansPage from "./pages/admin/subscriptions/PlansPage";
+import InvoicesPage from "./pages/admin/subscriptions/InvoicesPage";
 
 const queryClient = new QueryClient();
 
@@ -80,6 +83,9 @@ const App = () => (
               <Route path="/admin/portais" element={<PortaisPage />} />
               <Route path="/admin/portais/:portalId" element={<PortalConfigPage />} />
               <Route path="/admin/usuarios" element={<UsersPage />} />
+              <Route path="/admin/assinaturas" element={<PaymentsPage />} />
+              <Route path="/admin/assinaturas/planos" element={<PlansPage />} />
+              <Route path="/admin/assinaturas/faturas" element={<InvoicesPage />} />
 
               <Route path="*" element={<NotFound />} />
             </Routes>

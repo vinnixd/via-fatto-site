@@ -11,6 +11,7 @@ import {
   ChevronLeft,
   ChevronRight,
   LogOut,
+  CreditCard,
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
@@ -28,6 +29,7 @@ const menuItems: MenuItem[] = [
   { icon: Palette, label: 'Designer', path: '/admin/designer' },
   { icon: Building2, label: 'Imóveis', path: '/admin/imoveis' },
   { icon: Globe, label: 'Portais', path: '/admin/portais' },
+  { icon: CreditCard, label: 'Assinaturas', path: '/admin/assinaturas' },
   { icon: MessageSquare, label: 'Mensagens', path: '/admin/mensagens' },
   { icon: Users, label: 'Usuários', path: '/admin/usuarios', roles: ['admin'] },
 ];

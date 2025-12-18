@@ -211,13 +211,19 @@ const PlansPage = () => {
                     })}
                   </div>
 
-                  <div className="pt-6">
+                  <div className="pt-6 space-y-4">
                     <Button 
                       className="w-full" 
                       variant={plan.highlighted ? "default" : "outline"}
                     >
                       Contratar Plano
                     </Button>
+                    
+                    {!isAnnual && (
+                      <p className="text-xs text-center text-muted-foreground">
+                        Contrate o plano anual e ganhe até <span className="font-semibold text-primary">20% de desconto</span>.
+                      </p>
+                    )}
                   </div>
                 </CardContent>
               </Card>

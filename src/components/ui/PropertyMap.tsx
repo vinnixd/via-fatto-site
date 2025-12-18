@@ -38,40 +38,60 @@ const PropertyMap: React.FC<PropertyMapProps> = ({ address, locationType, classN
         setError(null);
 
         // Get Mapbox token from edge function
-        const { data: tokenData, error: tokenError } = await supabase.functions.invoke('get-mapbox-token');
+        let tokenData, tokenError;
+        try {
+          const result = await supabase.functions.invoke('get-mapbox-token');
+          tokenData = result.data;
+          tokenError = result.error;
+        } catch (e) {
+          console.error('Failed to invoke get-mapbox-token:', e);
+          setError('Mapa não disponível');
+          setLoading(false);
+          return;
+        }
         
         if (tokenError || !tokenData?.token) {
-          throw new Error('Token do mapa não configurado');
+          setError('Mapa não disponível');
+          setLoading(false);
+          return;
         }
 
         setMapboxToken(tokenData.token);
 
         // Geocode address
-        const { data: geoData, error: geoError } = await supabase.functions.invoke('geocode-address', {
-          body: { address }
-        });
-
-        if (geoError) {
-          throw new Error('Erro ao buscar localização');
+        let geoData, geoError;
+        try {
+          const result = await supabase.functions.invoke('geocode-address', {
+            body: { address }
+          });
+          geoData = result.data;
+          geoError = result.error;
+        } catch (e) {
+          console.error('Failed to invoke geocode-address:', e);
+          setError('Localização não disponível');
+          setLoading(false);
+          return;
         }
 
-        if (geoData?.success && geoData?.coordinates) {
-          let { lng, lat } = geoData.coordinates;
-          
-          // Add some randomness for approximate location
-          if (locationType === 'approximate') {
-            const offset = 0.005;
-            lng += (Math.random() - 0.5) * offset;
-            lat += (Math.random() - 0.5) * offset;
-          }
-
-          setCoordinates({ lng, lat });
-        } else {
+        if (geoError || !geoData?.success || !geoData?.coordinates) {
           setError('Localização não encontrada');
+          setLoading(false);
+          return;
         }
+
+        let { lng, lat } = geoData.coordinates;
+        
+        // Add some randomness for approximate location
+        if (locationType === 'approximate') {
+          const offset = 0.005;
+          lng += (Math.random() - 0.5) * offset;
+          lat += (Math.random() - 0.5) * offset;
+        }
+
+        setCoordinates({ lng, lat });
       } catch (err: any) {
         console.error('Map error:', err);
-        setError(err.message || 'Erro ao carregar mapa');
+        setError('Mapa indisponível');
       } finally {
         setLoading(false);
       }

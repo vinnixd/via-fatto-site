@@ -1,5 +1,5 @@
 import { useParams, useNavigate, Link } from 'react-router-dom';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { ArrowLeft, Heart, Share2, Printer, MapPin, Bed, Bath, Car, Maximize, CheckCircle, Loader2, X, ChevronLeft, ChevronRight, ZoomIn, ZoomOut, Expand, Grid3X3 } from 'lucide-react';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
@@ -8,6 +8,19 @@ import WhatsAppIcon from '@/components/ui/WhatsAppIcon';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { buildWhatsAppUrl } from '@/lib/utils';
 import PropertyMap from '@/components/ui/PropertyMap';
+import SEOHead from '@/components/SEOHead';
+import Breadcrumbs from '@/components/Breadcrumbs';
+
+const propertyTypeLabels: Record<string, string> = {
+  casa: 'Casa',
+  apartamento: 'Apartamento',
+  terreno: 'Terreno',
+  comercial: 'Imóvel Comercial',
+  rural: 'Imóvel Rural',
+  cobertura: 'Cobertura',
+  flat: 'Flat',
+  galpao: 'Galpão',
+};
 
 const PropertyPage = () => {
   const { slug } = useParams<{ slug: string }>();
@@ -100,12 +113,60 @@ const PropertyPage = () => {
     }
   };
 
+  // Generate breadcrumb data
+  const breadcrumbItems = useMemo(() => {
+    const baseUrl = window.location.origin;
+    const items = [
+      { name: 'Imóveis', url: `${baseUrl}/imoveis` },
+    ];
+    
+    if (property.address_city) {
+      items.push({ 
+        name: property.address_city, 
+        url: `${baseUrl}/imoveis?city=${encodeURIComponent(property.address_city)}` 
+      });
+    }
+    
+    items.push({ name: property.title, url: window.location.href });
+    
+    return items;
+  }, [property]);
+
+  const breadcrumbsUI = useMemo(() => {
+    const items: { label: string; href?: string }[] = [
+      { label: 'Imóveis', href: '/imoveis' },
+    ];
+    
+    if (property.address_city) {
+      items.push({ 
+        label: property.address_city, 
+        href: `/imoveis?city=${encodeURIComponent(property.address_city)}` 
+      });
+    }
+    
+    const typeLabel = propertyTypeLabels[property.type] || property.type;
+    items.push({ label: `${typeLabel} em ${property.address_neighborhood || property.address_city}` });
+    
+    return items;
+  }, [property]);
+
   return (
     <div className="min-h-screen bg-background">
+      {/* SEO Head */}
+      <SEOHead 
+        property={property}
+        siteConfig={siteConfig}
+        breadcrumbs={breadcrumbItems}
+        ogType="product"
+      />
+      
       <Header />
       
       <main className="py-8">
         <div className="container">
+          {/* Breadcrumbs */}
+          <Breadcrumbs items={breadcrumbsUI} className="mb-4" />
+          
           {/* Back Button */}
           <button
             onClick={() => navigate(-1)}

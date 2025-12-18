@@ -1,5 +1,8 @@
 project_id = "lwxrneoeoqzlekusqgml"
 
+[functions.lookup-cep]
+verify_jwt = false
+
 [functions.import-properties-csv]
 verify_jwt = true
 

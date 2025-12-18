@@ -21,9 +21,9 @@ const Footer = () => {
             {/* Logo e Descrição */}
             <div className="lg:col-span-2">
               <div className="mb-4">
-                {siteConfig?.logo_url ? (
+                {(siteConfig?.logo_horizontal_url || siteConfig?.logo_url) ? (
                   <img 
-                    src={siteConfig.logo_url} 
+                    src={siteConfig.logo_horizontal_url || siteConfig.logo_url} 
                     alt="Via Fatto Imóveis" 
                     className="h-14 w-auto object-contain brightness-0 invert"
                   />

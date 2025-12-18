@@ -34,9 +34,9 @@ const Header = () => {
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <Link to="/" className="flex-shrink-0">
-            {siteConfig?.logo_url ? (
+            {(siteConfig?.logo_horizontal_url || siteConfig?.logo_url) ? (
               <img 
-                src={siteConfig.logo_url} 
+                src={siteConfig.logo_horizontal_url || siteConfig.logo_url} 
                 alt="Logo" 
                 className="h-12 max-w-[200px] w-auto object-contain"
               />

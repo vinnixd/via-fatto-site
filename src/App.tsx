@@ -30,7 +30,8 @@ import ProfilePage from "./pages/admin/ProfilePage";
 import SettingsPage from "./pages/admin/SettingsPage";
 import FavoritesListPage from "./pages/admin/FavoritesListPage";
 import MessagesPage from "./pages/admin/MessagesPage";
-import ImportPage from "./pages/admin/ImportPage";
+import ExportPage from "./pages/admin/data/ExportPage";
+import ImportDataPage from "./pages/admin/data/ImportPage";
 import PortaisPage from "./pages/admin/PortaisPage";
 import PortalConfigPage from "./pages/admin/PortalConfigPage";
 import UsersPage from "./pages/admin/UsersPage";
@@ -82,7 +83,8 @@ const App = () => (
               <Route path="/admin/configuracoes" element={<SettingsPage />} />
               <Route path="/admin/favoritos" element={<FavoritesListPage />} />
               <Route path="/admin/mensagens" element={<MessagesPage />} />
-              <Route path="/admin/importar" element={<ImportPage />} />
+              <Route path="/admin/dados" element={<ExportPage />} />
+              <Route path="/admin/dados/importar" element={<ImportDataPage />} />
               <Route path="/admin/portais" element={<PortaisPage />} />
               <Route path="/admin/portais/:portalId" element={<PortalConfigPage />} />
               <Route path="/admin/usuarios" element={<UsersPage />} />

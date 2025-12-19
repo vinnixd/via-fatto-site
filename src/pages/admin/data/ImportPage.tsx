@@ -1,7 +1,6 @@
 import { useState, useRef } from "react";
-import AdminLayout from "@/components/admin/AdminLayout";
+import DataLayout from "./DataLayout";
 import AdminHeader from "@/components/admin/AdminHeader";
-import ImportProgressBar from "@/components/admin/ImportProgressBar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
@@ -50,7 +49,7 @@ const ImportPage = () => {
         toast.error("Por favor, selecione um arquivo CSV");
         return;
       }
-      if (selectedFile.size > 50 * 1024 * 1024) { // 50MB limit
+      if (selectedFile.size > 50 * 1024 * 1024) {
         toast.error("Arquivo muito grande. Limite máximo: 50MB");
         return;
       }
@@ -97,7 +96,6 @@ const ImportPage = () => {
         throw new Error(data.error || 'Erro ao importar imóveis');
       }
 
-      // Check if it's a background processing response
       if (data.success && data.jobId) {
         setResult({
           total_linhas: data.totalRows,
@@ -139,7 +137,7 @@ const ImportPage = () => {
   };
 
   return (
-    <AdminLayout>
+    <DataLayout>
       <AdminHeader 
         title="Importar Imóveis (CSV)" 
         subtitle="Importe imóveis em massa a partir de um arquivo CSV exportado do WordPress"
@@ -399,7 +397,7 @@ const ImportPage = () => {
                 </Alert>
               )}
 
-              {/* Problem Properties (imported but with missing data) */}
+              {/* Problem Properties */}
               {result.problemProperties && result.problemProperties.length > 0 && (
                 <div className="border border-yellow-500/30 rounded-lg overflow-hidden">
                   <div className="bg-yellow-500/10 px-4 py-2 font-medium text-sm flex items-center gap-2">
@@ -430,23 +428,22 @@ const ImportPage = () => {
                 </div>
               )}
 
-              {/* Errors list */}
+              {/* Error List */}
               {result.erros.length > 0 && (
                 <div className="border border-destructive/30 rounded-lg overflow-hidden">
-                  <div className="bg-destructive/10 px-4 py-2 font-medium text-sm flex items-center gap-2">
-                    <XCircle className="h-4 w-4 text-destructive" />
+                  <div className="bg-destructive/10 px-4 py-2 font-medium text-sm">
                     Erros encontrados ({result.erros.length})
                   </div>
                   <div className="divide-y max-h-64 overflow-y-auto">
                     {result.erros.map((erro, index) => (
                       <div key={index} className="px-4 py-3 text-sm">
                         <div className="flex items-start gap-2">
-                          <Badge variant="outline" className="shrink-0">
+                          <Badge variant="destructive" className="text-xs">
                             Linha {erro.linha}
                           </Badge>
-                          <div>
-                            <p className="font-medium">{erro.titulo}</p>
-                            <p className="text-muted-foreground">{erro.motivo}</p>
+                          <div className="flex-1 min-w-0">
+                            <p className="font-medium truncate">{erro.titulo}</p>
+                            <p className="text-muted-foreground text-xs">{erro.motivo}</p>
                           </div>
                         </div>
                       </div>
@@ -455,12 +452,12 @@ const ImportPage = () => {
                 </div>
               )}
 
-              {/* Action buttons */}
-              <div className="flex gap-3">
+              {/* Actions */}
+              <div className="flex gap-3 pt-4">
                 <Button variant="outline" onClick={resetForm}>
                   Importar outro arquivo
                 </Button>
-                <Button asChild>
+                <Button variant="admin" asChild>
                   <Link to="/admin/imoveis">Ver imóveis</Link>
                 </Button>
               </div>
@@ -468,7 +465,7 @@ const ImportPage = () => {
           </Card>
         )}
       </div>
-    </AdminLayout>
+    </DataLayout>
   );
 };
 

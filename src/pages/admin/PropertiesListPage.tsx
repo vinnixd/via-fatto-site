@@ -796,9 +796,9 @@ const PropertiesListPage = () => {
                       <span className="hidden sm:inline">Gerar SEO</span>
                     </Button>
                     <Button variant="outline" asChild className="gap-2">
-                      <Link to="/admin/importar">
+                      <Link to="/admin/dados">
                         <Upload className="h-4 w-4" />
-                        <span className="hidden sm:inline">Importar CSV</span>
+                        <span className="hidden sm:inline">Exportar e Importar</span>
                       </Link>
                     </Button>
                     <Button asChild className="gap-2 shadow-md">

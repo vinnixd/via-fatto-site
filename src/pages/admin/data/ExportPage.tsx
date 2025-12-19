@@ -123,18 +123,18 @@ const ExportPage = () => {
                      property.status === 'alugado' ? 'Alugado' : 'Venda',
           Perfil: property.profile,
           
-          // Price
-          Preço: property.price || '',
-          Condomínio: property.condo_fee || '',
+          // Price - usar ?? para preservar zeros válidos
+          Preço: property.price ?? 0,
+          Condomínio: property.condo_fee ?? 0,
           'Condomínio Isento': property.condo_exempt ? 'Sim' : 'Não',
-          IPTU: property.iptu || '',
+          IPTU: property.iptu ?? 0,
           
-          // Specifications
-          Quartos: property.bedrooms || 0,
-          Suítes: property.suites || 0,
-          Banheiros: property.bathrooms || 0,
-          Vagas: property.garages || 0,
-          'Área Total': property.area || 0,
+          // Specifications - usar ?? para preservar zeros
+          Quartos: property.bedrooms ?? 0,
+          Suítes: property.suites ?? 0,
+          Banheiros: property.bathrooms ?? 0,
+          Vagas: property.garages ?? 0,
+          'Área Total': property.area ?? 0,
           'Área Construída': property.built_area || '',
           
           // Features

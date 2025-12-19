@@ -6,7 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
-import { Upload, FileSpreadsheet, CheckCircle2, XCircle, AlertTriangle, Download, Loader2, Info, DollarSign, FileText, ListChecks, FileDown } from "lucide-react";
+import { Upload, FileSpreadsheet, CheckCircle2, XCircle, AlertTriangle, Download, Loader2, Info, DollarSign, FileText, ListChecks, FileDown, Search } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { Link } from "react-router-dom";
@@ -35,10 +35,36 @@ interface ImportResult {
   problemProperties?: ProblemProperty[];
 }
 
+interface ValidationIssue {
+  linha: number;
+  titulo: string;
+  problemas: string[];
+}
+
+interface ValidationResult {
+  totalLinhas: number;
+  linhasValidas: number;
+  linhasComProblemas: number;
+  colunasFaltando: string[];
+  issues: ValidationIssue[];
+  resumo: {
+    semTitulo: number;
+    semPermalink: number;
+    precoInvalido: number;
+    semCidade: number;
+    numerosInvalidos: number;
+  };
+}
+
+const REQUIRED_COLUMNS = ['Title', 'Permalink'];
+const RECOMMENDED_COLUMNS = ['Content', 'Image URL', 'Estado e Cidade', 'Tipo do Imóvel', 'Finalidade', 'Preço'];
+
 const ImportPage = () => {
   const [file, setFile] = useState<File | null>(null);
   const [importing, setImporting] = useState(false);
+  const [validating, setValidating] = useState(false);
   const [result, setResult] = useState<ImportResult | null>(null);
+  const [validationResult, setValidationResult] = useState<ValidationResult | null>(null);
   const [error, setError] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -151,7 +177,215 @@ const ImportPage = () => {
       }
       setFile(selectedFile);
       setResult(null);
+      setValidationResult(null);
       setError(null);
+    }
+  };
+
+  const parseCSV = (text: string): { headers: string[]; rows: string[][] } => {
+    const lines: string[] = [];
+    let currentLine = '';
+    let insideQuotes = false;
+    
+    for (let i = 0; i < text.length; i++) {
+      const char = text[i];
+      
+      if (char === '"') {
+        if (insideQuotes && text[i + 1] === '"') {
+          currentLine += '"';
+          i++;
+        } else {
+          insideQuotes = !insideQuotes;
+        }
+        currentLine += char;
+      } else if ((char === '\n' || char === '\r') && !insideQuotes) {
+        if (currentLine.trim()) {
+          lines.push(currentLine);
+        }
+        currentLine = '';
+        if (char === '\r' && text[i + 1] === '\n') {
+          i++;
+        }
+      } else {
+        currentLine += char;
+      }
+    }
+    
+    if (currentLine.trim()) {
+      lines.push(currentLine);
+    }
+
+    const parseRow = (line: string): string[] => {
+      const result: string[] = [];
+      let current = '';
+      let inQuotes = false;
+      
+      for (let i = 0; i < line.length; i++) {
+        const char = line[i];
+        
+        if (char === '"') {
+          if (inQuotes && line[i + 1] === '"') {
+            current += '"';
+            i++;
+          } else {
+            inQuotes = !inQuotes;
+          }
+        } else if (char === ',' && !inQuotes) {
+          result.push(current.trim());
+          current = '';
+        } else {
+          current += char;
+        }
+      }
+      
+      result.push(current.trim());
+      return result;
+    };
+
+    const headers = lines.length > 0 ? parseRow(lines[0]) : [];
+    const rows = lines.slice(1).map(parseRow);
+    
+    return { headers, rows };
+  };
+
+  const handleValidate = async () => {
+    if (!file) {
+      toast.error("Selecione um arquivo CSV primeiro");
+      return;
+    }
+
+    setValidating(true);
+    setError(null);
+    setValidationResult(null);
+
+    try {
+      const text = await file.text();
+      const { headers, rows } = parseCSV(text);
+
+      // Check missing required columns
+      const colunasFaltando = REQUIRED_COLUMNS.filter(
+        col => !headers.some(h => h.toLowerCase() === col.toLowerCase())
+      );
+
+      // Check missing recommended columns
+      const colunasRecomendadasFaltando = RECOMMENDED_COLUMNS.filter(
+        col => !headers.some(h => h.toLowerCase() === col.toLowerCase())
+      );
+
+      // Find column indices
+      const getColIndex = (name: string) => 
+        headers.findIndex(h => h.toLowerCase() === name.toLowerCase());
+
+      const titleIdx = getColIndex('Title');
+      const permalinkIdx = getColIndex('Permalink');
+      const precoIdx = getColIndex('Preço');
+      const cidadeIdx = getColIndex('Estado e Cidade');
+      const quartosIdx = getColIndex('Quartos');
+      const suitesIdx = getColIndex('Suítes');
+      const banheirosIdx = getColIndex('Banheiros');
+      const vagasIdx = getColIndex('Vagas');
+      const areaIdx = getColIndex('Área Total');
+
+      const issues: ValidationIssue[] = [];
+      const resumo = {
+        semTitulo: 0,
+        semPermalink: 0,
+        precoInvalido: 0,
+        semCidade: 0,
+        numerosInvalidos: 0,
+      };
+
+      rows.forEach((row, index) => {
+        const problemas: string[] = [];
+        const titulo = titleIdx >= 0 ? row[titleIdx]?.replace(/^"|"$/g, '') : '';
+        
+        // Check required fields
+        if (titleIdx < 0 || !titulo) {
+          problemas.push('Título ausente');
+          resumo.semTitulo++;
+        }
+        
+        const permalink = permalinkIdx >= 0 ? row[permalinkIdx]?.replace(/^"|"$/g, '') : '';
+        if (permalinkIdx < 0 || !permalink) {
+          problemas.push('Permalink ausente');
+          resumo.semPermalink++;
+        }
+
+        // Check price (0 is valid, empty/invalid is a warning)
+        if (precoIdx >= 0) {
+          const precoStr = row[precoIdx]?.replace(/^"|"$/g, '').replace(/[^\d.,\-]/g, '').replace(',', '.');
+          const preco = parseFloat(precoStr);
+          if (precoStr && isNaN(preco)) {
+            problemas.push('Preço inválido');
+            resumo.precoInvalido++;
+          }
+        }
+
+        // Check city
+        if (cidadeIdx >= 0) {
+          const cidade = row[cidadeIdx]?.replace(/^"|"$/g, '');
+          if (!cidade) {
+            problemas.push('Cidade ausente');
+            resumo.semCidade++;
+          }
+        }
+
+        // Check numeric fields
+        const numericFields = [
+          { idx: quartosIdx, name: 'Quartos' },
+          { idx: suitesIdx, name: 'Suítes' },
+          { idx: banheirosIdx, name: 'Banheiros' },
+          { idx: vagasIdx, name: 'Vagas' },
+          { idx: areaIdx, name: 'Área' },
+        ];
+
+        numericFields.forEach(({ idx, name }) => {
+          if (idx >= 0) {
+            const valStr = row[idx]?.replace(/^"|"$/g, '').replace(/[^\d.,\-]/g, '').replace(',', '.');
+            if (valStr) {
+              const val = parseFloat(valStr);
+              if (isNaN(val) || val < 0) {
+                problemas.push(`${name} inválido`);
+                resumo.numerosInvalidos++;
+              }
+            }
+          }
+        });
+
+        if (problemas.length > 0) {
+          issues.push({
+            linha: index + 2, // +2 because of header and 0-index
+            titulo: titulo || `Linha ${index + 2}`,
+            problemas,
+          });
+        }
+      });
+
+      const validationData: ValidationResult = {
+        totalLinhas: rows.length,
+        linhasValidas: rows.length - issues.length,
+        linhasComProblemas: issues.length,
+        colunasFaltando: [...colunasFaltando, ...colunasRecomendadasFaltando.map(c => `${c} (recomendado)`)],
+        issues,
+        resumo,
+      };
+
+      setValidationResult(validationData);
+
+      if (issues.length === 0 && colunasFaltando.length === 0) {
+        toast.success('CSV validado com sucesso! Todas as linhas estão corretas.');
+      } else if (colunasFaltando.length > 0) {
+        toast.error(`Colunas obrigatórias faltando: ${colunasFaltando.join(', ')}`);
+      } else {
+        toast.warning(`${issues.length} linha(s) com problemas encontradas.`);
+      }
+
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Erro ao validar arquivo';
+      setError(errorMessage);
+      toast.error(errorMessage);
+    } finally {
+      setValidating(false);
     }
   };
 
@@ -226,6 +460,7 @@ const ImportPage = () => {
   const resetForm = () => {
     setFile(null);
     setResult(null);
+    setValidationResult(null);
     setError(null);
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
@@ -376,9 +611,27 @@ const ImportPage = () => {
 
             <div className="flex gap-3">
               <Button 
+                variant="outline"
+                onClick={handleValidate} 
+                disabled={!file || validating || importing}
+                className="flex-1"
+              >
+                {validating ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Validando...
+                  </>
+                ) : (
+                  <>
+                    <Search className="mr-2 h-4 w-4" />
+                    Validar CSV
+                  </>
+                )}
+              </Button>
+              <Button 
                 variant="admin"
                 onClick={handleImport} 
-                disabled={!file || importing}
+                disabled={!file || importing || validating}
                 className="flex-1"
               >
                 {importing ? (
@@ -413,6 +666,171 @@ const ImportPage = () => {
             <AlertTitle>Erro na importação</AlertTitle>
             <AlertDescription>{error}</AlertDescription>
           </Alert>
+        )}
+
+        {/* Validation Results Card */}
+        {validationResult && (
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                {validationResult.linhasComProblemas === 0 && validationResult.colunasFaltando.filter(c => !c.includes('recomendado')).length === 0 ? (
+                  <CheckCircle2 className="h-5 w-5 text-green-500" />
+                ) : (
+                  <AlertTriangle className="h-5 w-5 text-yellow-500" />
+                )}
+                Resultado da validação
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              {/* Validation Stats */}
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                <div className="bg-muted rounded-lg p-4 text-center">
+                  <p className="text-2xl font-bold">{validationResult.totalLinhas}</p>
+                  <p className="text-sm text-muted-foreground">Total de linhas</p>
+                </div>
+                <div className="bg-green-500/10 rounded-lg p-4 text-center">
+                  <p className="text-2xl font-bold text-green-600">{validationResult.linhasValidas}</p>
+                  <p className="text-sm text-muted-foreground">Linhas válidas</p>
+                </div>
+                <div className="bg-yellow-500/10 rounded-lg p-4 text-center">
+                  <p className="text-2xl font-bold text-yellow-600">{validationResult.linhasComProblemas}</p>
+                  <p className="text-sm text-muted-foreground">Linhas com problemas</p>
+                </div>
+              </div>
+
+              {/* Missing Columns */}
+              {validationResult.colunasFaltando.length > 0 && (
+                <div className="border border-yellow-500/30 rounded-lg overflow-hidden">
+                  <div className="bg-yellow-500/10 px-4 py-2 font-medium text-sm flex items-center gap-2">
+                    <AlertTriangle className="h-4 w-4 text-yellow-600" />
+                    Colunas não encontradas ({validationResult.colunasFaltando.length})
+                  </div>
+                  <div className="px-4 py-3 flex flex-wrap gap-2">
+                    {validationResult.colunasFaltando.map((col, idx) => (
+                      <Badge 
+                        key={idx} 
+                        variant={col.includes('recomendado') ? 'outline' : 'destructive'}
+                        className={col.includes('recomendado') ? 'border-yellow-500/50 text-yellow-600' : ''}
+                      >
+                        {col}
+                      </Badge>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Issues Summary */}
+              {(validationResult.resumo.semTitulo > 0 || validationResult.resumo.semPermalink > 0 || 
+                validationResult.resumo.precoInvalido > 0 || validationResult.resumo.semCidade > 0 ||
+                validationResult.resumo.numerosInvalidos > 0) && (
+                <div className="grid grid-cols-2 md:grid-cols-5 gap-2">
+                  {validationResult.resumo.semTitulo > 0 && (
+                    <div className="bg-destructive/10 rounded-lg p-3 text-center">
+                      <p className="text-lg font-bold text-destructive">{validationResult.resumo.semTitulo}</p>
+                      <p className="text-xs text-muted-foreground">Sem título</p>
+                    </div>
+                  )}
+                  {validationResult.resumo.semPermalink > 0 && (
+                    <div className="bg-destructive/10 rounded-lg p-3 text-center">
+                      <p className="text-lg font-bold text-destructive">{validationResult.resumo.semPermalink}</p>
+                      <p className="text-xs text-muted-foreground">Sem permalink</p>
+                    </div>
+                  )}
+                  {validationResult.resumo.precoInvalido > 0 && (
+                    <div className="bg-yellow-500/10 rounded-lg p-3 text-center">
+                      <p className="text-lg font-bold text-yellow-600">{validationResult.resumo.precoInvalido}</p>
+                      <p className="text-xs text-muted-foreground">Preço inválido</p>
+                    </div>
+                  )}
+                  {validationResult.resumo.semCidade > 0 && (
+                    <div className="bg-yellow-500/10 rounded-lg p-3 text-center">
+                      <p className="text-lg font-bold text-yellow-600">{validationResult.resumo.semCidade}</p>
+                      <p className="text-xs text-muted-foreground">Sem cidade</p>
+                    </div>
+                  )}
+                  {validationResult.resumo.numerosInvalidos > 0 && (
+                    <div className="bg-yellow-500/10 rounded-lg p-3 text-center">
+                      <p className="text-lg font-bold text-yellow-600">{validationResult.resumo.numerosInvalidos}</p>
+                      <p className="text-xs text-muted-foreground">Números inválidos</p>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* Success message */}
+              {validationResult.linhasComProblemas === 0 && validationResult.colunasFaltando.filter(c => !c.includes('recomendado')).length === 0 ? (
+                <Alert className="bg-green-500/10 border-green-500">
+                  <CheckCircle2 className="h-4 w-4 text-green-600" />
+                  <AlertTitle className="text-green-600">CSV validado com sucesso!</AlertTitle>
+                  <AlertDescription>
+                    Todas as {validationResult.totalLinhas} linhas estão corretas. Você pode prosseguir com a importação.
+                  </AlertDescription>
+                </Alert>
+              ) : (
+                <Alert variant="default" className="border-yellow-500/50 bg-yellow-500/5">
+                  <AlertTriangle className="h-4 w-4 text-yellow-600" />
+                  <AlertTitle className="text-yellow-600">Atenção: problemas encontrados</AlertTitle>
+                  <AlertDescription>
+                    Corrija os problemas acima antes de importar para melhores resultados. 
+                    A importação ainda funcionará, mas alguns dados podem ficar incompletos.
+                  </AlertDescription>
+                </Alert>
+              )}
+
+              {/* Issues List */}
+              {validationResult.issues.length > 0 && (
+                <div className="border border-yellow-500/30 rounded-lg overflow-hidden">
+                  <div className="bg-yellow-500/10 px-4 py-2 font-medium text-sm flex items-center gap-2">
+                    <AlertTriangle className="h-4 w-4 text-yellow-600" />
+                    Linhas com problemas ({validationResult.issues.length})
+                  </div>
+                  <div className="divide-y max-h-64 overflow-y-auto">
+                    {validationResult.issues.slice(0, 50).map((issue, index) => (
+                      <div key={index} className="px-4 py-3 text-sm">
+                        <div className="flex items-start justify-between gap-2">
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center gap-2">
+                              <Badge variant="secondary" className="text-xs">
+                                Linha {issue.linha}
+                              </Badge>
+                              <span className="font-medium truncate">{issue.titulo}</span>
+                            </div>
+                          </div>
+                          <div className="flex flex-wrap gap-1 justify-end">
+                            {issue.problemas.map((problema, i) => (
+                              <Badge key={i} variant="outline" className="text-xs border-yellow-500/50 text-yellow-600">
+                                {problema}
+                              </Badge>
+                            ))}
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                    {validationResult.issues.length > 50 && (
+                      <div className="px-4 py-3 text-sm text-center text-muted-foreground">
+                        ... e mais {validationResult.issues.length - 50} linha(s) com problemas
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
+
+              {/* Actions */}
+              <div className="flex gap-3 pt-4">
+                <Button variant="outline" onClick={() => setValidationResult(null)}>
+                  Fechar validação
+                </Button>
+                <Button 
+                  variant="admin" 
+                  onClick={handleImport}
+                  disabled={importing || validationResult.colunasFaltando.filter(c => !c.includes('recomendado')).length > 0}
+                >
+                  <Download className="mr-2 h-4 w-4" />
+                  Importar mesmo assim
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
         )}
 
         {/* Results Card */}

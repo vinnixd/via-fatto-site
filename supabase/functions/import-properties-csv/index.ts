@@ -490,19 +490,25 @@ async function downloadAndUploadImage(
   supabase: any,
   imageUrl: string,
   propertySlug: string,
-  index: number
+  index: number,
+  timeoutMs: number = 10000 // 10 second timeout per image
 ): Promise<string | null> {
   try {
-    console.log(`Downloading image: ${imageUrl}`);
+    // Create AbortController for timeout
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
     
     const response = await fetch(imageUrl, {
       headers: {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
-      }
+      },
+      signal: controller.signal
     });
     
+    clearTimeout(timeoutId);
+    
     if (!response.ok) {
-      console.error(`Failed to download image: ${response.status}`);
+      console.error(`Failed to download image ${index}: ${response.status}`);
       return null;
     }
     
@@ -526,7 +532,7 @@ async function downloadAndUploadImage(
       });
     
     if (uploadError) {
-      console.error(`Failed to upload image: ${uploadError.message}`);
+      console.error(`Failed to upload image ${index}: ${uploadError.message}`);
       return null;
     }
     
@@ -534,12 +540,62 @@ async function downloadAndUploadImage(
       .from('property-images')
       .getPublicUrl(fileName);
     
-    console.log(`Image uploaded: ${publicUrl}`);
     return publicUrl;
   } catch (error) {
-    console.error(`Error processing image: ${error}`);
+    if (error instanceof Error && error.name === 'AbortError') {
+      console.error(`Image ${index} download timed out`);
+    } else {
+      console.error(`Error processing image ${index}: ${error}`);
+    }
     return null;
   }
+}
+
+/**
+ * Process images in parallel with concurrency limit
+ */
+async function processImagesInParallel(
+  supabase: any,
+  imageUrls: string[],
+  propertySlug: string,
+  propertyId: string,
+  title: string,
+  maxConcurrent: number = 3, // Process 3 images at a time
+  maxImages: number = 10 // Limit to first 10 images per property
+): Promise<number> {
+  // Limit number of images to prevent timeout
+  const urlsToProcess = imageUrls.slice(0, maxImages);
+  let imagesCount = 0;
+  
+  // Process in batches
+  for (let i = 0; i < urlsToProcess.length; i += maxConcurrent) {
+    const batch = urlsToProcess.slice(i, i + maxConcurrent);
+    
+    const results = await Promise.allSettled(
+      batch.map(async (url, batchIndex) => {
+        const imgIndex = i + batchIndex;
+        const uploadedUrl = await downloadAndUploadImage(supabase, url, propertySlug, imgIndex);
+        
+        if (uploadedUrl) {
+          const { error: imgError } = await supabase
+            .from('property_images')
+            .insert({
+              property_id: propertyId,
+              url: uploadedUrl,
+              order_index: imgIndex,
+              alt: imgIndex === 0 ? `${title} - Capa` : `${title} - Imagem ${imgIndex + 1}`
+            });
+          
+          if (!imgError) return true;
+        }
+        return false;
+      })
+    );
+    
+    imagesCount += results.filter(r => r.status === 'fulfilled' && r.value).length;
+  }
+  
+  return imagesCount;
 }
 
 // Process a single property (for background processing)
@@ -844,7 +900,7 @@ async function processProperty(
     
     // Process images - support multiple URLs separated by "|" (WP All Export) or ", " (Lovable export)
     const imageUrlsRaw = row['Image URL'] || row['image_url'] || row['Attachment URL'] || row['Imagens'] || '';
-    console.log(`[MAPPED] Images RAW: "${imageUrlsRaw.substring(0, 200)}${imageUrlsRaw.length > 200 ? '...' : ''}"`);
+    console.log(`[MAPPED] Images: ${imageUrlsRaw.length} chars`);
     
     const imageUrls = imageUrlsRaw
       .split(/[|,]/)
@@ -852,28 +908,17 @@ async function processProperty(
       .filter(url => url.startsWith('http'));
     
     console.log(`[MAPPED] Images PARSED: ${imageUrls.length} valid URLs found`);
-    if (imageUrls.length > 0) {
-      console.log(`[MAPPED] First image URL: "${imageUrls[0]}"`);
-    }
     
-    // Process all images - first image is cover, rest are gallery
-    let imagesCount = 0;
-    for (let imgIndex = 0; imgIndex < imageUrls.length; imgIndex++) {
-      const uploadedUrl = await downloadAndUploadImage(supabase, imageUrls[imgIndex], slug, imgIndex);
-      
-      if (uploadedUrl) {
-        const { error: imgError } = await supabase
-          .from('property_images')
-          .insert({
-            property_id: propertyId,
-            url: uploadedUrl,
-            order_index: imgIndex, // First image (index 0) is cover
-            alt: imgIndex === 0 ? `${title} - Capa` : `${title} - Imagem ${imgIndex + 1}`
-          });
-        
-        if (!imgError) imagesCount++;
-      }
-    }
+    // Process images in parallel with limits to prevent timeout
+    const imagesCount = await processImagesInParallel(
+      supabase, 
+      imageUrls, 
+      slug, 
+      propertyId, 
+      title,
+      3,  // 3 concurrent downloads
+      10  // Max 10 images per property
+    );
     
     // Property can be saved even without images
     return { 
@@ -976,7 +1021,7 @@ serve(async (req) => {
     
     const jobId = importJob?.id;
     
-    // Process in background using waitUntil
+    // Process in background using waitUntil - with parallel batches for speed
     const backgroundTask = async () => {
       let criados = 0;
       let atualizados = 0;
@@ -988,43 +1033,67 @@ serve(async (req) => {
       const erros: Array<{ linha: number; titulo: string; motivo: string }> = [];
       const problemProperties: Array<{ title: string; permalink: string; issues: string[] }> = [];
       
-      for (let i = 0; i < rows.length; i++) {
-        const row = rows[i];
-        const lineNumber = i + 2;
+      const BATCH_SIZE = 5; // Process 5 properties in parallel
+      
+      for (let batchStart = 0; batchStart < rows.length; batchStart += BATCH_SIZE) {
+        const batch = rows.slice(batchStart, batchStart + BATCH_SIZE);
         
-        const result = await processProperty(supabase, row, lineNumber);
+        console.log(`Processing batch ${Math.floor(batchStart / BATCH_SIZE) + 1}/${Math.ceil(rows.length / BATCH_SIZE)} (items ${batchStart + 1}-${batchStart + batch.length})`);
         
-        if (result.success) {
-          if (result.created) criados++;
-          if (result.updated) atualizados++;
-          imagensImportadas += result.imagesCount;
-          if (result.hasPrice) withPrice++;
-          if (result.hasDescription) withDescription++;
-          if (result.hasSpecs) withSpecs++;
-          if (result.hasVagas) withVagas++;
-          
-          // Track properties with issues even if successfully imported
-          if (result.issues.length > 0) {
-            problemProperties.push({
-              title: row['Title'] || row['title'] || 'Desconhecido',
-              permalink: row['Permalink'] || row['permalink'] || '',
-              issues: result.issues
+        // Process batch in parallel
+        const batchResults = await Promise.allSettled(
+          batch.map((row, batchIndex) => {
+            const lineNumber = batchStart + batchIndex + 2;
+            return processProperty(supabase, row, lineNumber)
+              .then(result => ({ result, row, lineNumber }));
+          })
+        );
+        
+        // Collect results
+        for (const settled of batchResults) {
+          if (settled.status === 'fulfilled') {
+            const { result, row, lineNumber } = settled.value;
+            
+            if (result.success) {
+              if (result.created) criados++;
+              if (result.updated) atualizados++;
+              imagensImportadas += result.imagesCount;
+              if (result.hasPrice) withPrice++;
+              if (result.hasDescription) withDescription++;
+              if (result.hasSpecs) withSpecs++;
+              if (result.hasVagas) withVagas++;
+              
+              if (result.issues.length > 0) {
+                problemProperties.push({
+                  title: row['Title'] || row['title'] || 'Desconhecido',
+                  permalink: row['Permalink'] || row['permalink'] || '',
+                  issues: result.issues
+                });
+              }
+            } else {
+              erros.push({
+                linha: lineNumber,
+                titulo: row['Title'] || row['title'] || 'Desconhecido',
+                motivo: result.error || 'Erro desconhecido'
+              });
+            }
+          } else {
+            // Promise rejected
+            erros.push({
+              linha: batchStart + 2,
+              titulo: 'Batch error',
+              motivo: settled.reason?.message || 'Erro desconhecido no batch'
             });
           }
-        } else {
-          erros.push({
-            linha: lineNumber,
-            titulo: row['Title'] || row['title'] || 'Desconhecido',
-            motivo: result.error || 'Erro desconhecido'
-          });
         }
         
-        // Update progress every 1 item or at the end
-        if (jobId && (i % 1 === 0 || i === rows.length - 1)) {
+        // Update progress after each batch
+        const processedCount = Math.min(batchStart + BATCH_SIZE, rows.length);
+        if (jobId) {
           await supabase
             .from('import_jobs')
             .update({
-              processed_items: i + 1,
+              processed_items: processedCount,
               created_items: criados,
               updated_items: atualizados,
               error_count: erros.length,
@@ -1035,7 +1104,7 @@ serve(async (req) => {
                   withDescription,
                   withSpecs,
                   withVagas,
-                  totalProcessed: i + 1
+                  totalProcessed: processedCount
                 },
                 problemProperties: problemProperties.slice(-20)
               }

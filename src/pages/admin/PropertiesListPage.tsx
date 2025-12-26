@@ -46,6 +46,9 @@ import {
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
+  DropdownMenuRadioGroup,
+  DropdownMenuRadioItem,
+  DropdownMenuLabel,
 } from '@/components/ui/dropdown-menu';
 import {
   DndContext,
@@ -285,6 +288,19 @@ const SortablePropertyCard = ({
   );
 };
 
+type SortOption = 'manual' | 'price_asc' | 'price_desc' | 'alpha_asc' | 'alpha_desc' | 'date_asc' | 'date_desc' | 'views';
+
+const SORT_OPTIONS: { value: SortOption; label: string }[] = [
+  { value: 'manual', label: 'Ordenação Manual' },
+  { value: 'price_asc', label: 'Preço: Menor → Maior' },
+  { value: 'price_desc', label: 'Preço: Maior → Menor' },
+  { value: 'alpha_asc', label: 'Título: A → Z' },
+  { value: 'alpha_desc', label: 'Título: Z → A' },
+  { value: 'date_desc', label: 'Data: Mais Novo' },
+  { value: 'date_asc', label: 'Data: Mais Antigo' },
+  { value: 'views', label: 'Mais Vistos' },
+];
+
 const PropertiesListPage = () => {
   const navigate = useNavigate();
   const [properties, setProperties] = useState<Property[]>([]);
@@ -294,6 +310,7 @@ const PropertiesListPage = () => {
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [totalCount, setTotalCount] = useState(0);
+  const [sortBy, setSortBy] = useState<SortOption>('manual');
   const [isReorderMode, setIsReorderMode] = useState(false);
   const [isSelectMode, setIsSelectMode] = useState(false);
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
@@ -322,11 +339,35 @@ const PropertiesListPage = () => {
         .from('properties')
         .select('*', { count: 'exact' });
 
-      // When in reorder mode, sort by order_index, otherwise by created_at
-      if (isReorderMode) {
+      // Apply sorting based on sortBy state
+      if (isReorderMode || sortBy === 'manual') {
         query = query.order('order_index', { ascending: true });
       } else {
-        query = query.order('order_index', { ascending: true });
+        switch (sortBy) {
+          case 'price_asc':
+            query = query.order('price', { ascending: true });
+            break;
+          case 'price_desc':
+            query = query.order('price', { ascending: false });
+            break;
+          case 'alpha_asc':
+            query = query.order('title', { ascending: true });
+            break;
+          case 'alpha_desc':
+            query = query.order('title', { ascending: false });
+            break;
+          case 'date_desc':
+            query = query.order('created_at', { ascending: false });
+            break;
+          case 'date_asc':
+            query = query.order('created_at', { ascending: true });
+            break;
+          case 'views':
+            query = query.order('views', { ascending: false });
+            break;
+          default:
+            query = query.order('order_index', { ascending: true });
+        }
       }
 
       if (search) {
@@ -371,7 +412,7 @@ const PropertiesListPage = () => {
 
   useEffect(() => {
     fetchProperties();
-  }, [page, search, isReorderMode]);
+  }, [page, search, isReorderMode, sortBy]);
 
   // Listen for import job completion to refresh the list
   useEffect(() => {
@@ -745,6 +786,7 @@ const PropertiesListPage = () => {
                       variant="outline"
                       onClick={() => {
                         setIsReorderMode(false);
+                        setSortBy('date_desc');
                         fetchProperties();
                       }}
                     >
@@ -774,14 +816,35 @@ const PropertiesListPage = () => {
                       <Trash2 className="h-4 w-4" />
                       <span className="hidden sm:inline">Excluir Vários</span>
                     </Button>
-                    <Button
-                      variant="outline"
-                      onClick={() => setIsReorderMode(true)}
-                      className="gap-2"
-                    >
-                      <ArrowUpDown className="h-4 w-4" />
-                      <span className="hidden sm:inline">Ordenar</span>
-                    </Button>
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="outline" className="gap-2">
+                          <ArrowUpDown className="h-4 w-4" />
+                          <span className="hidden sm:inline">
+                            {SORT_OPTIONS.find(o => o.value === sortBy)?.label || 'Ordenar'}
+                          </span>
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end" className="w-56">
+                        <DropdownMenuLabel>Ordenar por</DropdownMenuLabel>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuRadioGroup value={sortBy} onValueChange={(value) => {
+                          if (value === 'manual') {
+                            setIsReorderMode(true);
+                            setSortBy('manual');
+                          } else {
+                            setIsReorderMode(false);
+                            setSortBy(value as SortOption);
+                          }
+                        }}>
+                          {SORT_OPTIONS.map((option) => (
+                            <DropdownMenuRadioItem key={option.value} value={option.value}>
+                              {option.label}
+                            </DropdownMenuRadioItem>
+                          ))}
+                        </DropdownMenuRadioGroup>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
                     <Button
                       variant="outline"
                       onClick={handleBatchGenerateSeo}

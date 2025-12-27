@@ -4,7 +4,7 @@ export interface Property {
   title: string;
   description: string;
   price: number;
-  type: 'casa' | 'apartamento' | 'terreno' | 'comercial' | 'rural';
+  type: 'casa' | 'apartamento' | 'terreno' | 'comercial' | 'rural' | 'cobertura' | 'flat' | 'galpao' | 'loft';
   status: 'venda' | 'aluguel' | 'vendido' | 'alugado';
   featured: boolean;
   images: string[];

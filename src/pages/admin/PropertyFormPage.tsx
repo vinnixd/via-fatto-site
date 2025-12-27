@@ -914,6 +914,7 @@ const PropertyFormPage = () => {
                               <SelectItem value="cobertura">Cobertura</SelectItem>
                               <SelectItem value="flat">Flat</SelectItem>
                               <SelectItem value="galpao">Galpão</SelectItem>
+                              <SelectItem value="loft">Loft</SelectItem>
                             </SelectContent>
                           </Select>
                         </div>

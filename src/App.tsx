@@ -9,6 +9,7 @@ import { useBrandColors } from "@/hooks/useBrandColors";
 import { useTrackingScripts } from "@/hooks/useTrackingScripts";
 import ScrollToTop from "@/components/ScrollToTop";
 import { AppErrorBoundary } from "@/components/AppErrorBoundary";
+import FloatingWhatsApp from "@/components/FloatingWhatsApp";
 import Index from "./pages/Index";
 import PropertyPage from "./pages/PropertyPage";
 import PropertiesPage from "./pages/PropertiesPage";
@@ -95,6 +96,7 @@ const App = () => (
 
               <Route path="*" element={<NotFound />} />
             </Routes>
+            <FloatingWhatsApp />
           </AppErrorBoundary>
         </AuthProvider>
       </BrowserRouter>

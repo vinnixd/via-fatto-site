@@ -24,6 +24,7 @@ const PropertyFilter = ({ onFilterChange, onSearch, initialFilters }: PropertyFi
     { value: 'cobertura', label: 'Cobertura' },
     { value: 'flat', label: 'Flat' },
     { value: 'galpao', label: 'Galpão' },
+    { value: 'loft', label: 'Loft' },
   ];
 
   const handleSearchSubmit = (e: React.FormEvent) => {

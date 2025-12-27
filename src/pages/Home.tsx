@@ -165,28 +165,28 @@ const Home = () => {
           <div className="absolute inset-0 bg-black/50"></div>
         </div>
         
-        <div className="relative container py-20">
-          <div className="max-w-4xl mx-auto text-center mb-12">
-            <h1 className="text-4xl md:text-6xl font-bold mb-6">
+        <div className="relative container py-12 sm:py-16 md:py-20">
+          <div className="max-w-4xl mx-auto text-center mb-8 sm:mb-12">
+            <h1 className="text-2xl sm:text-3xl md:text-5xl lg:text-6xl font-bold mb-4 sm:mb-6 px-2">
               {siteConfig?.hero_title || 'Encontre o imóvel dos seus sonhos'}
             </h1>
             {siteConfig?.hero_subtitle && (
-              <p className="text-xl text-neutral-200">{siteConfig.hero_subtitle}</p>
+              <p className="text-base sm:text-lg md:text-xl text-neutral-200 px-4">{siteConfig.hero_subtitle}</p>
             )}
           </div>
 
           {/* Hero Search Form */}
-          <div className="max-w-5xl mx-auto">
-            <form onSubmit={handleHeroSearch} className="bg-white rounded-2xl p-6 shadow-2xl">
-              <div className="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
+          <div className="max-w-5xl mx-auto px-2">
+            <form onSubmit={handleHeroSearch} className="bg-white rounded-xl sm:rounded-2xl p-4 sm:p-6 shadow-2xl">
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 items-end">
                 <div>
-                  <label className="block text-sm font-medium text-neutral-600 mb-2">
+                  <label className="block text-xs sm:text-sm font-medium text-neutral-600 mb-1.5 sm:mb-2">
                     Categoria
                   </label>
                   <select
                     value={heroSearch.category}
                     onChange={(e) => setHeroSearch({ ...heroSearch, category: e.target.value })}
-                    className="w-full px-4 py-3 rounded-lg border border-neutral-200 bg-white text-neutral-700 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+                    className="w-full px-3 sm:px-4 py-3 rounded-lg border border-neutral-200 bg-white text-neutral-700 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent text-base"
                   >
                     <option value="">Selecione</option>
                     <option value="casa">Casa</option>
@@ -197,26 +197,27 @@ const Home = () => {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-neutral-600 mb-2">
+                  <label className="block text-xs sm:text-sm font-medium text-neutral-600 mb-1.5 sm:mb-2">
                     Valor mínimo
                   </label>
                   <input
                     type="text"
+                    inputMode="numeric"
                     placeholder="R$ 0,00"
                     value={heroSearch.minPrice}
                     onChange={(e) => setHeroSearch({ ...heroSearch, minPrice: e.target.value })}
-                    className="w-full px-4 py-3 rounded-lg border border-neutral-200 bg-white text-neutral-700 placeholder:text-neutral-400 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+                    className="w-full px-3 sm:px-4 py-3 rounded-lg border border-neutral-200 bg-white text-neutral-700 placeholder:text-neutral-400 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent text-base"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-neutral-600 mb-2">
+                  <label className="block text-xs sm:text-sm font-medium text-neutral-600 mb-1.5 sm:mb-2">
                     Localização
                   </label>
                   <select
                     value={heroSearch.location}
                     onChange={(e) => setHeroSearch({ ...heroSearch, location: e.target.value })}
-                    className="w-full px-4 py-3 rounded-lg border border-neutral-200 bg-white text-neutral-700 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+                    className="w-full px-3 sm:px-4 py-3 rounded-lg border border-neutral-200 bg-white text-neutral-700 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent text-base"
                   >
                     <option value="">Todas as cidades</option>
                     {availableCities.map((city) => (
@@ -227,10 +228,10 @@ const Home = () => {
                   </select>
                 </div>
 
-                <div>
+                <div className="sm:col-span-2 md:col-span-1">
                   <button
                     type="submit"
-                    className="w-full bg-primary text-primary-foreground px-6 py-3 rounded-lg font-medium hover:bg-primary-hover transition-colors flex items-center justify-center space-x-2"
+                    className="w-full bg-primary text-primary-foreground px-4 sm:px-6 py-3 rounded-lg font-medium hover:bg-primary-hover active:scale-[0.98] transition-all flex items-center justify-center space-x-2 touch-manipulation"
                   >
                     <Search size={18} />
                     <span>Buscar</span>
@@ -243,57 +244,60 @@ const Home = () => {
       </section>
 
       {/* Category Filter Section */}
-      <section className="py-12 bg-neutral-50">
+      <section className="py-8 sm:py-12 bg-neutral-50">
         <div className="container">
-          <div className="text-center mb-8">
-            <h2 className="text-3xl font-bold mb-4">
+          <div className="text-center mb-6 sm:mb-8">
+            <h2 className="text-xl sm:text-2xl md:text-3xl font-bold mb-2 sm:mb-4 px-4">
               Busque seu imóvel por categoria
             </h2>
           </div>
           
-          <div className="flex flex-wrap justify-center gap-4 mb-8">
-            {categoryFilters.map((category) => {
-              const Icon = category.icon;
-              return (
-                <button
-                  key={category.id}
-                  onClick={() => setActiveCategory(category.id)}
-                  className={`px-6 py-3 rounded-full font-medium transition-all ${
-                    activeCategory === category.id
-                      ? 'bg-primary text-primary-foreground shadow-lg'
-                      : 'bg-white text-neutral-600 hover:bg-neutral-100 border border-neutral-200'
-                  }`}
-                >
-                  <div className="flex items-center space-x-2">
-                    <Icon size={18} />
-                    <span>{category.name}</span>
-                    <span className="text-xs bg-neutral-200 text-neutral-600 px-2 py-1 rounded-full">
-                      {category.count}
-                    </span>
-                  </div>
-                </button>
-              );
-            })}
+          {/* Mobile: Horizontal scroll / Desktop: Flex wrap */}
+          <div className="overflow-x-auto scrollbar-hide -mx-4 px-4 sm:mx-0 sm:px-0">
+            <div className="flex sm:flex-wrap sm:justify-center gap-2 sm:gap-4 pb-2 sm:pb-0 min-w-max sm:min-w-0">
+              {categoryFilters.map((category) => {
+                const Icon = category.icon;
+                return (
+                  <button
+                    key={category.id}
+                    onClick={() => setActiveCategory(category.id)}
+                    className={`px-4 sm:px-6 py-2.5 sm:py-3 rounded-full font-medium transition-all whitespace-nowrap touch-manipulation active:scale-95 ${
+                      activeCategory === category.id
+                        ? 'bg-primary text-primary-foreground shadow-lg'
+                        : 'bg-white text-neutral-600 hover:bg-neutral-100 border border-neutral-200'
+                    }`}
+                  >
+                    <div className="flex items-center space-x-1.5 sm:space-x-2">
+                      <Icon size={16} className="sm:w-[18px] sm:h-[18px]" />
+                      <span className="text-sm sm:text-base">{category.name}</span>
+                      <span className="text-xs bg-neutral-200 text-neutral-600 px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-full">
+                        {category.count}
+                      </span>
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
           </div>
         </div>
       </section>
 
       {/* Properties Grid */}
-      <section className="py-16">
+      <section className="py-10 sm:py-16">
         <div className="container">
-          <div className="text-center mb-8">
-            <h2 className="text-3xl font-bold mb-4">
+          <div className="text-center mb-6 sm:mb-8">
+            <h2 className="text-xl sm:text-2xl md:text-3xl font-bold mb-2 sm:mb-4">
               Conheça nossos melhores imóveis
             </h2>
           </div>
 
           {isLoading ? (
-            <div className="flex justify-center py-16">
+            <div className="flex justify-center py-12 sm:py-16">
               <Loader2 className="h-8 w-8 animate-spin text-primary" />
             </div>
           ) : displayProperties.length > 0 ? (
             <>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mb-6 sm:mb-8">
                 {displayProperties.map((property) => (
                   <PropertyCard
                     key={property.id}
@@ -304,18 +308,18 @@ const Home = () => {
                 ))}
               </div>
               <div className="text-center">
-                <Link to="/imoveis" className="btn-primary">
+                <Link to="/imoveis" className="btn-primary inline-block">
                   Todos os imóveis
                 </Link>
               </div>
             </>
           ) : (
-            <div className="text-center py-16">
-              <HomeIcon size={64} className="mx-auto text-muted-foreground mb-4" />
-              <h3 className="text-xl font-semibold text-foreground mb-2">
+            <div className="text-center py-12 sm:py-16 px-4">
+              <HomeIcon size={48} className="sm:w-16 sm:h-16 mx-auto text-muted-foreground mb-4" />
+              <h3 className="text-lg sm:text-xl font-semibold text-foreground mb-2">
                 Nenhum imóvel cadastrado
               </h3>
-              <p className="text-muted-foreground mb-6">
+              <p className="text-muted-foreground mb-6 text-sm sm:text-base">
                 Acesse o painel administrativo para adicionar imóveis.
               </p>
             </div>
@@ -324,53 +328,53 @@ const Home = () => {
       </section>
 
       {/* Services Section */}
-      <section className="py-16 bg-neutral-50">
+      <section className="py-10 sm:py-16 bg-neutral-50">
         <div className="container">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold mb-4">
-              Explore as inúmeras maneiras pelas quais podemos ajudar
+          <div className="text-center mb-8 sm:mb-12 px-4">
+            <h2 className="text-xl sm:text-2xl md:text-3xl font-bold mb-2 sm:mb-4">
+              Explore as maneiras pelas quais podemos ajudar
             </h2>
-            <p className="text-muted-foreground max-w-2xl mx-auto">
+            <p className="text-muted-foreground max-w-2xl mx-auto text-sm sm:text-base">
               Oferecemos soluções completas para todas as suas necessidades imobiliárias
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="card-property text-center p-8">
-              <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-6">
-                <HomeIcon className="text-primary" size={32} />
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6 md:gap-8">
+            <div className="card-property text-center p-5 sm:p-8">
+              <div className="w-12 h-12 sm:w-16 sm:h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4 sm:mb-6">
+                <HomeIcon className="text-primary w-6 h-6 sm:w-8 sm:h-8" />
               </div>
-              <h3 className="text-xl font-bold mb-4">Comprar imóveis</h3>
-              <p className="text-muted-foreground mb-6">
+              <h3 className="text-lg sm:text-xl font-bold mb-2 sm:mb-4">Comprar imóveis</h3>
+              <p className="text-muted-foreground mb-4 sm:mb-6 text-sm sm:text-base">
                 Encontre o imóvel perfeito com nossa expertise e atendimento personalizado.
               </p>
-              <Link to="/imoveis" className="btn-primary">
+              <Link to="/imoveis" className="btn-primary inline-block">
                 Ver imóveis
               </Link>
             </div>
 
-            <div className="card-property text-center p-8">
-              <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-6">
-                <Building className="text-primary" size={32} />
+            <div className="card-property text-center p-5 sm:p-8">
+              <div className="w-12 h-12 sm:w-16 sm:h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4 sm:mb-6">
+                <Building className="text-primary w-6 h-6 sm:w-8 sm:h-8" />
               </div>
-              <h3 className="text-xl font-bold mb-4">Alugar imóveis</h3>
-              <p className="text-muted-foreground mb-6">
+              <h3 className="text-lg sm:text-xl font-bold mb-2 sm:mb-4">Alugar imóveis</h3>
+              <p className="text-muted-foreground mb-4 sm:mb-6 text-sm sm:text-base">
                 Encontre opções de aluguel que se encaixem no seu orçamento e necessidades.
               </p>
-              <Link to="/imoveis" className="btn-primary">
+              <Link to="/imoveis" className="btn-primary inline-block">
                 Ver aluguéis
               </Link>
             </div>
 
-            <div className="card-property text-center p-8">
-              <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-6">
-                <Star className="text-primary" size={32} />
+            <div className="card-property text-center p-5 sm:p-8 sm:col-span-2 md:col-span-1">
+              <div className="w-12 h-12 sm:w-16 sm:h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4 sm:mb-6">
+                <Star className="text-primary w-6 h-6 sm:w-8 sm:h-8" />
               </div>
-              <h3 className="text-xl font-bold mb-4">Anuncie seu imóvel</h3>
-              <p className="text-muted-foreground mb-6">
+              <h3 className="text-lg sm:text-xl font-bold mb-2 sm:mb-4">Anuncie seu imóvel</h3>
+              <p className="text-muted-foreground mb-4 sm:mb-6 text-sm sm:text-base">
                 Venda ou alugue seu imóvel com nossa estratégia de marketing eficaz.
               </p>
-              <Link to="/contato" className="btn-primary">
+              <Link to="/contato" className="btn-primary inline-block">
                 Anunciar
               </Link>
             </div>

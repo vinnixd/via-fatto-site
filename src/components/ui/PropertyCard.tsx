@@ -20,8 +20,8 @@ const PropertyCard = ({ property, onFavorite, isFavorited = false }: PropertyCar
     return new Intl.NumberFormat('pt-BR', {
       style: 'currency',
       currency: 'BRL',
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2,
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
     }).format(price);
   };
 
@@ -44,9 +44,9 @@ const PropertyCard = ({ property, onFavorite, isFavorited = false }: PropertyCar
   };
 
   return (
-    <Link to={`/imovel/${property.slug}`} className="card-property group block h-full flex flex-col">
+    <Link to={`/imovel/${property.slug}`} className="card-property group block h-full flex flex-col touch-manipulation">
       {/* Image Container */}
-      <div className="relative h-48 md:h-56 overflow-hidden bg-neutral-100">
+      <div className="relative h-44 sm:h-48 md:h-56 overflow-hidden bg-neutral-100">
         <img
           src={coverImage}
           alt={property.title}
@@ -59,8 +59,8 @@ const PropertyCard = ({ property, onFavorite, isFavorited = false }: PropertyCar
         />
 
         {/* Status Badge */}
-        <div className="absolute top-3 left-3">
-          <span className={`px-3 py-1 rounded-full text-xs font-medium ${
+        <div className="absolute top-2 sm:top-3 left-2 sm:left-3">
+          <span className={`px-2 sm:px-3 py-1 rounded-full text-xs font-medium ${
             property.status === 'venda'
               ? 'bg-primary text-primary-foreground'
               : 'bg-info text-white'
@@ -71,7 +71,7 @@ const PropertyCard = ({ property, onFavorite, isFavorited = false }: PropertyCar
 
         {/* Featured Badge */}
         {property.featured && (
-          <div className="absolute top-3 right-3">
+          <div className="absolute top-2 sm:top-3 right-2 sm:right-3">
             <span className="bg-warning text-white px-2 py-1 rounded-full text-xs font-medium">
               Destaque
             </span>
@@ -81,7 +81,7 @@ const PropertyCard = ({ property, onFavorite, isFavorited = false }: PropertyCar
         {/* Favorite Button */}
         <button
           onClick={handleFavoriteClick}
-          className={`absolute bottom-3 right-3 p-2 rounded-full transition-colors ${
+          className={`absolute bottom-2 sm:bottom-3 right-2 sm:right-3 p-2.5 sm:p-2 rounded-full transition-colors touch-manipulation active:scale-95 ${
             isFavorited
               ? 'bg-red-500 text-white'
               : 'bg-white/90 text-neutral-600 hover:bg-red-500 hover:text-white'
@@ -92,29 +92,29 @@ const PropertyCard = ({ property, onFavorite, isFavorited = false }: PropertyCar
         </button>
 
         {/* Reference */}
-        <div className="absolute bottom-3 left-3 bg-black/50 text-white px-2 py-1 rounded-full text-xs">
+        <div className="absolute bottom-2 sm:bottom-3 left-2 sm:left-3 bg-black/50 text-white px-2 py-1 rounded-full text-xs">
           Ref: {property.reference}
         </div>
       </div>
 
       {/* Content */}
-      <div className="p-4 flex flex-col flex-1">
+      <div className="p-3 sm:p-4 flex flex-col flex-1">
         {/* Price */}
-        <div className="mb-2">
-          <span className="text-2xl font-bold text-primary">
+        <div className="mb-1.5 sm:mb-2">
+          <span className="text-xl sm:text-2xl font-bold text-primary">
             {formatPrice(property.price)}
           </span>
         </div>
 
         {/* Title */}
-        <h3 className="text-lg font-semibold text-foreground mb-2 group-hover:text-primary transition-colors line-clamp-2">
+        <h3 className="text-base sm:text-lg font-semibold text-foreground mb-1.5 sm:mb-2 group-hover:text-primary transition-colors line-clamp-2">
           {property.title}
         </h3>
 
         {/* Location */}
-        <div className="flex items-center text-muted-foreground mb-3">
-          <MapPin size={14} className="mr-1" />
-          <span className="text-sm">
+        <div className="flex items-center text-muted-foreground mb-2 sm:mb-3">
+          <MapPin size={14} className="mr-1 flex-shrink-0" />
+          <span className="text-xs sm:text-sm truncate">
             {property.address.neighborhood}, {property.address.city}
           </span>
         </div>
@@ -122,28 +122,28 @@ const PropertyCard = ({ property, onFavorite, isFavorited = false }: PropertyCar
         {/* Spacer to push features to bottom */}
         <div className="flex-1" />
 
-        {/* Features - Fixed at footer, centered */}
-        <div className="flex items-center justify-center gap-4 text-sm text-muted-foreground pt-3 border-t border-border">
+        {/* Features - Fixed at footer */}
+        <div className="flex items-center justify-between gap-2 sm:gap-4 text-xs sm:text-sm text-muted-foreground pt-2 sm:pt-3 border-t border-border">
           {property.bedrooms > 0 && (
             <div className="flex items-center gap-1">
-              <Bed size={14} />
+              <Bed size={14} className="flex-shrink-0" />
               <span>{property.bedrooms}</span>
             </div>
           )}
           {property.bathrooms > 0 && (
             <div className="flex items-center gap-1">
-              <Bath size={14} />
+              <Bath size={14} className="flex-shrink-0" />
               <span>{property.bathrooms}</span>
             </div>
           )}
           {property.garages > 0 && (
             <div className="flex items-center gap-1">
-              <Car size={14} />
+              <Car size={14} className="flex-shrink-0" />
               <span>{property.garages}</span>
             </div>
           )}
           <div className="flex items-center gap-1">
-            <Maximize size={14} />
+            <Maximize size={14} className="flex-shrink-0" />
             <span>{property.area}m²</span>
           </div>
         </div>

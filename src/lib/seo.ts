@@ -411,15 +411,25 @@ export function generateOpenGraphMeta(
   image?: string,
   type: 'website' | 'article' | 'product' = 'website'
 ) {
-  return {
+  const meta: Record<string, string> = {
     'og:title': title,
     'og:description': description,
     'og:url': url,
     'og:type': type,
-    'og:image': image || '',
     'og:locale': 'pt_BR',
     'og:site_name': 'Via Fatto Imóveis',
   };
+  
+  if (image) {
+    meta['og:image'] = image;
+    meta['og:image:secure_url'] = image;
+    meta['og:image:type'] = image.includes('.png') ? 'image/png' : 'image/jpeg';
+    meta['og:image:width'] = '1200';
+    meta['og:image:height'] = '630';
+    meta['og:image:alt'] = title;
+  }
+  
+  return meta;
 }
 
 // Twitter Card meta tags generator
@@ -428,10 +438,16 @@ export function generateTwitterMeta(
   description: string,
   image?: string
 ) {
-  return {
+  const meta: Record<string, string> = {
     'twitter:card': image ? 'summary_large_image' : 'summary',
     'twitter:title': title,
     'twitter:description': description,
-    'twitter:image': image || '',
   };
+  
+  if (image) {
+    meta['twitter:image'] = image;
+    meta['twitter:image:alt'] = title;
+  }
+  
+  return meta;
 }

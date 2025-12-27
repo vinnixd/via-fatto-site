@@ -1081,57 +1081,54 @@ const PropertyFormPage = () => {
                         Opções de Exibição
                       </div>
                       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                        <div 
-                          className={`flex items-center gap-3 p-4 rounded-xl border-2 transition-all cursor-pointer ${formData.active ? 'border-primary bg-primary/5' : 'border-border bg-muted/30 hover:bg-muted/50'}`}
+                        <button
+                          type="button"
+                          className={`flex items-center justify-between p-4 rounded-xl border-2 transition-all ${formData.active ? 'border-primary bg-primary/10' : 'border-border bg-muted/30 hover:bg-muted/50'}`}
                           onClick={() => setFormData(prev => ({ ...prev, active: !prev.active }))}
                         >
-                          <Switch
-                            checked={formData.active}
-                            onCheckedChange={(v) => setFormData(prev => ({ ...prev, active: v }))}
-                            onClick={(e) => e.stopPropagation()}
-                          />
-                          <div>
-                            <p className="font-medium text-sm flex items-center gap-1.5">
-                              <Check className="h-3.5 w-3.5 text-primary" />
-                              Ativo
-                            </p>
-                            <p className="text-xs text-muted-foreground">Visível no site</p>
+                          <div className="flex items-center gap-2">
+                            <Check className={`h-4 w-4 ${formData.active ? 'text-primary' : 'text-muted-foreground'}`} />
+                            <div className="text-left">
+                              <p className="font-medium text-sm">Ativo</p>
+                              <p className="text-xs text-muted-foreground">Visível no site</p>
+                            </div>
                           </div>
-                        </div>
-                        <div 
-                          className={`flex items-center gap-3 p-4 rounded-xl border-2 transition-all cursor-pointer ${formData.featured ? 'border-yellow-500 bg-yellow-500/5' : 'border-border bg-muted/30 hover:bg-muted/50'}`}
+                          <span className={`px-2.5 py-1 rounded-md text-xs font-semibold ${formData.active ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground'}`}>
+                            {formData.active ? 'Sim' : 'Não'}
+                          </span>
+                        </button>
+                        <button
+                          type="button"
+                          className={`flex items-center justify-between p-4 rounded-xl border-2 transition-all ${formData.featured ? 'border-yellow-500 bg-yellow-500/10' : 'border-border bg-muted/30 hover:bg-muted/50'}`}
                           onClick={() => setFormData(prev => ({ ...prev, featured: !prev.featured }))}
                         >
-                          <Switch
-                            checked={formData.featured}
-                            onCheckedChange={(v) => setFormData(prev => ({ ...prev, featured: v }))}
-                            onClick={(e) => e.stopPropagation()}
-                          />
-                          <div>
-                            <p className="font-medium text-sm flex items-center gap-1.5">
-                              <Star className="h-3.5 w-3.5 text-yellow-500" />
-                              Destaque
-                            </p>
-                            <p className="text-xs text-muted-foreground">Página inicial</p>
+                          <div className="flex items-center gap-2">
+                            <Star className={`h-4 w-4 ${formData.featured ? 'text-yellow-500' : 'text-muted-foreground'}`} />
+                            <div className="text-left">
+                              <p className="font-medium text-sm">Destaque</p>
+                              <p className="text-xs text-muted-foreground">Página inicial</p>
+                            </div>
                           </div>
-                        </div>
-                        <div 
-                          className={`flex items-center gap-3 p-4 rounded-xl border-2 transition-all cursor-pointer ${formData.financing ? 'border-green-500 bg-green-500/5' : 'border-border bg-muted/30 hover:bg-muted/50'}`}
+                          <span className={`px-2.5 py-1 rounded-md text-xs font-semibold ${formData.featured ? 'bg-yellow-500 text-white' : 'bg-muted text-muted-foreground'}`}>
+                            {formData.featured ? 'Sim' : 'Não'}
+                          </span>
+                        </button>
+                        <button
+                          type="button"
+                          className={`flex items-center justify-between p-4 rounded-xl border-2 transition-all ${formData.financing ? 'border-green-500 bg-green-500/10' : 'border-border bg-muted/30 hover:bg-muted/50'}`}
                           onClick={() => setFormData(prev => ({ ...prev, financing: !prev.financing }))}
                         >
-                          <Switch
-                            checked={formData.financing}
-                            onCheckedChange={(v) => setFormData(prev => ({ ...prev, financing: v }))}
-                            onClick={(e) => e.stopPropagation()}
-                          />
-                          <div>
-                            <p className="font-medium text-sm flex items-center gap-1.5">
-                              <DollarSign className="h-3.5 w-3.5 text-green-500" />
-                              Financiamento
-                            </p>
-                            <p className="text-xs text-muted-foreground">Aceita financiar</p>
+                          <div className="flex items-center gap-2">
+                            <DollarSign className={`h-4 w-4 ${formData.financing ? 'text-green-500' : 'text-muted-foreground'}`} />
+                            <div className="text-left">
+                              <p className="font-medium text-sm">Financiamento</p>
+                              <p className="text-xs text-muted-foreground">Aceita financiar</p>
+                            </div>
                           </div>
-                        </div>
+                          <span className={`px-2.5 py-1 rounded-md text-xs font-semibold ${formData.financing ? 'bg-green-500 text-white' : 'bg-muted text-muted-foreground'}`}>
+                            {formData.financing ? 'Sim' : 'Não'}
+                          </span>
+                        </button>
                       </div>
                     </div>
                   </CardContent>

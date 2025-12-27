@@ -155,19 +155,19 @@ const PropertyCard = ({ property, onFavorite, isFavorited = false, viewMode = 'g
               {property.bedrooms > 0 && (
                 <div className="flex items-center gap-1.5">
                   <Bed size={16} className="text-primary flex-shrink-0" />
-                  <span>{property.bedrooms} quarto{property.bedrooms > 1 ? 's' : ''}</span>
+                  <span>{property.bedrooms}</span>
                 </div>
               )}
               {property.bathrooms > 0 && (
                 <div className="flex items-center gap-1.5">
                   <Bath size={16} className="text-primary flex-shrink-0" />
-                  <span>{property.bathrooms} banheiro{property.bathrooms > 1 ? 's' : ''}</span>
+                  <span>{property.bathrooms}</span>
                 </div>
               )}
               {property.garages > 0 && (
                 <div className="flex items-center gap-1.5">
                   <Car size={16} className="text-primary flex-shrink-0" />
-                  <span>{property.garages} vaga{property.garages > 1 ? 's' : ''}</span>
+                  <span>{property.garages}</span>
                 </div>
               )}
             </div>
@@ -264,7 +264,7 @@ const PropertyCard = ({ property, onFavorite, isFavorited = false, viewMode = 'g
         <div className="flex-1" />
 
         {/* Features */}
-        <div className="flex items-center flex-wrap gap-3 text-sm text-muted-foreground mb-4">
+        <div className="flex items-center flex-wrap gap-4 text-sm text-muted-foreground mb-4">
           {property.area > 0 && (
             <div className="flex items-center gap-1">
               <Maximize size={14} className="text-primary flex-shrink-0" />
@@ -274,19 +274,19 @@ const PropertyCard = ({ property, onFavorite, isFavorited = false, viewMode = 'g
           {property.bedrooms > 0 && (
             <div className="flex items-center gap-1">
               <Bed size={14} className="text-primary flex-shrink-0" />
-              <span>{property.bedrooms} quarto{property.bedrooms > 1 ? 's' : ''}</span>
+              <span>{property.bedrooms}</span>
             </div>
           )}
           {property.bathrooms > 0 && (
             <div className="flex items-center gap-1">
               <Bath size={14} className="text-primary flex-shrink-0" />
-              <span>{property.bathrooms} banheiro{property.bathrooms > 1 ? 's' : ''}</span>
+              <span>{property.bathrooms}</span>
             </div>
           )}
           {property.garages > 0 && (
             <div className="flex items-center gap-1">
               <Car size={14} className="text-primary flex-shrink-0" />
-              <span>{property.garages} vaga{property.garages > 1 ? 's' : ''}</span>
+              <span>{property.garages}</span>
             </div>
           )}
         </div>

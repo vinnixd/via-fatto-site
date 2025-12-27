@@ -160,7 +160,8 @@ const PropertyPage = () => {
 
   const getWhatsAppUrl = () => {
     const priceText = property.price && property.price > 0 ? ` - ${formatPrice(property.price)}` : '';
-    const message = `Olá! Tenho interesse no imóvel: ${property.title} - Ref: ${property.reference || property.id}${priceText}. Poderia me passar mais informações?`;
+    const propertyUrl = `${window.location.origin}/imovel/${property.slug}`;
+    const message = `Olá! Tenho interesse no imóvel:\n\n*${property.title}*\nRef: ${property.reference || property.id}${priceText}\n\n${propertyUrl}\n\nPoderia me passar mais informações?`;
     return buildWhatsAppUrl({ phone: siteConfig?.whatsapp, message });
   };
 

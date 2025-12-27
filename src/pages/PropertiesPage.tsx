@@ -206,12 +206,12 @@ const PropertiesPage = () => {
     <div className="min-h-screen bg-background">
       <Header />
       
-      <main className="py-8">
+      <main className="py-6 sm:py-8">
         <div className="container">
-          <h1 className="text-3xl font-bold mb-8">Todos os Imóveis</h1>
+          <h1 className="text-2xl sm:text-3xl font-bold mb-6 sm:mb-8">Todos os Imóveis</h1>
           
           {/* Filters */}
-          <div className="mb-8">
+          <div className="mb-6 sm:mb-8">
             <PropertyFilter
               onFilterChange={setFilters}
               onSearch={setSearchQuery}
@@ -220,19 +220,19 @@ const PropertiesPage = () => {
           </div>
 
           {/* Controls */}
-          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
-            <div className="text-muted-foreground">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-4 mb-4 sm:mb-6">
+            <div className="text-sm sm:text-base text-muted-foreground">
               {filteredProperties.length} imóve{filteredProperties.length !== 1 ? 'is' : 'l'} encontrado{filteredProperties.length !== 1 ? 's' : ''}
             </div>
             
-            <div className="flex items-center space-x-4">
+            <div className="flex items-center space-x-2 sm:space-x-4 w-full sm:w-auto">
               {/* Sort */}
               <select
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value)}
-                className="input-field"
+                className="flex-1 sm:flex-none input-field text-sm sm:text-base !py-2"
               >
-                <option value="custom">Ordem personalizada</option>
+                <option value="custom">Personalizada</option>
                 <option value="newest">Mais recentes</option>
                 <option value="oldest">Mais antigos</option>
                 <option value="price_asc">Menor preço</option>
@@ -245,13 +245,15 @@ const PropertiesPage = () => {
               <div className="flex rounded-lg border border-border">
                 <button
                   onClick={() => setViewMode('grid')}
-                  className={`p-2 ${viewMode === 'grid' ? 'bg-primary text-primary-foreground' : 'text-muted-foreground hover:text-foreground'}`}
+                  className={`p-2.5 sm:p-2 touch-manipulation ${viewMode === 'grid' ? 'bg-primary text-primary-foreground' : 'text-muted-foreground hover:text-foreground'}`}
+                  aria-label="Visualização em grade"
                 >
                   <Grid size={18} />
                 </button>
                 <button
                   onClick={() => setViewMode('list')}
-                  className={`p-2 ${viewMode === 'list' ? 'bg-primary text-primary-foreground' : 'text-muted-foreground hover:text-foreground'}`}
+                  className={`p-2.5 sm:p-2 touch-manipulation ${viewMode === 'list' ? 'bg-primary text-primary-foreground' : 'text-muted-foreground hover:text-foreground'}`}
+                  aria-label="Visualização em lista"
                 >
                   <List size={18} />
                 </button>
@@ -261,13 +263,13 @@ const PropertiesPage = () => {
 
           {/* Properties Grid/List */}
           {isLoading ? (
-            <div className="flex justify-center py-16">
+            <div className="flex justify-center py-12 sm:py-16">
               <Loader2 className="h-8 w-8 animate-spin text-primary" />
             </div>
           ) : currentProperties.length > 0 ? (
             <div className={viewMode === 'grid' 
-              ? 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6' 
-              : 'space-y-6'
+              ? 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6' 
+              : 'space-y-4 sm:space-y-6'
             }>
               {currentProperties.map((property) => (
                 <PropertyCard
@@ -279,12 +281,12 @@ const PropertiesPage = () => {
               ))}
             </div>
           ) : (
-            <div className="text-center py-16">
-              <div className="text-6xl mb-4">🏠</div>
-              <h3 className="text-xl font-semibold text-foreground mb-2">
+            <div className="text-center py-12 sm:py-16 px-4">
+              <div className="text-5xl sm:text-6xl mb-4">🏠</div>
+              <h3 className="text-lg sm:text-xl font-semibold text-foreground mb-2">
                 Nenhum imóvel encontrado
               </h3>
-              <p className="text-muted-foreground mb-6">
+              <p className="text-muted-foreground mb-6 text-sm sm:text-base">
                 Tente ajustar os filtros ou entre em contato conosco para mais opções.
               </p>
               <button
@@ -301,34 +303,49 @@ const PropertiesPage = () => {
 
           {/* Pagination */}
           {totalPages > 1 && (
-            <div className="flex justify-center mt-12">
-              <div className="flex space-x-2">
+            <div className="flex justify-center mt-8 sm:mt-12">
+              <div className="flex flex-wrap justify-center gap-1.5 sm:gap-2">
                 <button
                   onClick={() => handlePageChange(Math.max(1, currentPage - 1))}
                   disabled={currentPage === 1}
-                  className="px-4 py-2 rounded-lg border border-border disabled:opacity-50 disabled:cursor-not-allowed hover:bg-neutral-50"
+                  className="px-3 sm:px-4 py-2 rounded-lg border border-border disabled:opacity-50 disabled:cursor-not-allowed hover:bg-neutral-50 text-sm sm:text-base touch-manipulation"
                 >
                   Anterior
                 </button>
                 
-                {Array.from({ length: Math.min(totalPages, 5) }, (_, i) => i + 1).map((page) => (
-                  <button
-                    key={page}
-                    onClick={() => handlePageChange(page)}
-                    className={`px-4 py-2 rounded-lg ${
-                      page === currentPage
-                        ? 'bg-primary text-primary-foreground'
-                        : 'border border-border hover:bg-neutral-50'
-                    }`}
-                  >
-                    {page}
-                  </button>
-                ))}
+                {/* Show limited pages on mobile */}
+                {Array.from({ length: Math.min(totalPages, 5) }, (_, i) => {
+                  // Smart pagination for mobile
+                  let pageNum: number;
+                  if (totalPages <= 5) {
+                    pageNum = i + 1;
+                  } else if (currentPage <= 3) {
+                    pageNum = i + 1;
+                  } else if (currentPage >= totalPages - 2) {
+                    pageNum = totalPages - 4 + i;
+                  } else {
+                    pageNum = currentPage - 2 + i;
+                  }
+                  
+                  return (
+                    <button
+                      key={pageNum}
+                      onClick={() => handlePageChange(pageNum)}
+                      className={`w-10 h-10 sm:w-auto sm:px-4 sm:py-2 rounded-lg touch-manipulation ${
+                        pageNum === currentPage
+                          ? 'bg-primary text-primary-foreground'
+                          : 'border border-border hover:bg-neutral-50'
+                      }`}
+                    >
+                      {pageNum}
+                    </button>
+                  );
+                })}
                 
                 <button
                   onClick={() => handlePageChange(Math.min(totalPages, currentPage + 1))}
                   disabled={currentPage === totalPages}
-                  className="px-4 py-2 rounded-lg border border-border disabled:opacity-50 disabled:cursor-not-allowed hover:bg-neutral-50"
+                  className="px-3 sm:px-4 py-2 rounded-lg border border-border disabled:opacity-50 disabled:cursor-not-allowed hover:bg-neutral-50 text-sm sm:text-base touch-manipulation"
                 >
                   Próxima
                 </button>

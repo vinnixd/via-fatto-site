@@ -4,6 +4,7 @@ import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
 import PropertyCard from '@/components/ui/PropertyCard';
 import PropertyFilter from '@/components/ui/PropertyFilter';
+import SEOHead from '@/components/SEOHead';
 import { useProperties, useSiteConfig, PropertyFromDB } from '@/hooks/useSupabaseData';
 import { PropertyFilter as PropertyFilterType } from '@/types/property';
 import { Grid, List, Loader2 } from 'lucide-react';
@@ -204,6 +205,12 @@ const PropertiesPage = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      <SEOHead 
+        title={`Imóveis à Venda e Aluguel - ${siteConfig?.seo_title || 'Via Fatto Imóveis'}`}
+        description={`Encontre ${filteredProperties.length} imóveis disponíveis para compra e aluguel em Brasília DF e Goiás. Casas, apartamentos, terrenos e mais.`}
+        ogImage={siteConfig?.og_image_url || undefined}
+        siteConfig={siteConfig}
+      />
       <Header />
       
       <main className="py-6 sm:py-8">

@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
 import PropertyCard from '@/components/ui/PropertyCard';
+import SEOHead from '@/components/SEOHead';
 import { useProperties, useSiteConfig, PropertyFromDB } from '@/hooks/useSupabaseData';
 import { Heart, Home, Loader2 } from 'lucide-react';
 import { buildWhatsAppUrl } from '@/lib/utils';
@@ -80,6 +81,12 @@ const FavoritesPage = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      <SEOHead 
+        title="Meus Favoritos - Via Fatto Imóveis"
+        description="Veja os imóveis que você salvou como favoritos."
+        siteConfig={siteConfig}
+        noIndex={true}
+      />
       <Header />
       
       <main className="py-16">

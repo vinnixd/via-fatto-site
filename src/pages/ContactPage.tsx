@@ -6,6 +6,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useSiteConfig } from '@/hooks/useSupabaseData';
 import { toast } from 'sonner';
 import { buildWhatsAppUrl } from '@/lib/utils';
+import SEOHead from '@/components/SEOHead';
 
 const ContactPage = () => {
   const { data: siteConfig } = useSiteConfig();
@@ -66,6 +67,12 @@ const ContactPage = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      <SEOHead 
+        title={`Contato - ${siteConfig?.seo_title || 'Via Fatto Imóveis'}`}
+        description="Entre em contato conosco para encontrar o imóvel perfeito. Atendimento personalizado via WhatsApp, telefone ou e-mail."
+        ogImage={siteConfig?.og_image_url || undefined}
+        siteConfig={siteConfig}
+      />
       <Header />
       
       <main className="py-16">

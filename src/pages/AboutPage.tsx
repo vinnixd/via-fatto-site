@@ -3,6 +3,7 @@ import Footer from '@/components/layout/Footer';
 import { Star, Users, Home, Trophy, Phone, Mail } from 'lucide-react';
 import { useSiteConfig } from '@/hooks/useSupabaseData';
 import { buildWhatsAppUrl } from '@/lib/utils';
+import SEOHead from '@/components/SEOHead';
 
 const AboutPage = () => {
   const { data: siteConfig } = useSiteConfig();
@@ -13,6 +14,12 @@ const AboutPage = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      <SEOHead 
+        title={`Sobre - ${siteConfig?.seo_title || 'Via Fatto Imóveis'}`}
+        description={siteConfig?.about_text || 'Conheça a Via Fatto Imóveis, sua imobiliária de confiança em Brasília DF e Goiás.'}
+        ogImage={siteConfig?.about_image_url || siteConfig?.og_image_url || undefined}
+        siteConfig={siteConfig}
+      />
       <Header />
       
       <main className="py-16">

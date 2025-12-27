@@ -807,10 +807,12 @@ const DesignerPage = () => {
                       {config.watermark_url && (
                         <div className="mt-4 p-4 bg-muted/50 rounded-xl">
                           <p className="text-sm font-medium mb-3">Prévia da marca d'água</p>
-                          <div className="relative w-full max-w-md h-48 rounded-lg overflow-hidden bg-gradient-to-br from-gray-300 to-gray-400">
-                            <div className="absolute inset-0 flex items-center justify-center text-gray-500">
-                              <ImagePlus className="h-12 w-12" />
-                            </div>
+                          <div className="relative w-full max-w-md h-48 rounded-lg overflow-hidden">
+                            <img 
+                              src="https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=800&h=600&fit=crop" 
+                              alt="Imóvel exemplo" 
+                              className="w-full h-full object-cover"
+                            />
                             <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
                               <img 
                                 src={config.watermark_url} 

@@ -505,8 +505,8 @@ const PropertyPage = () => {
               )}
             </div>
 
-            {/* Property Info - Sticky on desktop, normal flow on mobile */}
-            <div className="space-y-4 sm:space-y-6 lg:sticky lg:top-20 lg:self-start">
+            {/* Property Info - Normal flow, scrolls with page */}
+            <div className="space-y-4 sm:space-y-6">
               {/* Header */}
               <div className="bg-card p-4 sm:p-0 rounded-lg sm:rounded-none border sm:border-0 border-border">
                 <div className="flex items-start justify-between mb-2">

@@ -13,27 +13,27 @@ interface BreadcrumbsProps {
 
 export function Breadcrumbs({ items, className = '' }: BreadcrumbsProps) {
   return (
-    <nav aria-label="Breadcrumb" className={`flex items-center space-x-1 text-sm ${className}`}>
+    <nav aria-label="Breadcrumb" className={`flex flex-wrap items-center gap-1 text-sm ${className}`}>
       <Link 
         to="/" 
-        className="text-muted-foreground hover:text-primary transition-colors"
+        className="flex-shrink-0 text-muted-foreground hover:text-primary transition-colors"
         aria-label="Página inicial"
       >
         <Home size={16} />
       </Link>
       
       {items.map((item, index) => (
-        <span key={index} className="flex items-center">
-          <ChevronRight size={14} className="mx-1 text-muted-foreground" />
+        <span key={index} className="inline-flex items-center gap-1">
+          <ChevronRight size={14} className="flex-shrink-0 text-muted-foreground" />
           {item.href ? (
             <Link 
               to={item.href}
-              className="text-muted-foreground hover:text-primary transition-colors"
+              className="text-muted-foreground hover:text-primary transition-colors whitespace-nowrap"
             >
               {item.label}
             </Link>
           ) : (
-            <span className="text-foreground font-medium" aria-current="page">
+            <span className="text-foreground font-medium truncate max-w-[300px]" aria-current="page" title={item.label}>
               {item.label}
             </span>
           )}

@@ -46,6 +46,7 @@ const PropertyPage = () => {
   const touchStartX = useRef<number>(0);
   const touchEndX = useRef<number>(0);
   const mainImageRef = useRef<HTMLDivElement>(null);
+  const stickySidebarRef = useRef<HTMLDivElement>(null);
 
   const handleTouchStart = (e: React.TouchEvent) => {
     touchStartX.current = e.targetTouches[0].clientX;
@@ -114,6 +115,46 @@ const PropertyPage = () => {
       trackPropertyView(property.id, property.title, property.type, property.price);
     }
   }, [property]);
+
+  // DEV-only: detect ancestor CSS that breaks `position: sticky`
+  useEffect(() => {
+    if (!(import.meta as any).env?.DEV) return;
+    if (!stickySidebarRef.current) return;
+
+    const el = stickySidebarRef.current;
+    const blockers: Array<{ reason: string; value: string; node: string }> = [];
+
+    let node: HTMLElement | null = el.parentElement;
+    while (node && node !== document.body) {
+      const style = window.getComputedStyle(node);
+
+      const overflowX = style.overflowX;
+      const overflowY = style.overflowY;
+      if (['hidden', 'auto', 'scroll'].includes(overflowX) || ['hidden', 'auto', 'scroll'].includes(overflowY)) {
+        blockers.push({
+          reason: 'overflow',
+          value: `overflowX=${overflowX}, overflowY=${overflowY}`,
+          node: node.tagName.toLowerCase() + (node.className ? `.${String(node.className).split(' ').join('.')}` : ''),
+        });
+      }
+
+      if (style.transform && style.transform !== 'none') {
+        blockers.push({ reason: 'transform', value: style.transform, node: node.tagName.toLowerCase() });
+      }
+      if (style.filter && style.filter !== 'none') {
+        blockers.push({ reason: 'filter', value: style.filter, node: node.tagName.toLowerCase() });
+      }
+      if (style.perspective && style.perspective !== 'none' && style.perspective !== '0px') {
+        blockers.push({ reason: 'perspective', value: style.perspective, node: node.tagName.toLowerCase() });
+      }
+
+      node = node.parentElement;
+    }
+
+    if (blockers.length > 0) {
+      console.warn('[StickyAudit] Ancestor CSS pode quebrar o sticky:', blockers);
+    }
+  }, [property?.id]);
 
   // Images array - defined early for touch handlers
   const images = useMemo(() => {
@@ -247,8 +288,8 @@ const PropertyPage = () => {
       
       <Header />
       
-      <main className="py-4 sm:py-8">
-        <div className="container">
+      <main className="py-4 sm:py-8 overflow-visible">
+        <div className="container overflow-visible">
           {/* Breadcrumbs - Hidden on mobile */}
           <div className="hidden sm:block">
             <Breadcrumbs items={breadcrumbsUI} className="mb-4" />
@@ -270,7 +311,7 @@ const PropertyPage = () => {
             <span className="text-sm sm:text-base font-medium">Voltar</span>
           </button>
 
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-8">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-8 overflow-visible">
             {/* Image Gallery */}
             <div className="lg:col-span-2">
               {/* Main Image with Touch Support */}
@@ -506,7 +547,7 @@ const PropertyPage = () => {
             </div>
 
             {/* Property Info (Sidebar) */}
-            <div className="lg:sticky lg:top-24 lg:self-start">
+            <div ref={stickySidebarRef} className="lg:sticky lg:top-24 lg:self-start">
               <div className="space-y-4 sm:space-y-6 lg:max-h-[calc(100vh-96px)] lg:overflow-auto lg:pr-1">
                 {/* Header */}
                 <div className="bg-card p-4 sm:p-0 rounded-lg sm:rounded-none border sm:border-0 border-border">

@@ -15,29 +15,29 @@ export function Breadcrumbs({ items, className = '' }: BreadcrumbsProps) {
   return (
     <nav
       aria-label="Breadcrumb"
-      className={`flex flex-nowrap items-center gap-1 text-sm overflow-x-auto whitespace-nowrap ${className}`}
+      className={`flex items-center gap-1.5 text-sm ${className}`}
     >
       <Link
         to="/"
-        className="flex-shrink-0 text-muted-foreground hover:text-primary transition-colors"
+        className="text-muted-foreground hover:text-primary transition-colors"
         aria-label="Página inicial"
       >
         <Home size={16} />
       </Link>
 
       {items.map((item, index) => (
-        <span key={index} className="inline-flex items-center gap-1 flex-shrink-0">
-          <ChevronRight size={14} className="flex-shrink-0 text-muted-foreground" />
+        <span key={index} className="flex items-center gap-1.5">
+          <ChevronRight size={14} className="text-muted-foreground" />
           {item.href ? (
             <Link
               to={item.href}
-              className="text-muted-foreground hover:text-primary transition-colors"
+              className="text-muted-foreground hover:text-primary transition-colors whitespace-nowrap"
             >
               {item.label}
             </Link>
           ) : (
             <span
-              className="text-foreground font-medium truncate max-w-[40vw]"
+              className="text-foreground font-medium line-clamp-1"
               aria-current="page"
               title={item.label}
             >

@@ -1,10 +1,51 @@
 import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import AdminSidebar from './AdminSidebar';
+import AdminHeader from './AdminHeader';
 import ImportProgressBar from './ImportProgressBar';
 import { Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+
+const getPageTitle = (pathname: string): { title: string; subtitle?: string } => {
+  const routes: Record<string, { title: string; subtitle?: string }> = {
+    '/admin': { title: 'Dashboard', subtitle: 'Visão geral do sistema' },
+    '/admin/imoveis': { title: 'Imóveis', subtitle: 'Gerencie seus imóveis' },
+    '/admin/imoveis/novo': { title: 'Novo Imóvel', subtitle: 'Cadastrar novo imóvel' },
+    '/admin/mensagens': { title: 'Mensagens', subtitle: 'Central de mensagens' },
+    '/admin/categorias': { title: 'Categorias', subtitle: 'Gerencie as categorias' },
+    '/admin/designer': { title: 'Designer', subtitle: 'Personalize seu site' },
+    '/admin/configuracoes': { title: 'Configurações', subtitle: 'Configurações do sistema' },
+    '/admin/perfil': { title: 'Meu Perfil', subtitle: 'Gerencie seu perfil' },
+    '/admin/usuarios': { title: 'Usuários', subtitle: 'Gerencie os usuários' },
+    '/admin/portais': { title: 'Portais', subtitle: 'Integração com portais' },
+    '/admin/integracoes': { title: 'Integrações', subtitle: 'Ferramentas de marketing' },
+    '/admin/dominios': { title: 'Domínios', subtitle: 'Gerencie seus domínios' },
+    '/admin/favoritos': { title: 'Favoritos', subtitle: 'Imóveis favoritados' },
+    '/admin/dados/importar': { title: 'Importar', subtitle: 'Importar dados' },
+    '/admin/dados/exportar': { title: 'Exportar', subtitle: 'Exportar dados' },
+    '/admin/assinatura/pagamentos': { title: 'Pagamentos', subtitle: 'Histórico de pagamentos' },
+    '/admin/assinatura/planos': { title: 'Planos', subtitle: 'Planos disponíveis' },
+    '/admin/assinatura/faturas': { title: 'Faturas', subtitle: 'Suas faturas' },
+  };
+
+  // Check for exact match first
+  if (routes[pathname]) {
+    return routes[pathname];
+  }
+
+  // Check for property edit page
+  if (pathname.match(/^\/admin\/imoveis\/[^/]+$/)) {
+    return { title: 'Editar Imóvel', subtitle: 'Atualize as informações do imóvel' };
+  }
+
+  // Check for portal config page
+  if (pathname.match(/^\/admin\/portais\/[^/]+$/)) {
+    return { title: 'Configurar Portal', subtitle: 'Configure a integração' };
+  }
+
+  return { title: 'Admin', subtitle: undefined };
+};
 
 interface AdminLayoutProps {
   children: React.ReactNode;
@@ -13,6 +54,7 @@ interface AdminLayoutProps {
 const AdminLayout = ({ children }: AdminLayoutProps) => {
   const { user, loading, canAccessAdmin } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
   const [sidebarCollapsed, setSidebarCollapsed] = useState(() => {
     // Persist sidebar state in localStorage
     const saved = localStorage.getItem('admin-sidebar-collapsed');
@@ -37,6 +79,8 @@ const AdminLayout = ({ children }: AdminLayoutProps) => {
     }
   }, [user, loading, canAccessAdmin, navigate]);
 
+  const { title, subtitle } = getPageTitle(location.pathname);
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
@@ -58,6 +102,7 @@ const AdminLayout = ({ children }: AdminLayoutProps) => {
           sidebarCollapsed ? 'ml-16' : 'ml-64'
         )}
       >
+        <AdminHeader title={title} subtitle={subtitle} />
         {/* Global Import Progress Bar - visible on all admin pages */}
         <div className="fixed bottom-4 right-4 z-50 w-96 max-w-[calc(100vw-2rem)]">
           <ImportProgressBar />

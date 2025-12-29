@@ -262,22 +262,21 @@ const PropertyPage = () => {
     return buildWhatsAppUrl({ phone: siteConfig?.whatsapp, message });
   };
 
-  const getShareUrl = () => {
-    const supabaseUrl = (import.meta as any).env.VITE_SUPABASE_URL;
-    return `${supabaseUrl}/functions/v1/share-property/${property.slug}`;
+  const getPropertyUrl = () => {
+    return `${window.location.origin}/imovel/${property.slug}`;
   };
 
   const handleShare = async () => {
-    const shareUrl = getShareUrl();
+    const propertyUrl = getPropertyUrl();
     trackPropertyShare(property.id, property.title, 'copy');
     if (navigator.share) {
       navigator.share({
         title: property.title,
         text: `Confira este imóvel: ${property.title}`,
-        url: shareUrl,
+        url: propertyUrl,
       });
     } else {
-      await navigator.clipboard.writeText(shareUrl);
+      await navigator.clipboard.writeText(propertyUrl);
       setShareCopied(true);
       setTimeout(() => setShareCopied(false), 2000);
     }
@@ -286,8 +285,8 @@ const PropertyPage = () => {
   const handleShareWhatsApp = () => {
     trackPropertyShare(property.id, property.title, 'whatsapp');
     trackWhatsAppClick('property_share', property.id, property.title);
-    const shareUrl = getShareUrl();
-    const text = encodeURIComponent(`Confira este imóvel: ${shareUrl}`);
+    const propertyUrl = getPropertyUrl();
+    const text = encodeURIComponent(`Confira este imóvel: ${propertyUrl}`);
     window.open(`https://wa.me/?text=${text}`, '_blank');
   };
 

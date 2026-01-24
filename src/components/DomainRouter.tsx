@@ -46,9 +46,11 @@ export const DomainRouter = ({ children }: DomainRouterProps) => {
     const currentPath = location.pathname;
     const hostname = window.location.hostname;
 
-    // Em ambientes Lovable (ex: *.lovable.app), não existe subdomínio painel.*.
+    // Em ambientes Lovable (ex: *.lovable.app, *.lovableproject.com), não existe subdomínio painel.*.
     // Então NÃO fazemos redirect cross-subdomain; mantemos o /admin funcionando no mesmo host.
-    const isLovableHosted = hostname.includes('lovable.app') || hostname.includes('localhost');
+    const isLovableHosted = hostname.includes('lovable.app') || 
+      hostname.includes('lovableproject.com') || 
+      hostname.includes('localhost');
     const rootHostname = hostname.replace(/^www\./, '');
 
     // NOVA REGRA: Se está no subdomínio painel.* e não está em rota admin, redireciona

@@ -46,21 +46,30 @@ async function resolveTenantByHostname(hostname: string, type: 'admin' | 'public
   error: string | null;
 }> {
   try {
-    // Query domains table for this hostname
-    const { data: domainData, error: domainError } = await supabase
+    // Query domains table for this hostname using rpc or direct query
+    // Using any to bypass TypeScript restrictions for new tables
+    const { data: domainData, error: domainError } = await (supabase as any)
       .from('domains')
       .select('*')
       .eq('hostname', hostname.toLowerCase())
       .eq('type', type)
-      .single();
+      .maybeSingle();
 
-    if (domainError || !domainData) {
+    if (domainError) {
+      console.error('Error querying domains:', domainError);
+      // If table doesn't exist yet, treat as not found
+      if (domainError.code === 'PGRST204' || domainError.message?.includes('relation')) {
+        return { tenant: null, domain: null, error: 'DOMAIN_NOT_FOUND' };
+      }
+    }
+
+    if (!domainData) {
       // Try without type restriction for fallback
-      const { data: anyDomain } = await supabase
+      const { data: anyDomain } = await (supabase as any)
         .from('domains')
         .select('*')
         .eq('hostname', hostname.toLowerCase())
-        .single();
+        .maybeSingle();
 
       if (!anyDomain) {
         return { 
@@ -101,7 +110,7 @@ async function resolveTenantByHostname(hostname: string, type: 'admin' | 'public
     }
 
     // Fetch tenant details
-    const { data: tenantData, error: tenantError } = await supabase
+    const { data: tenantData, error: tenantError } = await (supabase as any)
       .from('tenants')
       .select('*')
       .eq('id', domain.tenant_id)
@@ -144,12 +153,12 @@ async function resolveTenantByHostname(hostname: string, type: 'admin' | 'public
  */
 async function getUserTenantRole(tenantId: string, userId: string): Promise<'owner' | 'admin' | 'agent' | null> {
   try {
-    const { data, error } = await supabase
+    const { data, error } = await (supabase as any)
       .from('tenant_users')
       .select('role')
       .eq('tenant_id', tenantId)
       .eq('user_id', userId)
-      .single();
+      .maybeSingle();
 
     if (error || !data) {
       return null;
@@ -179,19 +188,21 @@ export const TenantProvider = ({ children }: TenantProviderProps) => {
 
     const hostname = window.location.hostname.toLowerCase();
     
-    // Skip resolution for localhost and lovable.app (use stored tenant or default)
-    const isDevEnvironment = hostname.includes('localhost') || hostname.includes('lovable.app');
+    // Skip resolution for localhost and lovable dev environments (use stored tenant or default)
+    const isDevEnvironment = hostname.includes('localhost') || 
+      hostname.includes('lovable.app') || 
+      hostname.includes('lovableproject.com');
     
     if (isDevEnvironment) {
       // In dev, try to get stored tenant or use default
       const storedTenantId = localStorage.getItem(TENANT_STORAGE_KEY);
       
       if (storedTenantId) {
-        const { data: tenantData } = await supabase
+        const { data: tenantData } = await (supabase as any)
           .from('tenants')
           .select('*')
           .eq('id', storedTenantId)
-          .single();
+          .maybeSingle();
 
         if (tenantData) {
           setTenant(tenantData as Tenant);
@@ -202,12 +213,12 @@ export const TenantProvider = ({ children }: TenantProviderProps) => {
       }
 
       // Get first available tenant for dev
-      const { data: firstTenant } = await supabase
+      const { data: firstTenant } = await (supabase as any)
         .from('tenants')
         .select('*')
         .eq('status', 'active')
         .limit(1)
-        .single();
+        .maybeSingle();
 
       if (firstTenant) {
         setTenant(firstTenant as Tenant);

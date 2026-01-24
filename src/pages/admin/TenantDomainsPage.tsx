@@ -84,7 +84,7 @@ const TenantDomainsPage = () => {
     queryFn: async () => {
       if (!tenantId) return [];
       
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from('domains')
         .select('*')
         .eq('tenant_id', tenantId)
@@ -104,7 +104,7 @@ const TenantDomainsPage = () => {
       // Generate verification token
       const verifyToken = crypto.randomUUID().replace(/-/g, '').substring(0, 32);
 
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from('domains')
         .insert({
           tenant_id: tenantId,
@@ -139,7 +139,7 @@ const TenantDomainsPage = () => {
   // Delete domain mutation
   const deleteDomainMutation = useMutation({
     mutationFn: async (domainId: string) => {
-      const { error } = await supabase
+      const { error } = await (supabase as any)
         .from('domains')
         .delete()
         .eq('id', domainId);

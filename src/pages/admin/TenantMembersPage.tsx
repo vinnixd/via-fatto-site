@@ -94,7 +94,7 @@ const TenantMembersPage = () => {
     queryFn: async () => {
       if (!tenantId) return [];
       
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from('tenant_users')
         .select(`
           *,
@@ -131,19 +131,19 @@ const TenantMembersPage = () => {
       }
 
       // Check if already a member
-      const { data: existing } = await supabase
+      const { data: existing } = await (supabase as any)
         .from('tenant_users')
         .select('id')
         .eq('tenant_id', tenantId)
         .eq('user_id', profile.id)
-        .single();
+        .maybeSingle();
 
       if (existing) {
         throw new Error('Este usuário já é membro desta empresa.');
       }
 
       // Add as member
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from('tenant_users')
         .insert({
           tenant_id: tenantId,
@@ -171,7 +171,7 @@ const TenantMembersPage = () => {
   // Update role mutation
   const updateRoleMutation = useMutation({
     mutationFn: async ({ memberId, role }: { memberId: string; role: 'owner' | 'admin' | 'agent' }) => {
-      const { error } = await supabase
+      const { error } = await (supabase as any)
         .from('tenant_users')
         .update({ role })
         .eq('id', memberId);
@@ -192,7 +192,7 @@ const TenantMembersPage = () => {
   // Remove member mutation
   const removeMemberMutation = useMutation({
     mutationFn: async (memberId: string) => {
-      const { error } = await supabase
+      const { error } = await (supabase as any)
         .from('tenant_users')
         .delete()
         .eq('id', memberId);

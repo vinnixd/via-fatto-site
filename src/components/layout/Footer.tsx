@@ -163,7 +163,9 @@ const Footer = () => {
               </Link>
               {(() => {
                 const hostname = window.location.hostname;
-                const isLovablePreview = hostname.includes('lovable.app') || hostname.includes('localhost');
+                const isLovablePreview = hostname.includes('lovable.app') || 
+                  hostname.includes('lovableproject.com') || 
+                  hostname.includes('localhost');
                 
                 if (isLovablePreview) {
                   return (

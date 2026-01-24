@@ -23,6 +23,7 @@ interface DomainRouterProps {
  * 
  * - painel.viafatto.com.br → usa URLs limpas (/, /imoveis, /designer)
  * - viafatto.com.br → usa rotas públicas normais
+ * - viafatto.com.br/admin → redireciona para painel.viafatto.com.br
  * 
  * No subdomínio admin, as rotas limpas são mapeadas internamente para /admin/*
  */
@@ -34,6 +35,21 @@ export const DomainRouter = ({ children }: DomainRouterProps) => {
   useEffect(() => {
     const isAdmin = isAdminSubdomain();
     const currentPath = location.pathname;
+    const hostname = window.location.hostname;
+
+    // Se está no domínio público e tentando acessar /admin, redireciona para subdomínio painel
+    if (!isAdmin && currentPath.startsWith('/admin')) {
+      const parts = hostname.split('.');
+      // Constrói o subdomínio painel (ex: painel.viafatto.com.br)
+      const adminDomain = `painel.${parts.join('.')}`;
+      // Converte /admin/imoveis para /imoveis (URL limpa)
+      const cleanPath = currentPath.replace('/admin', '') || '/';
+      const protocol = window.location.protocol;
+      
+      // Redireciona para o subdomínio admin com URL limpa
+      window.location.href = `${protocol}//${adminDomain}${cleanPath}`;
+      return;
+    }
 
     if (isAdmin) {
       // Verifica se está tentando acessar rotas exclusivas do site público

@@ -1,4 +1,5 @@
 import { useTenant } from '@/contexts/TenantContext';
+import { useQueryClient } from '@tanstack/react-query';
 import { Loader2, AlertCircle, Building2, Globe } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
@@ -13,7 +14,14 @@ interface PublicTenantGateProps {
  * - Success: Renders children with tenant context
  */
 export const PublicTenantGate = ({ children }: PublicTenantGateProps) => {
-  const { loading, error, isResolved, refreshTenant } = useTenant();
+  const { loading, error, isResolved } = useTenant();
+  const queryClient = useQueryClient();
+
+  const handleRetry = () => {
+    // Clear tenant from localStorage and refetch
+    localStorage.removeItem('public_tenant_id');
+    queryClient.invalidateQueries({ queryKey: ['tenant-id'] });
+  };
 
   // Loading state
   if (loading) {
@@ -29,7 +37,13 @@ export const PublicTenantGate = ({ children }: PublicTenantGateProps) => {
 
   // Error states
   if (error && !isResolved) {
-    return <ErrorScreen error={error} onRetry={refreshTenant} />;
+    const errorMessage = error?.message || 'RESOLUTION_ERROR';
+    return <ErrorScreen error={errorMessage} onRetry={handleRetry} />;
+  }
+
+  // No tenant resolved (not an error, just empty)
+  if (!isResolved && !loading) {
+    return <ErrorScreen error="NO_TENANT_AVAILABLE" onRetry={handleRetry} />;
   }
 
   // All good - render children

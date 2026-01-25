@@ -5,6 +5,8 @@ import useEmblaCarousel from 'embla-carousel-react';
 import Autoplay from 'embla-carousel-autoplay';
 import PropertyCard from '@/components/ui/PropertyCard';
 import { useProperties, useCategories, useSiteConfig, useAvailableCities, PropertyFromDB } from '@/hooks/useSupabaseData';
+import { useCompanyName, useContactInfo } from '@/hooks/useTenantSettings';
+import { useTenant } from '@/contexts/TenantContext';
 import heroHouse from '@/assets/hero-house.jpg';
 
 // Preload hero image for faster LCP
@@ -19,6 +21,9 @@ const preloadHeroImage = (src: string) => {
 
 const Home = () => {
   const navigate = useNavigate();
+  const { tenantId, isResolved } = useTenant();
+  const companyName = useCompanyName();
+  const contactInfo = useContactInfo();
 
   const [favorites, setFavorites] = useState<string[]>([]);
   const [activeCategory, setActiveCategory] = useState<string>('all');
@@ -139,10 +144,10 @@ const Home = () => {
     reference: property.reference || '',
     views: property.views,
     broker: {
-      name: 'Via Fatto Imóveis',
-      phone: siteConfig?.whatsapp || '11999887766',
-      email: siteConfig?.email || 'contato@viafatto.com.br',
-      creci: 'CRECI-DF: 29588',
+      name: companyName,
+      phone: contactInfo.whatsapp || contactInfo.phone || '',
+      email: contactInfo.email || '',
+      creci: '', // Loaded dynamically from tenant settings
       avatar: '',
     },
     createdAt: property.created_at,

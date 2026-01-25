@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { useSiteConfig } from '@/hooks/useSupabaseData';
+import { useTenantSettings } from '@/hooks/useTenantSettings';
 
 // Convert hex to HSL
 function hexToHSL(hex: string): { h: number; s: number; l: number } | null {
@@ -61,17 +61,42 @@ function lightenHSL(hsl: { h: number; s: number; l: number }, amount: number) {
   };
 }
 
+// Debug logging helper
+function debugLog(message: string, data?: unknown) {
+  if (import.meta.env.DEV) {
+    console.log(`[BrandColors] ${message}`, data ?? '');
+  }
+}
+
+/**
+ * Hook that applies tenant brand colors dynamically as CSS variables.
+ * Reads colors from tenant settings (site_config) and applies them to :root.
+ */
 export function useBrandColors() {
-  const { data: siteConfig } = useSiteConfig();
+  const { settings, isLoading } = useTenantSettings();
 
   useEffect(() => {
-    if (!siteConfig) return;
+    if (isLoading) {
+      debugLog('Waiting for settings to load...');
+      return;
+    }
+
+    if (!settings) {
+      debugLog('No settings available, using default colors');
+      return;
+    }
 
     const root = document.documentElement;
 
+    debugLog('Applying brand colors:', {
+      primary: settings.primary_color,
+      secondary: settings.secondary_color,
+      accent: settings.accent_color,
+    });
+
     // Apply primary color
-    if (siteConfig.primary_color) {
-      const primaryHSL = hexToHSL(siteConfig.primary_color);
+    if (settings.primary_color) {
+      const primaryHSL = hexToHSL(settings.primary_color);
       if (primaryHSL) {
         const hslValue = `${primaryHSL.h} ${primaryHSL.s}% ${primaryHSL.l}%`;
         root.style.setProperty('--primary', hslValue);
@@ -96,25 +121,31 @@ export function useBrandColors() {
           '--gradient-primary',
           `linear-gradient(135deg, hsl(${hslValue}), hsl(${gradientLightHSL.h} ${gradientLightHSL.s}% ${gradientLightHSL.l}%))`
         );
+
+        debugLog('Primary color applied:', settings.primary_color);
       }
     }
 
-    // Apply secondary color (if different from primary)
-    if (siteConfig.secondary_color) {
-      const secondaryHSL = hexToHSL(siteConfig.secondary_color);
+    // Apply secondary color
+    if (settings.secondary_color) {
+      const secondaryHSL = hexToHSL(settings.secondary_color);
       if (secondaryHSL) {
-        // Can use secondary for specific elements if needed
-        // For now, secondary is used for buttons/UI elements
+        const hslValue = `${secondaryHSL.h} ${secondaryHSL.s}% ${secondaryHSL.l}%`;
+        root.style.setProperty('--secondary', hslValue);
+        debugLog('Secondary color applied:', settings.secondary_color);
       }
     }
 
-    // Apply accent color
-    if (siteConfig.accent_color) {
-      const accentHSL = hexToHSL(siteConfig.accent_color);
+    // Apply accent color (if different from primary)
+    if (settings.accent_color) {
+      const accentHSL = hexToHSL(settings.accent_color);
       if (accentHSL) {
-        // Accent can be used for specific highlights
-        // Already covered by primary-derived accent above
+        // Optional: use for specific accent elements
+        debugLog('Accent color available:', settings.accent_color);
       }
     }
-  }, [siteConfig]);
+
+  }, [settings, isLoading]);
 }
+
+export { hexToHSL, darkenHSL, lightenHSL };

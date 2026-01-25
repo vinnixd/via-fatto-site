@@ -305,11 +305,11 @@ export const useSiteConfig = () => {
       return data as SiteConfig | null;
     },
     enabled: !!tenantId,
-    staleTime: 1000 * 30, // 30 seconds - more aggressive refresh
+    staleTime: 0, // Sem cache - sempre busca dados frescos
     gcTime: 1000 * 60 * 5, // 5 minutes
     refetchOnWindowFocus: true,
     refetchOnReconnect: true,
-    refetchInterval: 1000 * 60, // Refetch every 60 seconds
+    refetchOnMount: 'always', // Sempre refetch ao montar
   });
 
   useEffect(() => {

@@ -1,11 +1,17 @@
 import { useEffect } from 'react';
-import { useSiteConfig } from './useSupabaseData';
+import { useTenantSettings } from './useTenantSettings';
 
+/**
+ * Hook that dynamically updates the favicon based on tenant settings.
+ * Reads favicon_url from site_config (tenant settings).
+ */
 export const useFavicon = () => {
-  const { data: siteConfig } = useSiteConfig();
+  const { settings, isLoading } = useTenantSettings();
 
   useEffect(() => {
-    if (siteConfig?.favicon_url) {
+    if (isLoading) return;
+    
+    if (settings?.favicon_url) {
       // Update or create favicon link
       let favicon = document.querySelector('link[rel="icon"]') as HTMLLinkElement;
       if (!favicon) {
@@ -13,7 +19,7 @@ export const useFavicon = () => {
         favicon.rel = 'icon';
         document.head.appendChild(favicon);
       }
-      favicon.href = siteConfig.favicon_url;
+      favicon.href = settings.favicon_url;
       favicon.type = 'image/png';
 
       // Also update apple-touch-icon if exists
@@ -23,7 +29,11 @@ export const useFavicon = () => {
         appleFavicon.rel = 'apple-touch-icon';
         document.head.appendChild(appleFavicon);
       }
-      appleFavicon.href = siteConfig.favicon_url;
+      appleFavicon.href = settings.favicon_url;
+
+      if (import.meta.env.DEV) {
+        console.log('[Favicon] Updated to:', settings.favicon_url);
+      }
     }
-  }, [siteConfig?.favicon_url]);
+  }, [settings?.favicon_url, isLoading]);
 };

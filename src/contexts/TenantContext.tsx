@@ -33,6 +33,13 @@ const TenantContext = createContext<TenantContextType | undefined>(undefined);
 
 const TENANT_STORAGE_KEY = 'public_tenant_id';
 
+// Debug logging helper - only in development
+function debugLog(message: string, data?: unknown) {
+  if (import.meta.env.DEV) {
+    console.log(`[TenantContext] ${message}`, data ?? '');
+  }
+}
+
 /**
  * Resolve tenant by hostname from domains table
  * For public sites, we look for type='public' and verified=true
@@ -42,9 +49,11 @@ async function resolveTenantByHostname(hostname: string): Promise<{
   domain: Domain | null;
   error: string | null;
 }> {
+  debugLog('Resolving tenant for hostname:', hostname);
+  
   try {
     // Query domains table for this hostname with type='public' and verified=true
-    const { data: domainData, error: domainError } = await (supabase as any)
+    const { data: domainData, error: domainError } = await supabase
       .from('domains')
       .select('*')
       .eq('hostname', hostname.toLowerCase())
@@ -53,21 +62,24 @@ async function resolveTenantByHostname(hostname: string): Promise<{
       .maybeSingle();
 
     if (domainError) {
-      console.error('Error querying domains:', domainError);
+      console.error('[TenantContext] Error querying domains:', domainError);
       if (domainError.code === 'PGRST204' || domainError.message?.includes('relation')) {
         return { tenant: null, domain: null, error: 'DOMAIN_NOT_FOUND' };
       }
     }
 
+    debugLog('Domain query result:', domainData);
+
     if (!domainData) {
       // Check if domain exists but with wrong type or unverified
-      const { data: anyDomain } = await (supabase as any)
+      const { data: anyDomain } = await supabase
         .from('domains')
         .select('*')
         .eq('hostname', hostname.toLowerCase())
         .maybeSingle();
 
       if (!anyDomain) {
+        debugLog('Domain not found in database');
         return { 
           tenant: null, 
           domain: null, 
@@ -77,6 +89,7 @@ async function resolveTenantByHostname(hostname: string): Promise<{
 
       // Domain exists but not public type
       if (anyDomain.type !== 'public') {
+        debugLog('Domain exists but type is not public:', anyDomain.type);
         return {
           tenant: null,
           domain: anyDomain as Domain,
@@ -86,6 +99,7 @@ async function resolveTenantByHostname(hostname: string): Promise<{
 
       // Domain exists but not verified
       if (!anyDomain.verified) {
+        debugLog('Domain exists but not verified');
         return {
           tenant: null,
           domain: anyDomain as Domain,
@@ -95,15 +109,17 @@ async function resolveTenantByHostname(hostname: string): Promise<{
     }
 
     const domain = domainData as Domain;
+    debugLog('Valid domain found, tenant_id:', domain.tenant_id);
 
     // Fetch tenant details
-    const { data: tenantData, error: tenantError } = await (supabase as any)
+    const { data: tenantData, error: tenantError } = await supabase
       .from('tenants')
       .select('*')
       .eq('id', domain.tenant_id)
       .single();
 
     if (tenantError || !tenantData) {
+      debugLog('Tenant not found:', tenantError);
       return {
         tenant: null,
         domain,
@@ -113,6 +129,7 @@ async function resolveTenantByHostname(hostname: string): Promise<{
 
     // Check tenant status
     if (tenantData.status !== 'active') {
+      debugLog('Tenant inactive:', tenantData.status);
       return {
         tenant: tenantData as Tenant,
         domain,
@@ -120,13 +137,14 @@ async function resolveTenantByHostname(hostname: string): Promise<{
       };
     }
 
+    debugLog('Tenant resolved successfully:', tenantData.name);
     return {
       tenant: tenantData as Tenant,
       domain,
       error: null
     };
   } catch (err) {
-    console.error('Error resolving tenant:', err);
+    console.error('[TenantContext] Error resolving tenant:', err);
     return {
       tenant: null,
       domain: null,
@@ -152,23 +170,30 @@ export const TenantProvider = ({ children }: TenantProviderProps) => {
 
     const hostname = window.location.hostname.toLowerCase();
     
+    debugLog('Starting tenant resolution...');
+    debugLog('Current hostname:', hostname);
+    
     // Skip resolution for localhost and lovable dev environments (use stored tenant or default)
     const isDevEnvironment = hostname.includes('localhost') || 
       hostname.includes('lovable.app') || 
       hostname.includes('lovableproject.com');
     
+    debugLog('Is dev environment:', isDevEnvironment);
+    
     if (isDevEnvironment) {
       // In dev, try to get stored tenant or use default
       const storedTenantId = localStorage.getItem(TENANT_STORAGE_KEY);
+      debugLog('Stored tenant ID from localStorage:', storedTenantId);
       
       if (storedTenantId) {
-        const { data: tenantData } = await (supabase as any)
+        const { data: tenantData } = await supabase
           .from('tenants')
           .select('*')
           .eq('id', storedTenantId)
           .maybeSingle();
 
         if (tenantData) {
+          debugLog('Loaded tenant from storage:', tenantData.name);
           setTenant(tenantData as Tenant);
           setIsResolved(true);
           setLoading(false);
@@ -177,7 +202,7 @@ export const TenantProvider = ({ children }: TenantProviderProps) => {
       }
 
       // Get first available active tenant for dev
-      const { data: firstTenant } = await (supabase as any)
+      const { data: firstTenant } = await supabase
         .from('tenants')
         .select('*')
         .eq('status', 'active')
@@ -185,10 +210,12 @@ export const TenantProvider = ({ children }: TenantProviderProps) => {
         .maybeSingle();
 
       if (firstTenant) {
+        debugLog('Using first active tenant:', firstTenant.name);
         setTenant(firstTenant as Tenant);
         localStorage.setItem(TENANT_STORAGE_KEY, firstTenant.id);
         setIsResolved(true);
       } else {
+        debugLog('No active tenant available');
         setError('NO_TENANT_AVAILABLE');
       }
       
@@ -206,6 +233,7 @@ export const TenantProvider = ({ children }: TenantProviderProps) => {
 
     if (result.tenant) {
       localStorage.setItem(TENANT_STORAGE_KEY, result.tenant.id);
+      debugLog('Tenant stored in localStorage');
     }
 
     setLoading(false);
@@ -215,6 +243,20 @@ export const TenantProvider = ({ children }: TenantProviderProps) => {
   useEffect(() => {
     resolveTenant();
   }, [resolveTenant]);
+
+  // Debug output on tenant change
+  useEffect(() => {
+    if (import.meta.env.DEV) {
+      console.log('='.repeat(50));
+      console.log('[TenantContext] Current State:');
+      console.log('  Hostname:', window.location.hostname);
+      console.log('  Tenant ID:', tenant?.id ?? 'null');
+      console.log('  Tenant Name:', tenant?.name ?? 'null');
+      console.log('  Is Resolved:', isResolved);
+      console.log('  Error:', error ?? 'none');
+      console.log('='.repeat(50));
+    }
+  }, [tenant, isResolved, error]);
 
   const refreshTenant = useCallback(async () => {
     await resolveTenant();

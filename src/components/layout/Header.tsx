@@ -1,14 +1,16 @@
 import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Menu, X, Phone } from 'lucide-react';
-import { useSiteConfig } from '@/hooks/useSupabaseData';
+import { useTenantSettings, useCompanyName, useContactInfo } from '@/hooks/useTenantSettings';
 import WhatsAppIcon from '@/components/ui/WhatsAppIcon';
 import { buildWhatsAppUrl } from '@/lib/utils';
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const location = useLocation();
-  const { data: siteConfig, isLoading } = useSiteConfig();
+  const { settings, isLoading } = useTenantSettings();
+  const companyName = useCompanyName();
+  const contactInfo = useContactInfo();
 
   // Close menu on route change
   useEffect(() => {
@@ -39,9 +41,8 @@ const Header = () => {
     return location.pathname === href;
   };
 
-  const phoneNumber = siteConfig?.phone || '(11) 99988-7766';
   const whatsappUrl = buildWhatsAppUrl({
-    phone: siteConfig?.whatsapp,
+    phone: contactInfo.whatsapp || '',
     message: 'Olá! Gostaria de saber mais sobre os imóveis disponíveis.',
   });
 
@@ -62,10 +63,10 @@ const Header = () => {
           >
           {isLoading ? (
               <div className="h-10 sm:h-12 w-[120px] sm:w-[150px]" />
-            ) : (siteConfig?.logo_horizontal_url || siteConfig?.logo_url) ? (
+            ) : (settings?.logo_horizontal_url || settings?.logo_url) ? (
               <img 
-                src={siteConfig.logo_horizontal_url || siteConfig.logo_url} 
-                alt="Logo" 
+                src={settings.logo_horizontal_url || settings.logo_url!} 
+                alt={companyName} 
                 className="h-10 sm:h-12 max-w-[150px] sm:max-w-[200px] w-auto object-contain"
                 loading="eager"
                 decoding="async"
@@ -73,7 +74,9 @@ const Header = () => {
               />
             ) : (
               <div className="w-9 h-9 sm:w-10 sm:h-10 bg-primary rounded-lg flex items-center justify-center">
-                <span className="text-primary-foreground font-bold text-lg sm:text-xl">V</span>
+                <span className="text-primary-foreground font-bold text-lg sm:text-xl">
+                  {companyName.charAt(0).toUpperCase()}
+                </span>
               </div>
             )}
           </Link>
@@ -95,22 +98,26 @@ const Header = () => {
 
           {/* Contact Actions - Desktop */}
           <div className="hidden lg:flex items-center space-x-3">
-            <a
-              href={`tel:${siteConfig?.phone || '+5511999887766'}`}
-              className="flex items-center space-x-2 text-muted-foreground hover:text-primary transition-colors"
-            >
-              <Phone size={18} />
-              <span className="text-sm font-medium">{phoneNumber}</span>
-            </a>
-            <a
-              href={whatsappUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="btn-primary flex items-center space-x-2 !py-2"
-            >
-              <WhatsAppIcon size={18} />
-              <span>WhatsApp</span>
-            </a>
+            {contactInfo.phone && (
+              <a
+                href={`tel:${contactInfo.phone.replace(/\D/g, '')}`}
+                className="flex items-center space-x-2 text-muted-foreground hover:text-primary transition-colors"
+              >
+                <Phone size={18} />
+                <span className="text-sm font-medium">{contactInfo.phone}</span>
+              </a>
+            )}
+            {contactInfo.whatsapp && (
+              <a
+                href={whatsappUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="btn-primary flex items-center space-x-2 !py-2"
+              >
+                <WhatsAppIcon size={18} />
+                <span>WhatsApp</span>
+              </a>
+            )}
           </div>
 
           {/* Mobile Menu Button */}
@@ -159,22 +166,26 @@ const Header = () => {
           
           {/* Contact Actions - Mobile Footer */}
           <div className="border-t border-border p-6 space-y-3 bg-muted/30 safe-area-bottom">
-            <a
-              href={`tel:${siteConfig?.phone || '+5511999887766'}`}
-              className="flex items-center justify-center space-x-3 w-full py-4 px-6 rounded-xl bg-muted text-foreground font-medium text-base"
-            >
-              <Phone size={20} />
-              <span>{phoneNumber}</span>
-            </a>
-            <a
-              href={whatsappUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center justify-center space-x-3 w-full py-4 px-6 rounded-xl bg-primary text-primary-foreground font-medium text-base"
-            >
-              <WhatsAppIcon size={20} />
-              <span>Falar no WhatsApp</span>
-            </a>
+            {contactInfo.phone && (
+              <a
+                href={`tel:${contactInfo.phone.replace(/\D/g, '')}`}
+                className="flex items-center justify-center space-x-3 w-full py-4 px-6 rounded-xl bg-muted text-foreground font-medium text-base"
+              >
+                <Phone size={20} />
+                <span>{contactInfo.phone}</span>
+              </a>
+            )}
+            {contactInfo.whatsapp && (
+              <a
+                href={whatsappUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center justify-center space-x-3 w-full py-4 px-6 rounded-xl bg-primary text-primary-foreground font-medium text-base"
+              >
+                <WhatsAppIcon size={20} />
+                <span>Falar no WhatsApp</span>
+              </a>
+            )}
           </div>
         </nav>
       </div>

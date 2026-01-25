@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -8,10 +9,12 @@ import { useFavicon } from "@/hooks/useFavicon";
 import { useBrandColors } from "@/hooks/useBrandColors";
 import { useTrackingScripts } from "@/hooks/useTrackingScripts";
 import { useAutoPageTracking } from "@/hooks/usePageTracking";
+import { initializeTenant } from "@/hooks/useSupabaseData";
 import ScrollToTop from "@/components/ScrollToTop";
 import { AppErrorBoundary } from "@/components/AppErrorBoundary";
 import FloatingWhatsApp from "@/components/FloatingWhatsApp";
 import { PublicTenantGate } from "@/components/tenant/PublicTenantGate";
+import { Loader2 } from "lucide-react";
 
 // Public Pages
 import Index from "./pages/Index";
@@ -35,6 +38,23 @@ const BrandManager = () => {
 };
 
 const App = () => {
+  const [tenantReady, setTenantReady] = useState(false);
+
+  useEffect(() => {
+    initializeTenant().then(() => setTenantReady(true));
+  }, []);
+
+  if (!tenantReady) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <div className="text-center">
+          <Loader2 className="h-12 w-12 animate-spin text-primary mx-auto mb-4" />
+          <p className="text-muted-foreground">Carregando...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>

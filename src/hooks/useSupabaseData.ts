@@ -68,6 +68,17 @@ async function getTenantId(): Promise<string | null> {
 }
 
 /**
+ * Initialize tenant on app load - call once in App.tsx
+ * Returns the resolved tenant ID or null
+ */
+export async function initializeTenant(): Promise<string | null> {
+  debugLog('Initializing tenant...');
+  const tenantId = await getTenantId();
+  debugLog('Tenant initialized:', tenantId);
+  return tenantId;
+}
+
+/**
  * Hook to get current tenant ID (cached in localStorage)
  */
 export function useTenantId() {

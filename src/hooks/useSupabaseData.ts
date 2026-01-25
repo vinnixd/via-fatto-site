@@ -2,7 +2,7 @@ import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useEffect } from 'react';
 
-const TENANT_STORAGE_KEY = 'public_tenant_id';
+const TENANT_STORAGE_KEY = 'active_tenant_id';
 
 // Debug logging helper
 function debugLog(message: string, data?: unknown) {
@@ -12,70 +12,48 @@ function debugLog(message: string, data?: unknown) {
 }
 
 /**
- * Resolve tenant by hostname from domains table
+ * Initialize tenant on app load - call once in App.tsx
+ * Resolves tenant_id by hostname from database
  */
-async function resolveTenantByHostname(hostname: string): Promise<string | null> {
-  const normalizedHost = hostname.toLowerCase().replace(/^www\./, '');
+export async function initializeTenant(): Promise<string | null> {
+  const hostname = window.location.hostname.toLowerCase();
   
-  const { data: domainData } = await supabase
-    .from('domains')
-    .select('tenant_id')
-    .eq('hostname', normalizedHost)
-    .eq('type', 'public')
-    .eq('verified', true)
-    .maybeSingle();
-
-  return domainData?.tenant_id || null;
-}
-
-/**
- * Get tenant ID from localStorage or resolve by hostname
- */
-async function getTenantId(): Promise<string | null> {
-  const stored = localStorage.getItem(TENANT_STORAGE_KEY);
-  if (stored) return stored;
+  console.log('[initializeTenant] Resolvendo tenant para:', hostname);
   
-  const hostname = window.location.hostname;
-  
-  // Skip resolution for dev environments - find any verified public domain
+  // Dev environments (lovable preview, localhost)
   const isDevEnvironment = hostname.includes('localhost') || 
     hostname.includes('lovable.app') || 
     hostname.includes('lovableproject.com');
   
   if (isDevEnvironment) {
-    const { data: fallbackDomain } = await supabase
-      .from('domains')
-      .select('tenant_id')
-      .eq('type', 'public')
-      .eq('verified', true)
-      .order('is_primary', { ascending: false })
-      .limit(1)
-      .maybeSingle();
-    
-    if (fallbackDomain?.tenant_id) {
-      localStorage.setItem(TENANT_STORAGE_KEY, fallbackDomain.tenant_id);
-      return fallbackDomain.tenant_id;
-    }
+    // In dev, use default tenant
+    const devTenantId = 'a0000000-0000-0000-0000-000000000001';
+    localStorage.setItem(TENANT_STORAGE_KEY, devTenantId);
+    console.log('[initializeTenant] Dev mode, usando tenant:', devTenantId);
+    return devTenantId;
+  }
+  
+  // Production: fetch tenant by domain
+  const { data: domain, error } = await supabase
+    .from('domains')
+    .select('tenant_id')
+    .eq('hostname', hostname)
+    .eq('verified', true)
+    .maybeSingle();
+  
+  if (error) {
+    console.error('[initializeTenant] Erro ao buscar domínio:', error);
     return null;
   }
   
-  // Production: resolve by hostname
-  const tenantId = await resolveTenantByHostname(hostname);
-  if (tenantId) {
-    localStorage.setItem(TENANT_STORAGE_KEY, tenantId);
+  if (!domain) {
+    console.warn('[initializeTenant] Domínio não encontrado:', hostname);
+    return null;
   }
-  return tenantId;
-}
-
-/**
- * Initialize tenant on app load - call once in App.tsx
- * Returns the resolved tenant ID or null
- */
-export async function initializeTenant(): Promise<string | null> {
-  debugLog('Initializing tenant...');
-  const tenantId = await getTenantId();
-  debugLog('Tenant initialized:', tenantId);
-  return tenantId;
+  
+  localStorage.setItem(TENANT_STORAGE_KEY, domain.tenant_id);
+  console.log('[initializeTenant] Tenant resolvido:', domain.tenant_id);
+  return domain.tenant_id;
 }
 
 /**
@@ -84,7 +62,11 @@ export async function initializeTenant(): Promise<string | null> {
 export function useTenantId() {
   return useQuery({
     queryKey: ['tenant-id'],
-    queryFn: getTenantId,
+    queryFn: async () => {
+      const stored = localStorage.getItem(TENANT_STORAGE_KEY);
+      if (stored) return stored;
+      return initializeTenant();
+    },
     staleTime: 1000 * 60 * 60, // 1 hour
     gcTime: 1000 * 60 * 60 * 24, // 24 hours
   });

@@ -1,71 +1,147 @@
-# Welcome to your Lovable project
+# Site Público Multi-Tenant
 
-## Project info
+Este projeto é o **site público** de uma plataforma de imobiliárias multi-tenant. Ele consome dados do Supabase que são gerenciados por um painel administrativo separado.
 
-https://viafatto.com.br/
+## 🎯 Escopo
 
-## How can I edit this code?
+Este projeto **APENAS**:
+- ✅ Exibe imóveis do tenant ativo
+- ✅ Mostra páginas públicas (Home, Imóveis, Sobre, Contato, Favoritos)
+- ✅ Aplica branding dinâmico por tenant (cores, logo, textos)
+- ✅ Recebe contatos via formulário (INSERT em contacts)
+- ✅ Resolve tenant automaticamente por hostname
 
-There are several ways of editing your application.
+Este projeto **NÃO**:
+- ❌ Contém painel administrativo
+- ❌ Permite login de usuários
+- ❌ Permite edição de dados (exceto formulário de contato)
+- ❌ Expõe rotas /admin
 
-**Use Lovable**
+## 🏗️ Arquitetura
 
-Changes made via Lovable will be committed automatically to this repo.
+```
+┌─────────────────────┐     ┌──────────────────┐     ┌─────────────────┐
+│   Domínio Cliente   │────▶│   Site Público   │────▶│    Supabase     │
+│  viafatto.com.br    │     │   (Este Projeto) │     │   (Database)    │
+└─────────────────────┘     └──────────────────┘     └─────────────────┘
+                                     │
+                                     ▼
+                            ┌──────────────────┐
+                            │ TenantContext    │
+                            │ - Resolve tenant │
+                            │ - Filtra dados   │
+                            └──────────────────┘
+```
 
-**Use your preferred IDE**
+## 🔑 Resolução de Tenant
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+1. Usuário acessa `viafatto.com.br`
+2. `TenantContext` lê `window.location.hostname`
+3. Busca em `domains` onde:
+   - `hostname = 'viafatto.com.br'`
+   - `type = 'public'`
+   - `verified = true`
+4. Se encontrar, carrega o tenant e filtra todos os dados por `tenant_id`
+5. Se não encontrar, exibe página "Site não configurado"
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+## 📁 Estrutura de Arquivos
 
-Follow these steps:
+```
+src/
+├── App.tsx                      # Rotas públicas apenas
+├── contexts/
+│   └── TenantContext.tsx        # Resolução de tenant
+├── components/
+│   ├── tenant/
+│   │   └── PublicTenantGate.tsx # Gate de acesso público
+│   ├── TemplateRenderer.tsx     # Suporte a múltiplos templates
+│   └── layout/
+│       ├── Header.tsx
+│       └── Footer.tsx
+├── hooks/
+│   ├── useSupabaseData.ts       # Queries READ-ONLY com tenant_id
+│   └── useTemplate.ts           # Hook para templates
+└── pages/
+    ├── Index.tsx                # Home
+    ├── PropertiesPage.tsx       # Lista de imóveis
+    ├── PropertyPage.tsx         # Detalhe do imóvel
+    ├── AboutPage.tsx            # Sobre
+    ├── ContactPage.tsx          # Contato
+    ├── FavoritesPage.tsx        # Favoritos
+    └── NotFound.tsx             # 404
+```
+
+## 🔒 Segurança
+
+- Todas as queries filtram por `tenant_id`
+- Não é possível acessar dados de outros tenants
+- RLS no Supabase garante isolamento
+- Não há bypass via query string
+
+## 🎨 Templates
+
+O sistema suporta múltiplos templates via campo `template_id` nas settings do tenant:
+
+```tsx
+import { TemplateRenderer } from '@/components/TemplateRenderer';
+
+<TemplateRenderer
+  templates={{
+    default: <DefaultHero />,
+    modern: <ModernHero />,
+  }}
+  fallback={<DefaultHero />}
+/>
+```
+
+## 📊 SEO
+
+- Title, description e OG tags dinâmicos por tenant
+- URLs amigáveis: `/imovel/apartamento-3-quartos-asa-sul`
+- Estrutura preparada para sitemap por tenant
+
+## 🚀 Deploy
+
+Este projeto deve ser deployado em domínios públicos dos clientes:
+- `viafatto.com.br`
+- `www.viafatto.com.br`
+- `imobiliaria.exemplo.com.br`
+
+O painel administrativo é um projeto separado acessível via:
+- `painel.viafatto.com.br`
+
+## 📡 Dados Consumidos
+
+| Tabela | Uso |
+|--------|-----|
+| `tenants` | Dados do tenant |
+| `domains` | Resolução por hostname |
+| `site_config` | Branding, cores, textos |
+| `properties` | Lista de imóveis |
+| `property_images` | Fotos dos imóveis |
+| `categories` | Categorias de imóveis |
+| `contacts` | Formulário de contato (INSERT only) |
+| `favorites` | Favoritos do usuário |
+
+## 🔧 Desenvolvimento Local
 
 ```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+# Instalar dependências
+npm install
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
+# Iniciar servidor de desenvolvimento
 npm run dev
 ```
 
-**Edit a file directly in GitHub**
-
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
-
-**Use GitHub Codespaces**
-
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
-
-## What technologies are used for this project?
-
-This project is built with:
+## 📦 Tecnologias
 
 - Vite
 - TypeScript
 - React
 - shadcn-ui
 - Tailwind CSS
+- Supabase
 
-## How can I deploy this project?
+## 📄 Licença
 
-Simply open [Lovable](https://lovable.dev/projects/441800bb-875b-4228-a5de-e1a02447ce7a) and click on Share -> Publish.
-
-## Can I connect a custom domain to my Lovable project?
-
-Yes, you can!
-
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
-
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
+Projeto privado. Todos os direitos reservados.

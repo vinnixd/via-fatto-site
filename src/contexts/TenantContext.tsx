@@ -1,7 +1,7 @@
 import { createContext, useContext, useEffect, useState, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 
-interface Tenant {
+export interface Tenant {
   id: string;
   name: string;
   slug: string;
@@ -9,7 +9,7 @@ interface Tenant {
   settings?: Record<string, unknown>;
 }
 
-interface Domain {
+export interface Domain {
   id: string;
   tenant_id: string;
   hostname: string;
@@ -26,45 +26,41 @@ interface TenantContextType {
   error: string | null;
   domain: Domain | null;
   isResolved: boolean;
-  userRole: 'owner' | 'admin' | 'agent' | null;
-  isTenantMember: boolean;
-  isOwnerOrAdmin: boolean;
-  canManageUsers: boolean;
   refreshTenant: () => Promise<void>;
 }
 
 const TenantContext = createContext<TenantContextType | undefined>(undefined);
 
-const TENANT_STORAGE_KEY = 'active_tenant_id';
+const TENANT_STORAGE_KEY = 'public_tenant_id';
 
 /**
  * Resolve tenant by hostname from domains table
+ * For public sites, we look for type='public' and verified=true
  */
-async function resolveTenantByHostname(hostname: string, type: 'admin' | 'public' = 'admin'): Promise<{
+async function resolveTenantByHostname(hostname: string): Promise<{
   tenant: Tenant | null;
   domain: Domain | null;
   error: string | null;
 }> {
   try {
-    // Query domains table for this hostname using rpc or direct query
-    // Using any to bypass TypeScript restrictions for new tables
+    // Query domains table for this hostname with type='public' and verified=true
     const { data: domainData, error: domainError } = await (supabase as any)
       .from('domains')
       .select('*')
       .eq('hostname', hostname.toLowerCase())
-      .eq('type', type)
+      .eq('type', 'public')
+      .eq('verified', true)
       .maybeSingle();
 
     if (domainError) {
       console.error('Error querying domains:', domainError);
-      // If table doesn't exist yet, treat as not found
       if (domainError.code === 'PGRST204' || domainError.message?.includes('relation')) {
         return { tenant: null, domain: null, error: 'DOMAIN_NOT_FOUND' };
       }
     }
 
     if (!domainData) {
-      // Try without type restriction for fallback
+      // Check if domain exists but with wrong type or unverified
       const { data: anyDomain } = await (supabase as any)
         .from('domains')
         .select('*')
@@ -79,12 +75,12 @@ async function resolveTenantByHostname(hostname: string, type: 'admin' | 'public
         };
       }
 
-      // Domain exists but wrong type
-      if (anyDomain.type !== type) {
+      // Domain exists but not public type
+      if (anyDomain.type !== 'public') {
         return {
           tenant: null,
           domain: anyDomain as Domain,
-          error: 'WRONG_DOMAIN_TYPE'
+          error: 'DOMAIN_NOT_PUBLIC'
         };
       }
 
@@ -99,15 +95,6 @@ async function resolveTenantByHostname(hostname: string, type: 'admin' | 'public
     }
 
     const domain = domainData as Domain;
-
-    // Check if domain is verified
-    if (!domain.verified) {
-      return {
-        tenant: null,
-        domain,
-        error: 'DOMAIN_NOT_VERIFIED'
-      };
-    }
 
     // Fetch tenant details
     const { data: tenantData, error: tenantError } = await (supabase as any)
@@ -148,28 +135,6 @@ async function resolveTenantByHostname(hostname: string, type: 'admin' | 'public
   }
 }
 
-/**
- * Get user's role in the current tenant
- */
-async function getUserTenantRole(tenantId: string, userId: string): Promise<'owner' | 'admin' | 'agent' | null> {
-  try {
-    const { data, error } = await (supabase as any)
-      .from('tenant_users')
-      .select('role')
-      .eq('tenant_id', tenantId)
-      .eq('user_id', userId)
-      .maybeSingle();
-
-    if (error || !data) {
-      return null;
-    }
-
-    return data.role as 'owner' | 'admin' | 'agent';
-  } catch {
-    return null;
-  }
-}
-
 interface TenantProviderProps {
   children: React.ReactNode;
 }
@@ -180,7 +145,6 @@ export const TenantProvider = ({ children }: TenantProviderProps) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isResolved, setIsResolved] = useState(false);
-  const [userRole, setUserRole] = useState<'owner' | 'admin' | 'agent' | null>(null);
 
   const resolveTenant = useCallback(async () => {
     setLoading(true);
@@ -212,7 +176,7 @@ export const TenantProvider = ({ children }: TenantProviderProps) => {
         }
       }
 
-      // Get first available tenant for dev
+      // Get first available active tenant for dev
       const { data: firstTenant } = await (supabase as any)
         .from('tenants')
         .select('*')
@@ -232,8 +196,8 @@ export const TenantProvider = ({ children }: TenantProviderProps) => {
       return;
     }
 
-    // Production: resolve by hostname
-    const result = await resolveTenantByHostname(hostname, 'admin');
+    // Production: resolve by hostname for PUBLIC domains only
+    const result = await resolveTenantByHostname(hostname);
     
     setTenant(result.tenant);
     setDomain(result.domain);
@@ -247,35 +211,6 @@ export const TenantProvider = ({ children }: TenantProviderProps) => {
     setLoading(false);
   }, []);
 
-  // Check user's role in tenant when tenant or auth changes
-  useEffect(() => {
-    const checkUserRole = async () => {
-      if (!tenant?.id) {
-        setUserRole(null);
-        return;
-      }
-
-      const { data: { user } } = await supabase.auth.getUser();
-      
-      if (!user) {
-        setUserRole(null);
-        return;
-      }
-
-      const role = await getUserTenantRole(tenant.id, user.id);
-      setUserRole(role);
-    };
-
-    checkUserRole();
-
-    // Subscribe to auth changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(() => {
-      checkUserRole();
-    });
-
-    return () => subscription.unsubscribe();
-  }, [tenant?.id]);
-
   // Resolve tenant on mount
   useEffect(() => {
     resolveTenant();
@@ -284,10 +219,6 @@ export const TenantProvider = ({ children }: TenantProviderProps) => {
   const refreshTenant = useCallback(async () => {
     await resolveTenant();
   }, [resolveTenant]);
-
-  const isTenantMember = userRole !== null;
-  const isOwnerOrAdmin = userRole === 'owner' || userRole === 'admin';
-  const canManageUsers = isOwnerOrAdmin;
 
   return (
     <TenantContext.Provider
@@ -298,10 +229,6 @@ export const TenantProvider = ({ children }: TenantProviderProps) => {
         error,
         domain,
         isResolved,
-        userRole,
-        isTenantMember,
-        isOwnerOrAdmin,
-        canManageUsers,
         refreshTenant,
       }}
     >

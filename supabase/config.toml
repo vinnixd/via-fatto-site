@@ -33,6 +33,9 @@ verify_jwt = true
 [functions.generate-sitemap]
 verify_jwt = false
 
+[functions.generate-robots]
+verify_jwt = false
+
 [functions.generate-seo]
 verify_jwt = true
 

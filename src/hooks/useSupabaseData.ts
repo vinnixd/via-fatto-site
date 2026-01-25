@@ -4,7 +4,30 @@ import { useEffect } from 'react';
 
 const TENANT_STORAGE_KEY = 'active_tenant_id';
 
-// Debug logging helper
+// Fallback DEV tenant - MUST be the same in both public site and admin panel
+const DEV_FALLBACK_TENANT_ID = 'f136543f-bace-4e46-9908-d7c8e7e0982f';
+
+// Check if running in dev/preview environment
+const isDevEnvironment = () => {
+  const hostname = window.location.hostname.toLowerCase();
+  return hostname.includes('localhost') || 
+    hostname.includes('lovable.app') || 
+    hostname.includes('lovableproject.com');
+};
+
+// Debug logging helper - logs resolution details in dev mode
+function logTenantResolution(details: {
+  hostname: string;
+  tenant_id_from_domains: string | null;
+  tenant_id_from_localStorage: string | null;
+  tenant_id_final: string | null;
+  reason: 'domains' | 'localStorage' | 'devFallback' | 'none';
+}) {
+  if (import.meta.env.DEV) {
+    console.log('[TenantResolver] Resolution details:', details);
+  }
+}
+
 function debugLog(message: string, data?: unknown) {
   if (import.meta.env.DEV) {
     console.log(`[SupabaseData] ${message}`, data ?? '');
@@ -13,47 +36,79 @@ function debugLog(message: string, data?: unknown) {
 
 /**
  * Initialize tenant on app load - call once in App.tsx
- * Resolves tenant_id by hostname from database
+ * 
+ * PRIORITY ORDER:
+ * 1. Hostname resolution via domains table (always tried first)
+ * 2. Fallback to localStorage if hostname not found in domains
+ * 3. DEV fallback only as last resort (same ID in both projects)
  */
 export async function initializeTenant(): Promise<string | null> {
   const hostname = window.location.hostname.toLowerCase();
   
-  console.log('[initializeTenant] Resolvendo tenant para:', hostname);
+  console.log('[initializeTenant] Starting resolution for hostname:', hostname);
   
-  // Dev environments (lovable preview, localhost)
-  const isDevEnvironment = hostname.includes('localhost') || 
-    hostname.includes('lovable.app') || 
-    hostname.includes('lovableproject.com');
+  let tenantIdFromDomains: string | null = null;
+  let tenantIdFromLocalStorage: string | null = null;
+  let tenantIdFinal: string | null = null;
+  let reason: 'domains' | 'localStorage' | 'devFallback' | 'none' = 'none';
   
-  if (isDevEnvironment) {
-    // In dev, use Via Fatto tenant (same as production viafatto.com.br)
-    const devTenantId = 'f136543f-bace-4e46-9908-d7c8e7e0982f';
-    localStorage.setItem(TENANT_STORAGE_KEY, devTenantId);
-    console.log('[initializeTenant] Dev mode, usando tenant Via Fatto:', devTenantId);
-    return devTenantId;
+  // PRIORITY 1: Try hostname resolution via domains table
+  // This works for both production AND dev if domain is registered
+  try {
+    const { data: domain, error } = await supabase
+      .from('domains')
+      .select('tenant_id')
+      .eq('hostname', hostname)
+      .eq('verified', true)
+      .maybeSingle();
+    
+    if (error) {
+      console.warn('[initializeTenant] Error querying domains:', error.message);
+    } else if (domain?.tenant_id) {
+      tenantIdFromDomains = domain.tenant_id;
+      tenantIdFinal = domain.tenant_id;
+      reason = 'domains';
+      console.log('[initializeTenant] ✅ Resolved via domains table:', tenantIdFinal);
+    }
+  } catch (err) {
+    console.error('[initializeTenant] Failed to query domains:', err);
   }
   
-  // Production: fetch tenant by domain
-  const { data: domain, error } = await supabase
-    .from('domains')
-    .select('tenant_id')
-    .eq('hostname', hostname)
-    .eq('verified', true)
-    .maybeSingle();
-  
-  if (error) {
-    console.error('[initializeTenant] Erro ao buscar domínio:', error);
-    return null;
+  // PRIORITY 2: If domains didn't resolve, try localStorage
+  if (!tenantIdFinal) {
+    tenantIdFromLocalStorage = localStorage.getItem(TENANT_STORAGE_KEY);
+    
+    if (tenantIdFromLocalStorage) {
+      tenantIdFinal = tenantIdFromLocalStorage;
+      reason = 'localStorage';
+      console.log('[initializeTenant] ⚠️ Using localStorage fallback:', tenantIdFinal);
+    }
   }
   
-  if (!domain) {
-    console.warn('[initializeTenant] Domínio não encontrado:', hostname);
-    return null;
+  // PRIORITY 3: If still no tenant, use DEV fallback (only for dev/preview environments)
+  if (!tenantIdFinal && isDevEnvironment()) {
+    tenantIdFinal = DEV_FALLBACK_TENANT_ID;
+    reason = 'devFallback';
+    console.log('[initializeTenant] ⚠️ Using DEV fallback (dev environment):', tenantIdFinal);
   }
   
-  localStorage.setItem(TENANT_STORAGE_KEY, domain.tenant_id);
-  console.log('[initializeTenant] Tenant resolvido:', domain.tenant_id);
-  return domain.tenant_id;
+  // Log resolution details in dev mode
+  logTenantResolution({
+    hostname,
+    tenant_id_from_domains: tenantIdFromDomains,
+    tenant_id_from_localStorage: tenantIdFromLocalStorage,
+    tenant_id_final: tenantIdFinal,
+    reason,
+  });
+  
+  // Save final tenant ID to localStorage for future use
+  if (tenantIdFinal) {
+    localStorage.setItem(TENANT_STORAGE_KEY, tenantIdFinal);
+  } else {
+    console.error('[initializeTenant] ❌ Failed to resolve tenant - no valid source found');
+  }
+  
+  return tenantIdFinal;
 }
 
 /**

@@ -26,10 +26,10 @@ export async function initializeTenant(): Promise<string | null> {
     hostname.includes('lovableproject.com');
   
   if (isDevEnvironment) {
-    // In dev, use Via Fatto tenant (same as production viafatto.com.br)
-    const devTenantId = 'f136543f-bace-4e46-9908-d7c8e7e0982f';
+    // In dev, use demo tenant (same as Admin Panel for sync)
+    const devTenantId = 'a0000000-0000-0000-0000-000000000001';
     localStorage.setItem(TENANT_STORAGE_KEY, devTenantId);
-    console.log('[initializeTenant] Dev mode, usando tenant Via Fatto:', devTenantId);
+    console.log('[initializeTenant] Dev mode, usando tenant demo:', devTenantId);
     return devTenantId;
   }
   

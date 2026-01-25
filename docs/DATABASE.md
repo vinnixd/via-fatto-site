@@ -202,6 +202,7 @@ erDiagram
     site_config {
         uuid id PK
         uuid tenant_id FK
+        text template_id "Template ID (default, modern, etc.)"
         text logo_url
         text logo_horizontal_url
         text logo_vertical_url

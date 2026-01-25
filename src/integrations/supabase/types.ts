@@ -866,6 +866,7 @@ export type Database = {
           social_instagram: string | null
           social_linkedin: string | null
           social_youtube: string | null
+          template_id: string | null
           tenant_id: string | null
           updated_at: string
           watermark_enabled: boolean | null
@@ -910,6 +911,7 @@ export type Database = {
           social_instagram?: string | null
           social_linkedin?: string | null
           social_youtube?: string | null
+          template_id?: string | null
           tenant_id?: string | null
           updated_at?: string
           watermark_enabled?: boolean | null
@@ -954,6 +956,7 @@ export type Database = {
           social_instagram?: string | null
           social_linkedin?: string | null
           social_youtube?: string | null
+          template_id?: string | null
           tenant_id?: string | null
           updated_at?: string
           watermark_enabled?: boolean | null

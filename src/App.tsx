@@ -41,7 +41,9 @@ const App = () => {
   const [tenantReady, setTenantReady] = useState(false);
 
   useEffect(() => {
-    initializeTenant().then(() => setTenantReady(true));
+    initializeTenant()
+      .then(() => setTenantReady(true))
+      .catch(() => setTenantReady(true));
   }, []);
 
   if (!tenantReady) {

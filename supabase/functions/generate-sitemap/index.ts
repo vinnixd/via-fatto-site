@@ -27,6 +27,10 @@ function normalizeSlug(text: string): string {
     .replace(/(^-|-$)/g, '');
 }
 
+function normalizeHostname(hostname: string): string {
+  return hostname.toLowerCase().replace(/^www\./, '');
+}
+
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
@@ -37,15 +41,58 @@ serve(async (req) => {
     const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
     const supabase = createClient(supabaseUrl, supabaseKey);
 
-    // Get base URL from request or env
+    // Get base URL from request parameter
     const url = new URL(req.url);
     const baseUrl = url.searchParams.get('baseUrl') || `${url.protocol}//${url.host}`.replace('/functions/v1/generate-sitemap', '');
+    
+    // Extract hostname from baseUrl to resolve tenant
+    let tenantId: string | null = null;
+    try {
+      const baseUrlObj = new URL(baseUrl);
+      const hostname = normalizeHostname(baseUrlObj.hostname);
+      
+      // Resolve tenant from domain
+      const { data: domain } = await supabase
+        .from('domains')
+        .select('tenant_id')
+        .eq('hostname', hostname)
+        .eq('verified', true)
+        .eq('type', 'public')
+        .maybeSingle();
+      
+      if (domain?.tenant_id) {
+        tenantId = domain.tenant_id;
+        console.log(`Resolved tenant ${tenantId} from hostname ${hostname}`);
+      } else {
+        // Try with www prefix
+        const { data: wwwDomain } = await supabase
+          .from('domains')
+          .select('tenant_id')
+          .eq('hostname', `www.${hostname}`)
+          .eq('verified', true)
+          .eq('type', 'public')
+          .maybeSingle();
+        
+        if (wwwDomain?.tenant_id) {
+          tenantId = wwwDomain.tenant_id;
+          console.log(`Resolved tenant ${tenantId} from www.${hostname}`);
+        }
+      }
+    } catch (e) {
+      console.error('Error resolving tenant from baseUrl:', e);
+    }
 
-    // Fetch all active properties
-    const { data: properties, error: propError } = await supabase
+    // Build properties query with optional tenant filter
+    let propertiesQuery = supabase
       .from('properties')
       .select('slug, updated_at, address_city, address_state, address_neighborhood, type, status')
       .eq('active', true);
+    
+    if (tenantId) {
+      propertiesQuery = propertiesQuery.eq('tenant_id', tenantId);
+    }
+
+    const { data: properties, error: propError } = await propertiesQuery;
 
     if (propError) {
       console.error('Error fetching properties:', propError);
@@ -115,7 +162,6 @@ serve(async (req) => {
 
     // Add location pages (cities)
     locations.forEach((loc, key) => {
-      const citySlug = normalizeSlug(loc.city);
       sitemap += `  <url>
     <loc>${baseUrl}/imoveis/localizacao?city=${encodeURIComponent(loc.city)}</loc>
     <lastmod>${now}</lastmod>
@@ -149,7 +195,7 @@ serve(async (req) => {
 
     sitemap += `</urlset>`;
 
-    console.log(`Sitemap generated with ${properties?.length || 0} properties and ${locations.size} locations`);
+    console.log(`Sitemap generated for tenant ${tenantId || 'ALL'} with ${properties?.length || 0} properties and ${locations.size} locations`);
 
     return new Response(sitemap, {
       headers: {

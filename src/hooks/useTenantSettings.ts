@@ -6,6 +6,7 @@ import { useEffect } from 'react';
 export interface TenantSettings {
   id: string;
   tenant_id: string | null;
+  template_id: string | null;
   logo_url: string | null;
   logo_horizontal_url: string | null;
   logo_vertical_url: string | null;

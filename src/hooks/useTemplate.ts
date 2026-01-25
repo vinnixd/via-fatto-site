@@ -1,20 +1,23 @@
 import { useTenant } from '@/contexts/TenantContext';
+import { useTenantSettings } from './useTenantSettings';
 
 /**
- * Hook to get the current template configuration from tenant settings
+ * Hook to get the current template configuration from tenant settings (site_config)
  * This allows rendering different layouts based on tenant's template choice
  */
 export const useTemplate = () => {
-  const { tenant, tenantId, isResolved } = useTenant();
+  const { tenantId, isResolved } = useTenant();
+  const { settings, isLoading } = useTenantSettings();
   
-  // Get template_id from tenant settings or use default
-  const templateId = (tenant?.settings as any)?.template_id || 'default';
+  // Get template_id from site_config (tenant_settings) or use default
+  const templateId = settings?.template_id || 'default';
   
   return {
     templateId,
     tenantId,
-    tenantName: tenant?.name || '',
+    tenantName: settings?.seo_title?.split('|')[0]?.trim() || '',
     isResolved,
+    isLoading,
     // Helper to check if specific template is active
     isTemplate: (id: string) => templateId === id,
   };

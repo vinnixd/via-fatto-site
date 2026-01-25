@@ -1,5 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { useTenant } from '@/contexts/TenantContext';
 
 export interface PropertyFromDB {
   id: string;
@@ -86,14 +87,21 @@ export interface SiteConfig {
 }
 
 export const useProperties = (options?: { featured?: boolean; limit?: number; status?: string }) => {
+  const { tenantId } = useTenant();
+  
   return useQuery({
-    queryKey: ['properties', options],
+    queryKey: ['properties', tenantId, options],
     queryFn: async () => {
       let query = supabase
         .from('properties')
         .select('*')
         .eq('active', true)
         .order('order_index', { ascending: true });
+
+      // Filter by tenant if available
+      if (tenantId) {
+        query = query.eq('tenant_id', tenantId);
+      }
 
       if (options?.featured) {
         query = query.eq('featured', true);
@@ -125,6 +133,7 @@ export const useProperties = (options?: { featured?: boolean; limit?: number; st
 
       return propertiesWithImages as PropertyFromDB[];
     },
+    enabled: true, // Always enabled, will return empty if no tenant
   });
 };
 
@@ -148,17 +157,8 @@ export const useProperty = (slug: string) => {
         .eq('property_id', data.id)
         .order('order_index');
 
-      // Increment views (fire and forget, don't block the query)
-      (async () => {
-        try {
-          await supabase
-            .from('properties')
-            .update({ views: (data.views || 0) + 1 })
-            .eq('id', data.id);
-        } catch {
-          // Silently ignore errors
-        }
-      })();
+      // Note: Views increment is handled by the admin panel, not the public site
+      // Public site is read-only
 
       return { ...data, images: images || [] } as PropertyFromDB;
     },
@@ -167,14 +167,21 @@ export const useProperty = (slug: string) => {
 };
 
 export const useSiteConfig = () => {
+  const { tenantId } = useTenant();
+  
   return useQuery({
-    queryKey: ['site-config'],
+    queryKey: ['site-config', tenantId],
     queryFn: async () => {
-      const { data, error } = await supabase
+      let query = supabase
         .from('site_config')
-        .select('*')
-        .limit(1)
-        .maybeSingle();
+        .select('*');
+
+      // Filter by tenant if available
+      if (tenantId) {
+        query = query.eq('tenant_id', tenantId);
+      }
+
+      const { data, error } = await query.limit(1).maybeSingle();
 
       if (error) throw error;
       return data as SiteConfig | null;
@@ -183,14 +190,22 @@ export const useSiteConfig = () => {
 };
 
 export const useCategories = () => {
+  const { tenantId } = useTenant();
+  
   return useQuery({
-    queryKey: ['categories'],
+    queryKey: ['categories', tenantId],
     queryFn: async () => {
-      const { data, error } = await supabase
+      let query = supabase
         .from('categories')
         .select('*')
         .order('name');
 
+      // Filter by tenant if available
+      if (tenantId) {
+        query = query.eq('tenant_id', tenantId);
+      }
+
+      const { data, error } = await query;
       if (error) throw error;
       return data || [];
     },
@@ -198,16 +213,24 @@ export const useCategories = () => {
 };
 
 export const useAvailableCities = () => {
+  const { tenantId } = useTenant();
+  
   return useQuery({
-    queryKey: ['available-cities'],
+    queryKey: ['available-cities', tenantId],
     queryFn: async () => {
-      const { data, error } = await supabase
+      let query = supabase
         .from('properties')
         .select('address_city')
         .eq('active', true)
         .not('address_city', 'is', null)
         .not('address_city', 'eq', '');
 
+      // Filter by tenant if available
+      if (tenantId) {
+        query = query.eq('tenant_id', tenantId);
+      }
+
+      const { data, error } = await query;
       if (error) throw error;
 
       // Get unique cities and sort alphabetically

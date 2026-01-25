@@ -14,6 +14,7 @@ import ScrollToTop from "@/components/ScrollToTop";
 import { AppErrorBoundary } from "@/components/AppErrorBoundary";
 import FloatingWhatsApp from "@/components/FloatingWhatsApp";
 import { PublicTenantGate } from "@/components/tenant/PublicTenantGate";
+import { RealtimeSyncProvider } from "@/components/RealtimeSyncProvider";
 import { Loader2 } from "lucide-react";
 
 // Public Pages
@@ -65,28 +66,30 @@ const App = () => {
         <BrowserRouter>
           <ScrollToTop />
           <TenantProvider>
-            <PublicTenantGate>
-              <BrandManager />
-              <AppErrorBoundary>
-                <Routes>
-                  {/* Public Routes Only */}
-                  <Route path="/" element={<Index />} />
-                  <Route path="/imoveis" element={<PropertiesPage />} />
-                  <Route path="/imoveis/localizacao" element={<LocationPage />} />
-                  <Route path="/imovel/:slug" element={<PropertyPage />} />
-                  <Route path="/sobre" element={<AboutPage />} />
-                  <Route path="/contato" element={<ContactPage />} />
-                  <Route path="/favoritos" element={<FavoritesPage />} />
-                  
-                  {/* Any admin route redirects to 404 */}
-                  <Route path="/admin/*" element={<NotFound />} />
-                  
-                  {/* Catch-all 404 */}
-                  <Route path="*" element={<NotFound />} />
-                </Routes>
-                <FloatingWhatsApp />
-              </AppErrorBoundary>
-            </PublicTenantGate>
+            <RealtimeSyncProvider>
+              <PublicTenantGate>
+                <BrandManager />
+                <AppErrorBoundary>
+                  <Routes>
+                    {/* Public Routes Only */}
+                    <Route path="/" element={<Index />} />
+                    <Route path="/imoveis" element={<PropertiesPage />} />
+                    <Route path="/imoveis/localizacao" element={<LocationPage />} />
+                    <Route path="/imovel/:slug" element={<PropertyPage />} />
+                    <Route path="/sobre" element={<AboutPage />} />
+                    <Route path="/contato" element={<ContactPage />} />
+                    <Route path="/favoritos" element={<FavoritesPage />} />
+                    
+                    {/* Any admin route redirects to 404 */}
+                    <Route path="/admin/*" element={<NotFound />} />
+                    
+                    {/* Catch-all 404 */}
+                    <Route path="*" element={<NotFound />} />
+                  </Routes>
+                  <FloatingWhatsApp />
+                </AppErrorBoundary>
+              </PublicTenantGate>
+            </RealtimeSyncProvider>
           </TenantProvider>
         </BrowserRouter>
       </TooltipProvider>

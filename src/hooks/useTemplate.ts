@@ -1,12 +1,12 @@
-import { useTenant } from '@/contexts/TenantContext';
 import { useTenantSettings } from './useTenantSettings';
+import { useTenantId } from './useSupabaseData';
 
 /**
  * Hook to get the current template configuration from tenant settings (site_config)
  * This allows rendering different layouts based on tenant's template choice
  */
 export const useTemplate = () => {
-  const { tenantId, isResolved } = useTenant();
+  const { data: tenantId } = useTenantId();
   const { settings, isLoading } = useTenantSettings();
   
   // Get template_id from site_config (tenant_settings) or use default
@@ -16,7 +16,7 @@ export const useTemplate = () => {
     templateId,
     tenantId,
     tenantName: settings?.seo_title?.split('|')[0]?.trim() || '',
-    isResolved,
+    isResolved: !!tenantId,
     isLoading,
     // Helper to check if specific template is active
     isTemplate: (id: string) => templateId === id,

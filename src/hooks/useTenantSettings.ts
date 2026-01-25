@@ -1,7 +1,4 @@
-import { useQuery } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
-import { useTenant } from '@/contexts/TenantContext';
-import { useEffect } from 'react';
+import { useTenantId } from './useSupabaseData';
 
 export interface TenantSettings {
   id: string;
@@ -46,77 +43,21 @@ export interface TenantSettings {
   watermark_size: number | null;
 }
 
-// Debug logging helper
-function debugLog(message: string, data?: unknown) {
-  if (import.meta.env.DEV) {
-    console.log(`[TenantSettings] ${message}`, data ?? '');
-  }
-}
+import { useSiteConfig } from './useSupabaseData';
 
 /**
  * Hook to fetch and use tenant settings (site_config) from the database.
- * Automatically filters by tenant_id from TenantContext.
+ * Automatically filters by tenant_id resolved from hostname/localStorage.
  * Settings are used for branding, colors, SEO, and contact info.
  */
 export function useTenantSettings() {
-  const { tenantId, isResolved } = useTenant();
-
-  const query = useQuery({
-    queryKey: ['tenant-settings', tenantId],
-    queryFn: async () => {
-      debugLog('Fetching tenant settings for tenant:', tenantId);
-      
-      if (!tenantId) {
-        debugLog('No tenant ID available, skipping fetch');
-        return null;
-      }
-
-      const { data, error } = await supabase
-        .from('site_config')
-        .select('*')
-        .eq('tenant_id', tenantId)
-        .maybeSingle();
-
-      if (error) {
-        console.error('[TenantSettings] Error fetching settings:', error);
-        throw error;
-      }
-
-      debugLog('Tenant settings loaded:', data ? 'success' : 'not found');
-      
-      if (data) {
-        debugLog('Settings preview:', {
-          logo_url: data.logo_url ? '✓' : '✗',
-          primary_color: data.primary_color,
-          whatsapp: data.whatsapp ? '✓' : '✗',
-          seo_title: data.seo_title ? '✓' : '✗',
-        });
-      }
-
-      return data as TenantSettings | null;
-    },
-    enabled: isResolved && !!tenantId,
-    staleTime: 1000 * 60 * 5, // 5 minutes
-    refetchOnWindowFocus: true, // Refetch when user returns to tab
-  });
-
-  // Debug logging when settings change
-  useEffect(() => {
-    if (import.meta.env.DEV && isResolved) {
-      if (query.data) {
-        console.log('[TenantSettings] ✓ Settings loaded for tenant:', tenantId);
-      } else if (!query.isLoading && !query.data) {
-        console.warn('[TenantSettings] ⚠ No settings found for tenant:', tenantId);
-        console.warn('[TenantSettings] Make sure site_config has a row with tenant_id:', tenantId);
-      }
-    }
-  }, [query.data, query.isLoading, tenantId, isResolved]);
+  const { data, isLoading, error, refetch } = useSiteConfig();
 
   return {
-    settings: query.data,
-    isLoading: query.isLoading,
-    error: query.error,
-    refetch: query.refetch,
+    settings: data as TenantSettings | null,
+    isLoading,
+    error,
+    refetch,
   };
 }
 
@@ -125,10 +66,9 @@ export function useTenantSettings() {
  */
 export function useCompanyName(): string {
   const { settings } = useTenantSettings();
-  const { tenant } = useTenant();
   
-  // Priority: SEO title (usually company name) > tenant name > fallback
-  return settings?.seo_title?.split('|')[0]?.trim() || tenant?.name || 'Imobiliária';
+  // Priority: SEO title (usually company name) > fallback
+  return settings?.seo_title?.split('|')[0]?.trim() || 'Imobiliária';
 }
 
 /**

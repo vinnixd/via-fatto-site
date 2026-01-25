@@ -1,13 +1,82 @@
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { useTenant } from '@/contexts/TenantContext';
 import { useEffect } from 'react';
+
+const TENANT_STORAGE_KEY = 'public_tenant_id';
 
 // Debug logging helper
 function debugLog(message: string, data?: unknown) {
   if (import.meta.env.DEV) {
     console.log(`[SupabaseData] ${message}`, data ?? '');
   }
+}
+
+/**
+ * Resolve tenant by hostname from domains table
+ */
+async function resolveTenantByHostname(hostname: string): Promise<string | null> {
+  const normalizedHost = hostname.toLowerCase().replace(/^www\./, '');
+  
+  const { data: domainData } = await supabase
+    .from('domains')
+    .select('tenant_id')
+    .eq('hostname', normalizedHost)
+    .eq('type', 'public')
+    .eq('verified', true)
+    .maybeSingle();
+
+  return domainData?.tenant_id || null;
+}
+
+/**
+ * Get tenant ID from localStorage or resolve by hostname
+ */
+async function getTenantId(): Promise<string | null> {
+  const stored = localStorage.getItem(TENANT_STORAGE_KEY);
+  if (stored) return stored;
+  
+  const hostname = window.location.hostname;
+  
+  // Skip resolution for dev environments - find any verified public domain
+  const isDevEnvironment = hostname.includes('localhost') || 
+    hostname.includes('lovable.app') || 
+    hostname.includes('lovableproject.com');
+  
+  if (isDevEnvironment) {
+    const { data: fallbackDomain } = await supabase
+      .from('domains')
+      .select('tenant_id')
+      .eq('type', 'public')
+      .eq('verified', true)
+      .order('is_primary', { ascending: false })
+      .limit(1)
+      .maybeSingle();
+    
+    if (fallbackDomain?.tenant_id) {
+      localStorage.setItem(TENANT_STORAGE_KEY, fallbackDomain.tenant_id);
+      return fallbackDomain.tenant_id;
+    }
+    return null;
+  }
+  
+  // Production: resolve by hostname
+  const tenantId = await resolveTenantByHostname(hostname);
+  if (tenantId) {
+    localStorage.setItem(TENANT_STORAGE_KEY, tenantId);
+  }
+  return tenantId;
+}
+
+/**
+ * Hook to get current tenant ID (cached in localStorage)
+ */
+export function useTenantId() {
+  return useQuery({
+    queryKey: ['tenant-id'],
+    queryFn: getTenantId,
+    staleTime: 1000 * 60 * 60, // 1 hour
+    gcTime: 1000 * 60 * 60 * 24, // 24 hours
+  });
 }
 
 export interface PropertyFromDB {
@@ -96,14 +165,13 @@ export interface SiteConfig {
 }
 
 export const useProperties = (options?: { featured?: boolean; limit?: number; status?: string }) => {
-  const { tenantId, isResolved } = useTenant();
+  const { data: tenantId } = useTenantId();
   
   const query = useQuery({
     queryKey: ['properties', tenantId, options],
     queryFn: async () => {
       debugLog('Fetching properties for tenant:', tenantId);
       
-      // CRITICAL: Only fetch if we have a valid tenant
       if (!tenantId) {
         debugLog('No tenant ID - returning empty array');
         return [];
@@ -113,7 +181,7 @@ export const useProperties = (options?: { featured?: boolean; limit?: number; st
         .from('properties')
         .select('*')
         .eq('active', true)
-        .eq('tenant_id', tenantId) // ALWAYS filter by tenant
+        .eq('tenant_id', tenantId)
         .order('order_index', { ascending: true });
 
       if (options?.featured) {
@@ -151,10 +219,9 @@ export const useProperties = (options?: { featured?: boolean; limit?: number; st
 
       return propertiesWithImages as PropertyFromDB[];
     },
-    enabled: isResolved && !!tenantId,
+    enabled: !!tenantId,
   });
 
-  // Debug log when properties change
   useEffect(() => {
     if (import.meta.env.DEV && query.data) {
       debugLog(`Properties loaded: ${query.data.length} items for tenant ${tenantId}`);
@@ -165,7 +232,7 @@ export const useProperties = (options?: { featured?: boolean; limit?: number; st
 };
 
 export const useProperty = (slug: string) => {
-  const { tenantId, isResolved } = useTenant();
+  const { data: tenantId } = useTenantId();
   
   return useQuery({
     queryKey: ['property', slug, tenantId],
@@ -181,7 +248,7 @@ export const useProperty = (slug: string) => {
         .from('properties')
         .select('*')
         .eq('slug', slug)
-        .eq('tenant_id', tenantId) // ALWAYS filter by tenant
+        .eq('tenant_id', tenantId)
         .maybeSingle();
 
       if (error) {
@@ -195,7 +262,6 @@ export const useProperty = (slug: string) => {
 
       debugLog('Property found:', data.title);
 
-      // Fetch images
       const { data: images } = await supabase
         .from('property_images')
         .select('*')
@@ -204,12 +270,12 @@ export const useProperty = (slug: string) => {
 
       return { ...data, images: images || [] } as PropertyFromDB;
     },
-    enabled: !!slug && isResolved && !!tenantId,
+    enabled: !!slug && !!tenantId,
   });
 };
 
 export const useSiteConfig = () => {
-  const { tenantId, isResolved } = useTenant();
+  const { data: tenantId, isLoading: tenantLoading } = useTenantId();
   
   const query = useQuery({
     queryKey: ['site-config', tenantId],
@@ -245,24 +311,22 @@ export const useSiteConfig = () => {
       
       return data as SiteConfig | null;
     },
-    enabled: isResolved && !!tenantId,
-    staleTime: 1000 * 60 * 5, // 5 minutes
+    enabled: !!tenantId,
+    staleTime: 1000 * 60 * 5,
     refetchOnWindowFocus: true,
   });
 
-  // Debug warning if no config found
   useEffect(() => {
-    if (import.meta.env.DEV && isResolved && !query.isLoading && !query.data && tenantId) {
+    if (import.meta.env.DEV && !tenantLoading && !query.isLoading && !query.data && tenantId) {
       console.warn('[SupabaseData] ⚠ No site_config found for tenant:', tenantId);
-      console.warn('[SupabaseData] Ensure the admin panel has created a site_config row for this tenant');
     }
-  }, [query.data, query.isLoading, tenantId, isResolved]);
+  }, [query.data, query.isLoading, tenantId, tenantLoading]);
 
   return query;
 };
 
 export const useCategories = () => {
-  const { tenantId, isResolved } = useTenant();
+  const { data: tenantId } = useTenantId();
   
   return useQuery({
     queryKey: ['categories', tenantId],
@@ -288,12 +352,12 @@ export const useCategories = () => {
       debugLog('Categories fetched:', data?.length ?? 0);
       return data || [];
     },
-    enabled: isResolved && !!tenantId,
+    enabled: !!tenantId,
   });
 };
 
 export const useAvailableCities = () => {
-  const { tenantId, isResolved } = useTenant();
+  const { data: tenantId } = useTenantId();
   
   return useQuery({
     queryKey: ['available-cities', tenantId],
@@ -318,19 +382,18 @@ export const useAvailableCities = () => {
         throw error;
       }
 
-      // Get unique cities and sort alphabetically
       const uniqueCities = [...new Set(data?.map(p => p.address_city).filter(Boolean))]
         .sort((a, b) => a.localeCompare(b, 'pt-BR'));
 
       debugLog('Cities fetched:', uniqueCities.length);
       return uniqueCities;
     },
-    enabled: isResolved && !!tenantId,
+    enabled: !!tenantId,
   });
 };
 
 export const useSimilarProperties = (property: PropertyFromDB | null, limit: number = 4) => {
-  const { tenantId, isResolved } = useTenant();
+  const { data: tenantId } = useTenantId();
   
   return useQuery({
     queryKey: ['similar-properties', tenantId, property?.id, property?.address_city, property?.status, property?.type],
@@ -342,7 +405,6 @@ export const useSimilarProperties = (property: PropertyFromDB | null, limit: num
       const existingIds = [property.id];
       let results: any[] = [];
 
-      // 1. Same city + same status (filtered by tenant)
       const { data: sameCityStatus } = await supabase
         .from('properties')
         .select('*')
@@ -359,7 +421,6 @@ export const useSimilarProperties = (property: PropertyFromDB | null, limit: num
         existingIds.push(...sameCityStatus.map(p => p.id));
       }
 
-      // 2. Same city, different status
       if (results.length < limit) {
         const { data: sameCityOther } = await supabase
           .from('properties')
@@ -377,7 +438,6 @@ export const useSimilarProperties = (property: PropertyFromDB | null, limit: num
         }
       }
 
-      // 3. Same type + status from any city
       if (results.length < limit) {
         const { data: sameTypeStatus } = await supabase
           .from('properties')
@@ -396,7 +456,6 @@ export const useSimilarProperties = (property: PropertyFromDB | null, limit: num
         }
       }
 
-      // 4. Any other active properties
       if (results.length < limit) {
         const { data: anyOther } = await supabase
           .from('properties')
@@ -414,7 +473,6 @@ export const useSimilarProperties = (property: PropertyFromDB | null, limit: num
 
       debugLog('Similar properties found:', results.length);
 
-      // Fetch images for each property
       const propertiesWithImages = await Promise.all(
         results.map(async (p) => {
           const { data: images } = await supabase
@@ -430,6 +488,6 @@ export const useSimilarProperties = (property: PropertyFromDB | null, limit: num
 
       return propertiesWithImages as PropertyFromDB[];
     },
-    enabled: !!property && isResolved && !!tenantId,
+    enabled: !!property && !!tenantId,
   });
 };

@@ -3,10 +3,10 @@ import { supabase } from '@/integrations/supabase/client';
 
 export interface Tenant {
   id: string;
-  name: string;
-  slug: string;
-  status: string;
-  settings?: Record<string, unknown>;
+  name?: string | null;
+  slug?: string | null;
+  status?: string | null;
+  settings?: Record<string, unknown> | null;
 }
 
 export interface Domain {
@@ -111,37 +111,13 @@ async function resolveTenantByHostname(hostname: string): Promise<{
     const domain = domainData as Domain;
     debugLog('Valid domain found, tenant_id:', domain.tenant_id);
 
-    // Fetch tenant details
-    const { data: tenantData, error: tenantError } = await supabase
-      .from('tenants')
-      .select('*')
-      .eq('id', domain.tenant_id)
-      .single();
-
-    if (tenantError || !tenantData) {
-      debugLog('Tenant not found:', tenantError);
-      return {
-        tenant: null,
-        domain,
-        error: 'TENANT_NOT_FOUND'
-      };
-    }
-
-    // Check tenant status
-    if (tenantData.status !== 'active') {
-      debugLog('Tenant inactive:', tenantData.status);
-      return {
-        tenant: tenantData as Tenant,
-        domain,
-        error: 'TENANT_INACTIVE'
-      };
-    }
-
-    debugLog('Tenant resolved successfully:', tenantData.name);
+    // IMPORTANT (public site): do NOT query "tenants" here.
+    // The tenants table is intentionally protected by RLS (members-only),
+    // so public resolution must rely on the domains row only.
     return {
-      tenant: tenantData as Tenant,
+      tenant: { id: domain.tenant_id },
       domain,
-      error: null
+      error: null,
     };
   } catch (err) {
     console.error('[TenantContext] Error resolving tenant:', err);
@@ -164,11 +140,16 @@ export const TenantProvider = ({ children }: TenantProviderProps) => {
   const [error, setError] = useState<string | null>(null);
   const [isResolved, setIsResolved] = useState(false);
 
+  const normalizeHostname = useCallback((raw: string) => {
+    const h = raw.toLowerCase().trim();
+    return h.startsWith('www.') ? h.slice(4) : h;
+  }, []);
+
   const resolveTenant = useCallback(async () => {
     setLoading(true);
     setError(null);
 
-    const hostname = window.location.hostname.toLowerCase();
+    const hostname = normalizeHostname(window.location.hostname);
     
     debugLog('Starting tenant resolution...');
     debugLog('Current hostname:', hostname);
@@ -181,44 +162,47 @@ export const TenantProvider = ({ children }: TenantProviderProps) => {
     debugLog('Is dev environment:', isDevEnvironment);
     
     if (isDevEnvironment) {
-      // In dev, try to get stored tenant or use default
+      // Dev/Preview: allow rendering even without a matching domain by picking a safe default.
+      // IMPORTANT: do NOT query "tenants" (members-only). Use verified public domains.
       const storedTenantId = localStorage.getItem(TENANT_STORAGE_KEY);
       debugLog('Stored tenant ID from localStorage:', storedTenantId);
-      
-      if (storedTenantId) {
-        const { data: tenantData } = await supabase
-          .from('tenants')
-          .select('*')
-          .eq('id', storedTenantId)
-          .maybeSingle();
 
-        if (tenantData) {
-          debugLog('Loaded tenant from storage:', tenantData.name);
-          setTenant(tenantData as Tenant);
-          setIsResolved(true);
-          setLoading(false);
-          return;
-        }
+      if (storedTenantId) {
+        setTenant({ id: storedTenantId });
+        setIsResolved(true);
+        setLoading(false);
+        return;
       }
 
-      // Get first available active tenant for dev
-      const { data: firstTenant } = await supabase
-        .from('tenants')
+      const { data: fallbackDomain, error: fallbackError } = await supabase
+        .from('domains')
         .select('*')
-        .eq('status', 'active')
+        .eq('type', 'public')
+        .eq('verified', true)
+        .order('is_primary', { ascending: false })
+        .order('updated_at', { ascending: false })
         .limit(1)
         .maybeSingle();
 
-      if (firstTenant) {
-        debugLog('Using first active tenant:', firstTenant.name);
-        setTenant(firstTenant as Tenant);
-        localStorage.setItem(TENANT_STORAGE_KEY, firstTenant.id);
+      if (fallbackError) {
+        console.error('[TenantContext] Error resolving fallback domain:', fallbackError);
+      }
+
+      if (fallbackDomain?.tenant_id) {
+        debugLog('Using fallback tenant from verified public domain:', {
+          tenant_id: fallbackDomain.tenant_id,
+          hostname: fallbackDomain.hostname,
+        });
+        setTenant({ id: fallbackDomain.tenant_id });
+        setDomain(fallbackDomain as Domain);
+        localStorage.setItem(TENANT_STORAGE_KEY, fallbackDomain.tenant_id);
         setIsResolved(true);
       } else {
-        debugLog('No active tenant available');
+        debugLog('No verified public domain available for fallback');
         setError('NO_TENANT_AVAILABLE');
+        setIsResolved(false);
       }
-      
+
       setLoading(false);
       return;
     }

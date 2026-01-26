@@ -1,0 +1,2 @@
+id,tenant_id,hostname,type,is_primary,verified,verify_token,created_at,updated_at
+02a69603-bff9-4001-b4a6-5cdc907d647f,f136543f-bace-4e46-9908-d7c8e7e0982f,viafatto.com.br,public,true,true,5378062bf157d4e90e6162e4bf4f88a9,2026-01-24 21:12:05.514602+00,2026-01-24 21:12:05.514602+00

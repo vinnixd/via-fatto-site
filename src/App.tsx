@@ -25,6 +25,7 @@ import AboutPage from "./pages/AboutPage";
 import ContactPage from "./pages/ContactPage";
 import FavoritesPage from "./pages/FavoritesPage";
 import LocationPage from "./pages/LocationPage";
+import ExportPage from "./pages/ExportPage";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -79,7 +80,7 @@ const App = () => {
                     <Route path="/sobre" element={<AboutPage />} />
                     <Route path="/contato" element={<ContactPage />} />
                     <Route path="/favoritos" element={<FavoritesPage />} />
-                    
+                    <Route path="/export" element={<ExportPage />} />
                     {/* Any admin route redirects to 404 */}
                     <Route path="/admin/*" element={<NotFound />} />
                     

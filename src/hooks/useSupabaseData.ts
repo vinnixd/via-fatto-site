@@ -43,6 +43,13 @@ function debugLog(message: string, data?: unknown) {
  * 3. DEV fallback only as last resort (same ID in both projects)
  */
 export async function initializeTenant(): Promise<string | null> {
+  // Log Supabase configuration for debugging
+  const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+  const supabaseProjectId = import.meta.env.VITE_SUPABASE_PROJECT_ID;
+  
+  console.log('[TenantContext] SUPABASE_PROJECT_ID:', supabaseProjectId);
+  console.log('[TenantContext] SUPABASE_URL:', supabaseUrl ? new URL(supabaseUrl).hostname : 'not set');
+  
   const hostname = window.location.hostname.toLowerCase();
   
   console.log('[initializeTenant] Starting resolution for hostname:', hostname);

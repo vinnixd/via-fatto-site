@@ -505,7 +505,7 @@ const PropertyPage = () => {
             </div>
 
             {/* Property Info (Sidebar) - Sticky only on desktop */}
-            <div className="lg:sticky lg:top-24 lg:self-start">
+            <div className="lg:sticky lg:top-24 lg:self-start lg:max-h-[calc(100vh-8rem)] lg:overflow-y-auto">
               <div className="space-y-4 sm:space-y-6">
                 {/* Header */}
                 <div className="bg-card p-4 sm:p-0 rounded-lg sm:rounded-none border sm:border-0 border-border">

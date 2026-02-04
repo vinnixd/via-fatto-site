@@ -314,10 +314,10 @@ const PropertyCard = ({ property, onFavorite, isFavorited = false, viewMode = 'g
           )}
         </div>
 
-        {/* Ver Detalhes Button */}
-        <button className="w-full py-2.5 bg-primary text-primary-foreground rounded-lg font-medium hover:bg-primary/90 transition-colors">
-          Ver Detalhes
-        </button>
+        {/* Ver Detalhes Link */}
+        <span className="w-full text-center py-2 text-sm text-muted-foreground group-hover:text-primary transition-colors">
+          Ver Detalhes →
+        </span>
       </div>
     </Link>
   );

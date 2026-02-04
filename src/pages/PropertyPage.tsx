@@ -325,9 +325,9 @@ const PropertyPage = () => {
             <span className="text-sm sm:text-base font-medium">Voltar</span>
           </button>
 
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-8 overflow-visible">
+          <div className="flex flex-col lg:grid lg:grid-cols-3 gap-4 sm:gap-8 overflow-visible">
             {/* Image Gallery */}
-            <div className="lg:col-span-2">
+            <div className="lg:col-span-2 order-2 lg:order-1">
               {/* Main Image with Touch Support */}
               <div 
                 ref={mainImageRef}
@@ -563,7 +563,7 @@ const PropertyPage = () => {
             {/* Property Info (Sidebar) - Sticky on all screen sizes */}
             <div 
               ref={stickySidebarRef} 
-              className="sticky self-start z-30"
+              className="order-1 lg:order-2 sticky self-start z-30"
               style={{ top: headerHeight + 16 }}
             >
               <div className="space-y-4 sm:space-y-6">

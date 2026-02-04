@@ -251,14 +251,7 @@ const PropertyPage = () => {
           
           {/* Back Button */}
           <button
-            onClick={() => {
-              // Check if there's history to go back to, otherwise go to properties list
-              if (window.history.length > 1) {
-                navigate(-1);
-              } else {
-                navigate('/');
-              }
-            }}
+            onClick={() => navigate('/imoveis')}
             className="flex items-center gap-2 text-muted-foreground hover:text-primary mb-4 sm:mb-6 touch-manipulation active:scale-95 transition-transform min-h-[44px] -ml-2 pl-2 pr-4"
           >
             <ArrowLeft size={22} />

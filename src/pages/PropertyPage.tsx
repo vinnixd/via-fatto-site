@@ -560,10 +560,10 @@ const PropertyPage = () => {
               )}
             </div>
 
-            {/* Property Info (Sidebar) */}
+            {/* Property Info (Sidebar) - Sticky on all screen sizes */}
             <div 
               ref={stickySidebarRef} 
-              className="lg:sticky lg:self-start"
+              className="sticky self-start z-30"
               style={{ top: headerHeight + 16 }}
             >
               <div className="space-y-4 sm:space-y-6">

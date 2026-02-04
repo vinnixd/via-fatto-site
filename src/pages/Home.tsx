@@ -40,6 +40,11 @@ const Home = () => {
   const { data: siteConfig } = useSiteConfig();
   const { data: availableCities = [] } = useAvailableCities();
 
+  // Get latest 4 properties by created_at
+  const latestProperties = [...allProperties]
+    .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
+    .slice(0, 4);
+
   // Preload hero image for better LCP
   useEffect(() => {
     const heroSrc = siteConfig?.hero_background_url || heroHouse;
@@ -249,6 +254,34 @@ const Home = () => {
         </div>
       </section>
 
+      {/* Novos no Site Section - Latest 4 properties */}
+      {latestProperties.length > 0 && (
+        <section className="py-10 sm:py-16">
+          <div className="container">
+            <div className="text-center mb-6 sm:mb-10">
+              <h2 className="text-xl sm:text-2xl md:text-3xl font-bold mb-2">
+                Novos no site
+              </h2>
+              <div className="w-16 h-1 bg-primary mx-auto mb-3"></div>
+              <p className="text-muted-foreground text-sm sm:text-base">
+                Confira em primeira mão os novos imóveis que chegaram ao site
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+              {latestProperties.map((property) => (
+                <PropertyCard
+                  key={property.id}
+                  property={convertToCardFormat(property)}
+                  onFavorite={handleFavorite}
+                  isFavorited={favorites.includes(property.id)}
+                />
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
       {/* Category Filter Section */}
       <section className="py-8 sm:py-12 bg-neutral-50">
         <div className="container">
@@ -288,7 +321,7 @@ const Home = () => {
         </div>
       </section>
 
-      {/* Properties Grid */}
+      {/* Properties Grid - 3 per row */}
       <section className="py-10 sm:py-16">
         <div className="container">
           <div className="text-center mb-6 sm:mb-8">
@@ -303,8 +336,8 @@ const Home = () => {
             </div>
           ) : displayProperties.length > 0 ? (
             <>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-6 sm:mb-8">
-                {displayProperties.map((property) => (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mb-6 sm:mb-8">
+                {displayProperties.slice(0, 6).map((property) => (
                   <PropertyCard
                     key={property.id}
                     property={convertToCardFormat(property)}

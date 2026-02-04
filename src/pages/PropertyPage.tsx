@@ -246,8 +246,8 @@ const PropertyPage = () => {
       
       <Header />
       
-      <main className="py-4 sm:py-8 overflow-visible">
-        <div className="container overflow-visible">
+      <main className="py-4 sm:py-8">
+        <div className="container">
           {/* Breadcrumbs - Hidden on mobile */}
           <div className="hidden sm:block">
             <Breadcrumbs items={breadcrumbsUI} className="mb-4" />

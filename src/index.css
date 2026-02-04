@@ -107,8 +107,6 @@
   html {
     /* Smooth scrolling for anchor links */
     scroll-behavior: smooth;
-    /* Prevent horizontal overflow on mobile */
-    overflow-x: hidden;
     /* Safe area insets for notched devices */
     padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
   }
@@ -118,8 +116,6 @@
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     font-feature-settings: "rlig" 1, "calt" 1;
     text-rendering: optimizeSpeed;
-    /* Prevent horizontal overflow */
-    overflow-x: hidden;
     /* Improve touch scrolling */
     -webkit-overflow-scrolling: touch;
     /* Prevent text size adjust on orientation change */

@@ -248,10 +248,6 @@ const PropertyPage = () => {
       
       <main className="py-4 sm:py-8">
         <div className="container">
-          {/* Breadcrumbs - Hidden on mobile */}
-          <div className="hidden sm:block">
-            <Breadcrumbs items={breadcrumbsUI} className="mb-4" />
-          </div>
           
           {/* Back Button */}
           <button

@@ -1,6 +1,6 @@
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { useState, useEffect, useMemo, useRef, type ReactNode } from 'react';
-import { ArrowLeft, Heart, Share2, Printer, MapPin, Bed, Bath, Car, Maximize, CheckCircle, Loader2, X, ChevronLeft, ChevronRight, ZoomIn, ZoomOut, Expand, Grid3X3, Copy, Check } from 'lucide-react';
+import { ArrowLeft, Heart, Share2, MapPin, Bed, Bath, Car, Maximize, CheckCircle, Loader2, X, ChevronLeft, ChevronRight, ZoomIn, ZoomOut, Expand, Grid3X3, Copy, Check } from 'lucide-react';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
 import { useProperty, useSiteConfig, useSimilarProperties } from '@/hooks/useSupabaseData';
@@ -549,14 +549,7 @@ const PropertyPage = () => {
                         aria-label={shareCopied ? 'Link copiado!' : 'Copiar link'}
                         title={shareCopied ? 'Link copiado!' : 'Copiar link de compartilhamento'}
                       >
-                        {shareCopied ? <Check size={18} /> : <Copy size={18} />}
-                      </button>
-                      <button
-                        onClick={() => window.print()}
-                        className="hidden sm:block p-2 rounded-lg bg-neutral-100 text-neutral-600 hover:bg-primary hover:text-white transition-colors"
-                        aria-label="Imprimir"
-                      >
-                        <Printer size={18} />
+                      {shareCopied ? <Check size={18} /> : <Copy size={18} />}
                       </button>
                     </div>
                   </div>

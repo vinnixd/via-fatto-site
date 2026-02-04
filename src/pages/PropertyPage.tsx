@@ -40,28 +40,12 @@ const PropertyPage = () => {
   const [isFavorited, setIsFavorited] = useState(false);
   const [isGalleryOpen, setIsGalleryOpen] = useState(false);
   const [shareCopied, setShareCopied] = useState(false);
-  const [headerHeight, setHeaderHeight] = useState(64);
   const thumbnailsPerPage = 4;
 
   // Touch/swipe handling for gallery
   const touchStartX = useRef<number>(0);
   const touchEndX = useRef<number>(0);
   const mainImageRef = useRef<HTMLDivElement>(null);
-  const stickySidebarRef = useRef<HTMLDivElement>(null);
-
-  // Measure header height dynamically
-  useEffect(() => {
-    const measureHeader = () => {
-      const header = document.querySelector('header');
-      if (header) {
-        setHeaderHeight(header.offsetHeight);
-      }
-    };
-    
-    measureHeader();
-    window.addEventListener('resize', measureHeader);
-    return () => window.removeEventListener('resize', measureHeader);
-  }, []);
 
   const handleTouchStart = (e: React.TouchEvent) => {
     touchStartX.current = e.targetTouches[0].clientX;
@@ -130,46 +114,6 @@ const PropertyPage = () => {
       trackPropertyView(property.id, property.title, property.type, property.price);
     }
   }, [property]);
-
-  // DEV-only: detect ancestor CSS that breaks `position: sticky`
-  useEffect(() => {
-    if (!(import.meta as any).env?.DEV) return;
-    if (!stickySidebarRef.current) return;
-
-    const el = stickySidebarRef.current;
-    const blockers: Array<{ reason: string; value: string; node: string }> = [];
-
-    let node: HTMLElement | null = el.parentElement;
-    while (node && node !== document.body) {
-      const style = window.getComputedStyle(node);
-
-      const overflowX = style.overflowX;
-      const overflowY = style.overflowY;
-      if (['hidden', 'auto', 'scroll'].includes(overflowX) || ['hidden', 'auto', 'scroll'].includes(overflowY)) {
-        blockers.push({
-          reason: 'overflow',
-          value: `overflowX=${overflowX}, overflowY=${overflowY}`,
-          node: node.tagName.toLowerCase() + (node.className ? `.${String(node.className).split(' ').join('.')}` : ''),
-        });
-      }
-
-      if (style.transform && style.transform !== 'none') {
-        blockers.push({ reason: 'transform', value: style.transform, node: node.tagName.toLowerCase() });
-      }
-      if (style.filter && style.filter !== 'none') {
-        blockers.push({ reason: 'filter', value: style.filter, node: node.tagName.toLowerCase() });
-      }
-      if (style.perspective && style.perspective !== 'none' && style.perspective !== '0px') {
-        blockers.push({ reason: 'perspective', value: style.perspective, node: node.tagName.toLowerCase() });
-      }
-
-      node = node.parentElement;
-    }
-
-    if (blockers.length > 0) {
-      console.warn('[StickyAudit] Ancestor CSS pode quebrar o sticky:', blockers);
-    }
-  }, [property?.id]);
 
   // Images array - defined early for touch handlers
   const images = useMemo(() => {
@@ -325,9 +269,9 @@ const PropertyPage = () => {
             <span className="text-sm sm:text-base font-medium">Voltar</span>
           </button>
 
-          <div className="flex flex-col lg:grid lg:grid-cols-3 gap-4 sm:gap-8 overflow-visible">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-8 overflow-visible">
             {/* Image Gallery */}
-            <div className="lg:col-span-2 order-2 lg:order-1">
+            <div className="lg:col-span-2">
               {/* Main Image with Touch Support */}
               <div 
                 ref={mainImageRef}
@@ -560,12 +504,8 @@ const PropertyPage = () => {
               )}
             </div>
 
-            {/* Property Info (Sidebar) - Sticky on all screen sizes */}
-            <div 
-              ref={stickySidebarRef} 
-              className="order-1 lg:order-2 sticky self-start z-30"
-              style={{ top: headerHeight + 16 }}
-            >
+            {/* Property Info (Sidebar) */}
+            <div className="lg:self-start">
               <div className="space-y-4 sm:space-y-6">
                 {/* Header */}
                 <div className="bg-card p-4 sm:p-0 rounded-lg sm:rounded-none border sm:border-0 border-border">

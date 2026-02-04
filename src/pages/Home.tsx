@@ -250,50 +250,36 @@ const Home = () => {
       </section>
 
       {/* Category Filter Section */}
-      <section className="py-10 sm:py-14 bg-gradient-to-b from-background to-neutral-50/50">
+      <section className="py-8 sm:py-12 bg-neutral-50">
         <div className="container">
-          <div className="text-center mb-8 sm:mb-10">
-            <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-foreground">
+          <div className="text-center mb-6 sm:mb-8">
+            <h2 className="text-xl sm:text-2xl md:text-3xl font-bold mb-2 sm:mb-4 px-4">
               Busque seu imóvel por categoria
             </h2>
           </div>
           
-          {/* Modern Category Pills */}
-          <div className="flex justify-center">
-            <div className="inline-flex flex-wrap justify-center gap-3 sm:gap-4 p-2 bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-neutral-100">
+          {/* Mobile: Horizontal scroll / Desktop: Flex wrap */}
+          <div className="overflow-x-auto scrollbar-hide -mx-4 px-4 sm:mx-0 sm:px-0">
+            <div className="flex sm:flex-wrap sm:justify-center gap-2 sm:gap-4 pb-2 sm:pb-0 min-w-max sm:min-w-0">
               {categoryFilters.map((category) => {
                 const Icon = category.icon;
-                const isActive = activeCategory === category.id;
                 return (
                   <button
                     key={category.id}
                     onClick={() => setActiveCategory(category.id)}
-                    className={`
-                      group relative flex items-center gap-2 sm:gap-2.5 px-4 sm:px-5 py-2.5 sm:py-3 rounded-xl
-                      font-medium text-sm sm:text-base transition-all duration-300 ease-out
-                      touch-manipulation active:scale-[0.97]
-                      ${isActive
-                        ? 'bg-primary text-primary-foreground shadow-md shadow-primary/25'
-                        : 'bg-transparent text-neutral-600 hover:bg-neutral-100 hover:text-neutral-900'
-                      }
-                    `}
+                    className={`px-4 sm:px-6 py-2.5 sm:py-3 rounded-full font-medium transition-all whitespace-nowrap touch-manipulation active:scale-95 ${
+                      activeCategory === category.id
+                        ? 'bg-primary text-primary-foreground shadow-lg'
+                        : 'bg-white text-neutral-600 hover:bg-neutral-100 border border-neutral-200'
+                    }`}
                   >
-                    <Icon 
-                      size={18} 
-                      className={`transition-transform duration-300 ${isActive ? 'scale-110' : 'group-hover:scale-110'}`} 
-                    />
-                    <span className="font-semibold tracking-wide">{category.name}</span>
-                    <span 
-                      className={`
-                        text-xs font-bold px-2 py-0.5 rounded-full transition-colors duration-300
-                        ${isActive 
-                          ? 'bg-white/20 text-primary-foreground' 
-                          : 'bg-neutral-200/80 text-neutral-500 group-hover:bg-neutral-300 group-hover:text-neutral-700'
-                        }
-                      `}
-                    >
-                      {category.count}
-                    </span>
+                    <div className="flex items-center space-x-1.5 sm:space-x-2">
+                      <Icon size={16} className="sm:w-[18px] sm:h-[18px]" />
+                      <span className="text-sm sm:text-base">{category.name}</span>
+                      <span className="text-xs bg-neutral-200 text-neutral-600 px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-full">
+                        {category.count}
+                      </span>
+                    </div>
                   </button>
                 );
               })}

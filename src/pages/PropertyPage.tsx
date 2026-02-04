@@ -269,7 +269,7 @@ const PropertyPage = () => {
             <span className="text-sm sm:text-base font-medium">Voltar</span>
           </button>
 
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-8 overflow-visible">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-8 items-start">
             {/* Image Gallery */}
             <div className="lg:col-span-2">
               {/* Main Image with Touch Support */}

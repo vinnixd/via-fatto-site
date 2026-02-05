@@ -27,6 +27,8 @@ import FavoritesPage from "./pages/FavoritesPage";
 import LocationPage from "./pages/LocationPage";
 import ExportPage from "./pages/ExportPage";
 import NotFound from "./pages/NotFound";
+ import BlogPage from "./pages/BlogPage";
+ import BlogPostPage from "./pages/BlogPostPage";
 
 const queryClient = new QueryClient();
 
@@ -81,6 +83,8 @@ const App = () => {
                     <Route path="/contato" element={<ContactPage />} />
                     <Route path="/favoritos" element={<FavoritesPage />} />
                     <Route path="/export" element={<ExportPage />} />
+                     <Route path="/blog" element={<BlogPage />} />
+                     <Route path="/blog/:slug" element={<BlogPostPage />} />
                     {/* Any admin route redirects to 404 */}
                     <Route path="/admin/*" element={<NotFound />} />
                     

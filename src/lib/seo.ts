@@ -428,7 +428,7 @@ export function buildBlogListSEO(
 // INSTITUTIONAL PAGE SEO BUILDER
 // ============================================
 
-export type PageKey = 'home' | 'about' | 'contact' | 'privacy' | 'terms' | 'favorites' | 'location';
+ export type PageKey = 'home' | 'about' | 'contact' | 'privacy' | 'terms' | 'favorites' | 'location' | 'blog' | 'blog-post';
 
 const pageConfig: Record<PageKey, { title: string; description: string; path: string }> = {
   home: {
@@ -466,6 +466,16 @@ const pageConfig: Record<PageKey, { title: string; description: string; path: st
     description: 'Encontre imóveis na sua região preferida.',
     path: '/imoveis/localizacao',
   },
+   blog: {
+     title: 'Blog',
+     description: 'Dicas, notícias e novidades do mercado imobiliário.',
+     path: '/blog',
+   },
+   'blog-post': {
+     title: 'Artigo',
+     description: 'Leia nosso artigo sobre o mercado imobiliário.',
+     path: '/blog',
+   },
 };
 
 export function buildPageSEO(

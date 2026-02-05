@@ -470,6 +470,9 @@ const Home = () => {
         </section>
       )}
 
+      {/* Blog Section - Últimas do Mercado */}
+      <BlogSection posts={blogPosts} isLoading={blogLoading} />
+
       {/* Stats Section */}
       <section className="py-16 bg-primary text-primary-foreground">
         <div className="container">
@@ -553,9 +556,6 @@ const Home = () => {
         </div>
       </section>
 
-       {/* Blog Section */}
-       <BlogSection posts={blogPosts} isLoading={blogLoading} />
- 
       {/* CTA Section */}
       <section className="py-20 bg-neutral-900 text-white">
         <div className="container text-center">

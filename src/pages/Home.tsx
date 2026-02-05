@@ -4,7 +4,9 @@ import { ArrowRight, Star, Users, Home as HomeIcon, Trophy, Search, Building, Tr
 import useEmblaCarousel from 'embla-carousel-react';
 import Autoplay from 'embla-carousel-autoplay';
 import PropertyCard from '@/components/ui/PropertyCard';
+ import BlogSection from '@/components/blog/BlogSection';
 import { useProperties, useCategories, useSiteConfig, useAvailableCities, PropertyFromDB } from '@/hooks/useSupabaseData';
+ import { useBlogPosts } from '@/hooks/useBlogPosts';
 import { useCompanyName, useContactInfo } from '@/hooks/useTenantSettings';
 import { useTenant } from '@/contexts/TenantContext';
 import heroHouse from '@/assets/hero-house.jpg';
@@ -39,6 +41,7 @@ const Home = () => {
   const { data: categories = [] } = useCategories();
   const { data: siteConfig } = useSiteConfig();
   const { data: availableCities = [] } = useAvailableCities();
+   const { data: blogPosts = [], isLoading: blogLoading } = useBlogPosts({ limit: 3 });
 
   // Get latest 4 properties by created_at
   const latestProperties = [...allProperties]
@@ -550,6 +553,9 @@ const Home = () => {
         </div>
       </section>
 
+       {/* Blog Section */}
+       <BlogSection posts={blogPosts} isLoading={blogLoading} />
+ 
       {/* CTA Section */}
       <section className="py-20 bg-neutral-900 text-white">
         <div className="container text-center">

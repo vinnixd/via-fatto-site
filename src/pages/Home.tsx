@@ -470,9 +470,6 @@ const Home = () => {
         </section>
       )}
 
-      {/* Blog Section - Últimas do Mercado */}
-      <BlogSection posts={blogPosts} isLoading={blogLoading} />
-
       {/* Stats Section */}
       <section className="py-16 bg-primary text-primary-foreground">
         <div className="container">
@@ -557,7 +554,7 @@ const Home = () => {
       </section>
 
       {/* CTA Section */}
-      <section className="py-20 bg-neutral-900 text-white">
+      <section className="py-20 bg-neutral-900 text-white" id="cta-section">
         <div className="container text-center">
           <h2 className="text-3xl md:text-4xl font-bold mb-4">
             Pronto para Encontrar Seu Novo Lar?
@@ -575,6 +572,9 @@ const Home = () => {
           </div>
         </div>
       </section>
+
+      {/* Blog Section - Últimas do Mercado */}
+      <BlogSection posts={blogPosts} isLoading={blogLoading} />
     </div>
   );
 };

@@ -47,7 +47,7 @@ const AboutPage = () => {
                 </a>
                 <a
                   href={`tel:${siteConfig?.phone || '+5511999887766'}`}
-                  className="btn-secondary"
+                  className="btn-primary"
                 >
                   Ligar Agora
                 </a>
@@ -238,13 +238,13 @@ const AboutPage = () => {
                 </a>
                 <a
                   href={`tel:${siteConfig?.phone || '+5511999887766'}`}
-                  className="btn-secondary"
+                  className="btn-primary"
                 >
                   Telefone
                 </a>
                 <a
                   href={`mailto:${siteConfig?.email || 'contato@viafatto.com.br'}`}
-                  className="btn-secondary"
+                  className="btn-primary"
                 >
                   E-mail
                 </a>

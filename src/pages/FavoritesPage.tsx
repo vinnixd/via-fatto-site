@@ -155,7 +155,7 @@ const FavoritesPage = () => {
                     >
                       Agendar Visitas
                     </a>
-                    <Link to="/contato" className="btn-secondary">
+                    <Link to="/contato" className="btn-primary">
                       Falar com Corretora
                     </Link>
                   </div>
@@ -178,7 +178,7 @@ const FavoritesPage = () => {
                     <Link to="/imoveis" className="btn-primary block">
                       Explorar Imóveis
                     </Link>
-                    <Link to="/" className="btn-secondary block">
+                    <Link to="/" className="btn-primary block">
                       Voltar ao Início
                     </Link>
                   </div>

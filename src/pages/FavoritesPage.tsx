@@ -73,7 +73,7 @@ const FavoritesPage = () => {
       name: 'Via Fatto Imóveis',
       phone: siteConfig?.whatsapp || '11999887766',
       email: siteConfig?.email || 'contato@viafatto.com.br',
-      creci: 'CRECI-DF: 29588',
+      creci: 'CRECI-DF: 29588 | CRECI-GO: 42119',
       avatar: '',
     },
     createdAt: property.created_at,

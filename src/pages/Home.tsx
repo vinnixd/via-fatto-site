@@ -545,8 +545,8 @@ const Home = () => {
               </div>
               {/* CRECI Badge */}
               <div className="absolute -bottom-6 -right-6 bg-primary text-primary-foreground p-4 rounded-xl shadow-lg text-center">
-                <div className="text-lg font-bold">CRECI-DF</div>
-                <div className="text-xl font-bold">29588</div>
+                <div className="text-sm font-bold">CRECI-DF: 29588</div>
+                <div className="text-sm font-bold">CRECI-GO: 42119</div>
               </div>
             </div>
           </div>

@@ -266,7 +266,7 @@ export default function LocationPage() {
                       name: 'Via Fatto Imóveis',
                       phone: '',
                       email: '',
-                      creci: 'CRECI-DF: 29588',
+                      creci: 'CRECI-DF: 29588 | CRECI-GO: 42119',
                     },
                   }}
                   isFavorited={false}

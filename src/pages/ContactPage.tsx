@@ -325,7 +325,7 @@ const ContactPage = () => {
                     href={buildWhatsAppUrl({ phone: siteConfig?.whatsapp, message: 'Olá! Gostaria de uma avaliação do meu imóvel.' })}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="btn-secondary text-center"
+                    className="btn-primary text-center"
                   >
                     Avaliar Meu Imóvel
                   </a>

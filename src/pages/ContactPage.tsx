@@ -3,7 +3,7 @@ import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
 import { Phone, Mail, MapPin, MessageCircle, Clock, User, Send, Loader2 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
-import { useSiteConfig } from '@/hooks/useSupabaseData';
+import { useSiteConfig, useTenantId } from '@/hooks/useSupabaseData';
 import { toast } from 'sonner';
 import { buildWhatsAppUrl } from '@/lib/utils';
 import SEOHead from '@/components/SEOHead';
@@ -11,6 +11,7 @@ import { trackContactForm, trackWhatsAppClick } from '@/lib/gtmEvents';
 
 const ContactPage = () => {
   const { data: siteConfig } = useSiteConfig();
+  const { data: tenantId } = useTenantId();
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
@@ -31,6 +32,7 @@ const ContactPage = () => {
         email: formData.email,
         phone: formData.phone,
         message: `Assunto: ${formData.subject}\n\n${formData.message}`,
+        tenant_id: tenantId || undefined,
       });
 
       if (error) throw error;
